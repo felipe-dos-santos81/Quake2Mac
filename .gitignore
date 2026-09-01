@@ -1,0 +1,14 @@
+build/
+baseq2/gamearm64.so
+.qwen/
+
+# runtime game data (never committed)
+.DS_Store
+baseq2/config.cfg
+baseq2/players/
+baseq2/*.lst
+baseq2/*.pak
+baseq2/*.log
+baseq2/save/
+baseq2/scrnshot/
+baseq2/video/
