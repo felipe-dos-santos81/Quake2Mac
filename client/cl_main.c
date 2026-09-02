@@ -1723,7 +1723,7 @@ void CL_Frame (int msec)
 		time_after_ref = Sys_Milliseconds ();
 
 	// update audio
-	S_Update (cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
+	S_Update (cl.refdef.vieworg, cl.v_right);
 
 	// advance local effects for next frame
 	CL_RunDLights ();
