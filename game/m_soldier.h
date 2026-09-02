@@ -94,7 +94,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_pain309         	70
 #define FRAME_pain310         	71
 #define FRAME_pain311         	72
-#define FRAME_pain312         	73
 #define FRAME_pain313         	74
 #define FRAME_pain314         	75
 #define FRAME_pain315         	76
@@ -127,7 +126,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_run07           	103
 #define FRAME_run08           	104
 #define FRAME_run09           	105
-#define FRAME_run10           	106
 #define FRAME_run11           	107
 #define FRAME_run12           	108
 #define FRAME_runs01          	109
@@ -135,7 +133,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_runs03          	111
 #define FRAME_runs04          	112
 #define FRAME_runs05          	113
-#define FRAME_runs06          	114
 #define FRAME_runs07          	115
 #define FRAME_runs08          	116
 #define FRAME_runs09          	117
@@ -269,7 +266,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_walk131         	245
 #define FRAME_walk132         	246
 #define FRAME_walk133         	247
-#define FRAME_walk201         	248
 #define FRAME_walk202         	249
 #define FRAME_walk203         	250
 #define FRAME_walk204         	251
@@ -288,7 +284,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_walk217         	264
 #define FRAME_walk218         	265
 #define FRAME_walk219         	266
-#define FRAME_walk220         	267
 #define FRAME_walk221         	268
 #define FRAME_walk222         	269
 #define FRAME_walk223         	270
@@ -383,7 +378,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_death317        	359
 #define FRAME_death318        	360
 #define FRAME_death319        	361
-#define FRAME_death320        	362
 #define FRAME_death321        	363
 #define FRAME_death322        	364
 #define FRAME_death323        	365

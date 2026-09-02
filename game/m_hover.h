@@ -86,7 +86,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_forwrd33        	62
 #define FRAME_forwrd34        	63
 #define FRAME_forwrd35        	64
-#define FRAME_stop101         	65
 #define FRAME_stop102         	66
 #define FRAME_stop103         	67
 #define FRAME_stop104         	68
@@ -94,16 +93,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_stop106         	70
 #define FRAME_stop107         	71
 #define FRAME_stop108         	72
-#define FRAME_stop109         	73
-#define FRAME_stop201         	74
 #define FRAME_stop202         	75
 #define FRAME_stop203         	76
 #define FRAME_stop204         	77
 #define FRAME_stop205         	78
 #define FRAME_stop206         	79
 #define FRAME_stop207         	80
-#define FRAME_stop208         	81
-#define FRAME_takeof01        	82
 #define FRAME_takeof02        	83
 #define FRAME_takeof03        	84
 #define FRAME_takeof04        	85
@@ -132,8 +127,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_takeof27        	108
 #define FRAME_takeof28        	109
 #define FRAME_takeof29        	110
-#define FRAME_takeof30        	111
-#define FRAME_land01          	112
 #define FRAME_pain101         	113
 #define FRAME_pain102         	114
 #define FRAME_pain103         	115
@@ -194,7 +187,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_death109        	170
 #define FRAME_death110        	171
 #define FRAME_death111        	172
-#define FRAME_backwd01        	173
 #define FRAME_backwd02        	174
 #define FRAME_backwd03        	175
 #define FRAME_backwd04        	176
@@ -217,7 +209,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_backwd21        	193
 #define FRAME_backwd22        	194
 #define FRAME_backwd23        	195
-#define FRAME_backwd24        	196
 #define FRAME_attak101        	197
 #define FRAME_attak102        	198
 #define FRAME_attak103        	199
