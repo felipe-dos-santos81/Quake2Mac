@@ -1,6 +1,7 @@
 build/
 baseq2/gamearm64.so
 .qwen/
+.superpowers/
 
 # runtime game data (never committed)
 .DS_Store

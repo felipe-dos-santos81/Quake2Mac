@@ -6,6 +6,8 @@ SDL3 for video/input/audio, OpenGL renderer, all other platform backends removed
 
 Built for educational purposes only.
 
+Development conventions and agent instructions live in [`AGENTS.md`](AGENTS.md).
+
 **This repository does not ship the game data.** You must add the base game files
 from a retail Quake II installation yourself.
 
