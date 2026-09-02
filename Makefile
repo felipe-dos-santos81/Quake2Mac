@@ -27,7 +27,7 @@ BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 
 .DEFAULT_GOAL := build
 
-.PHONY: help install data objects build all verify-load run clean
+.PHONY: help install data objects build all verify-load run clean tools-test
 
 # ── Stage 0 · Help ───────────────────────────────────────────────────────────
 
@@ -45,6 +45,8 @@ install: ## Check toolchain and SDL3 dependency (brew install sdl3 if missing)
 	@pkg-config sdl3 --modversion > /dev/null 2>&1 || \
 		{ echo "ERROR: sdl3 not found. Run: brew install sdl3"; exit 1; }
 	@echo "SDL3 $$(pkg-config sdl3 --modversion) OK"
+	@command -v uv > /dev/null 2>&1 && echo "uv $$(uv --version | cut -d' ' -f2) OK" || \
+		echo "uv not found (optional, needed for 'make textures'): brew install uv"
 
 # ── Stage 2 · Game data ──────────────────────────────────────────────────────
 
@@ -185,3 +187,16 @@ run: build data ## Launch Quake II (windowed, GL renderer, no cursor grab)
 clean: ## Remove build outputs (build/ and the baseq2 game DLL copy)
 	rm -rf $(BUILD_DIR)
 	rm -f $(GAME_DLL)
+
+# ── Stage 6 · Tools (standalone Python in tools/, needs uv) ──────────────────
+
+UV ?= uv
+
+define require_uv
+	@command -v $(UV) > /dev/null 2>&1 || \
+		{ echo "ERROR: uv not found. Install: brew install uv"; exit 1; }
+endef
+
+tools-test: ## Run the tools/ pytest suite (extractor tests, no game data needed)
+	$(require_uv)
+	$(UV) run --project tools pytest tools/tests

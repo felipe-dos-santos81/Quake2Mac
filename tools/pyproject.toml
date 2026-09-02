@@ -1,0 +1,16 @@
+[project]
+name = "quake2-tools"
+version = "0.1.0"
+description = "Standalone helpers for the Quake II Apple Silicon port. Shares no code with the engine."
+requires-python = ">=3.12"
+dependencies = [
+    "vgio==1.3.0",
+    "pillow>=11",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
