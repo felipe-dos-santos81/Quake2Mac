@@ -187,10 +187,17 @@ today's 8-bit upload from mt                              (unchanged)
   paletted_texture[256*256]` with heap buffers sized
   `scaled_width * scaled_height` (`malloc`/`free` around the upload; the
   paletted buffer only when the paletted path is taken).
-- Replace the literal 256 clamp with `gl_override_maxsize->value`, clamped
-  at each use to `[1, gl_config.max_texsize]`, where `gl_config.max_texsize`
-  is filled by `qglGetIntegerv(GL_MAX_TEXTURE_SIZE, ...)` in
-  `GL_InitImages`.
+- For **mipmapped** uploads (world textures and skins) replace the literal
+  256 clamp with `gl_override_maxsize->value`, clamped at each use to
+  `[1, gl_config.max_texsize]`, where `gl_config.max_texsize` is filled by
+  `qglGetIntegerv(GL_MAX_TEXTURE_SIZE, ...)` in `GL_InitImages`.
+  Non-mipmapped uploads (HUD pics, skies) keep the literal 256: `gl_round_down`
+  never rounds those down, so a stock 320×240 pic would otherwise jump from
+  256×256 to 512×256 at the defaults. (Ruled during implementation review.)
+- The heap work buffer is sized for a width of at least 2 pixels:
+  `GL_MipMap` consumes two pixels per step, and the old 1 MB static buffer
+  was hiding that over-read for 1-pixel-wide mip chains (`gl_picmip 4` on a
+  narrow texture). The size product is computed in `size_t`.
 - `GL_ResampleTexture`: allocate `p1`/`p2` with `outwidth` entries instead
   of the fixed 1024.
 - Everything else (power-of-two rounding, `gl_round_down`, `gl_picmip`,
