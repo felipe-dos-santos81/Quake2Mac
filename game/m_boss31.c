@@ -559,30 +559,6 @@ void jorg_attack(edict_t *self)
 
 void jorg_dead (edict_t *self)
 {
-#if 0
-	edict_t	*tempent;
-	/*
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, -8);
-	*/
-	
-	// Jorg is on modelindex2. Do not clear him.
-	VectorSet (self->mins, -60, -60, 0);
-	VectorSet (self->maxs, 60, 60, 72);
-	self->movetype = MOVETYPE_TOSS;
-	self->nextthink = 0;
-	gi.linkentity (self);
-
-	tempent = G_Spawn();
-	VectorCopy (self->s.origin, tempent->s.origin);
-	VectorCopy (self->s.angles, tempent->s.angles);
-	tempent->killtarget = self->killtarget;
-	tempent->target = self->target;
-	tempent->activator = self->enemy;
-	self->killtarget = 0;
-	self->target = 0;
-	SP_monster_makron (tempent);
-#endif
 }
 
 
