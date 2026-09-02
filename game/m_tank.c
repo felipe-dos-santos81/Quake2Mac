@@ -122,8 +122,6 @@ void tank_stand (edict_t *self)
 // walk
 //
 
-void tank_walk (edict_t *self);
-
 mframe_t tank_frames_walk [] =
 {
 	ai_walk, 4,	NULL,
