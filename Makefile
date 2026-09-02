@@ -25,7 +25,7 @@ VERIFY_LOAD = $(BUILD_DIR)/verify_load
 EXE_LDFLAGS = $(SDL_LIBS) -ldl -lm
 BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := help
 
 .PHONY: help install data objects build all verify-load run clean
 
@@ -59,7 +59,7 @@ data: ## Check that Quake II game data (baseq2/pak0.pak) is present
 
 # ── Stage 3 · Build ──────────────────────────────────────────────────────────
 
-vpath %.c client server qcommon game ref_gl linux null sdl
+vpath %.c client server qcommon game ref_gl linux sdl
 
 # GNU make keeps the directory part of the stem (e.g. `client/cmd`) when
 # searching vpath, so strip it: the prerequisite is the basename .c file,
@@ -99,7 +99,7 @@ SERVER_OBJS = \
 
 # platform layer linked into the executable
 SYS_EXE_OBJS = \
-	$(BUILD_DIR)/client/cd_null.o $(BUILD_DIR)/client/q_shlinux.o \
+	$(BUILD_DIR)/client/q_shlinux.o \
 	$(BUILD_DIR)/client/vid_menu.o $(BUILD_DIR)/client/sys_linux.o \
 	$(BUILD_DIR)/client/glob.o $(BUILD_DIR)/client/net_udp.o \
 	$(BUILD_DIR)/client/snd_sdl.o $(BUILD_DIR)/client/vid_sdl.o
