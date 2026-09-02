@@ -219,12 +219,6 @@ mframe_t berserk_frames_attack_club [] =
 mmove_t berserk_move_attack_club = {FRAME_att_c9, FRAME_att_c20, berserk_frames_attack_club, berserk_run};
 
 
-void berserk_strike (edict_t *self)
-{
-	//FIXME play impact sound
-}
-
-
 void berserk_melee (edict_t *self)
 {
 	if ((rand() % 2) == 0)
