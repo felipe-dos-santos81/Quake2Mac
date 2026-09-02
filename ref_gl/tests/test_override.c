@@ -1,5 +1,5 @@
 /*
-test_override.c -- host test for ref_gl/gl_override.c.
+test_override.c -- host test for ref_gl/override.c.
 
 No GL context, no game data: a stub refimport_t serves files from a temp
 directory. Built and run by `make test-ref`.
@@ -11,9 +11,9 @@ directory. Built and run by `make test-ref`.
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "../gl_local.h"
+#include "ref_gl/local.h"
 
-refimport_t	ri;				/* gl_override.c calls ri.FS_LoadFile / FS_FreeFile / Con_Printf */
+refimport_t	ri;				/* override.c calls ri.FS_LoadFile / FS_FreeFile / Con_Printf */
 
 static char	tmpdir[1024];
 static int	failures;

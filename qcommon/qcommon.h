@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // qcommon.h -- definitions common between client and server, but not game.dll
 
-#include "../game/q_shared.h"
+#include "game/q_shared.h"
 
 
 #define	VERSION		3.19
@@ -149,7 +149,7 @@ PROTOCOL
 
 
 //==================
-// the svc_strings[] array in cl_parse.c should mirror this
+// the svc_strings[] array in client/net/parse.c should mirror this
 //==================
 
 //
@@ -577,7 +577,7 @@ CMODEL
 */
 
 
-#include "../qcommon/qfiles.h"
+#include "qcommon/qfiles.h"
 
 cmodel_t	*CM_LoadMap (char *name, qboolean clientload, unsigned *checksum);
 cmodel_t	*CM_InlineModel (char *name);	// *1, *2, etc

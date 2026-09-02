@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //define	PARANOID			// speed sapping error checking
 
-#include "../qcommon/qcommon.h"
-#include "../game/game.h"
+#include "qcommon/qcommon.h"
+#include "game/game.h"
 
 //=============================================================================
 
@@ -204,7 +204,7 @@ extern	edict_t		*sv_player;
 //===========================================================
 
 //
-// sv_main.c
+// server/main.c
 //
 void SV_FinalMessage (char *message, qboolean reconnect);
 void SV_DropClient (client_t *drop);
@@ -226,7 +226,7 @@ void Master_Heartbeat (void);
 void Master_Packet (void);
 
 //
-// sv_init.c
+// server/init.c
 //
 void SV_InitGame (void);
 void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame);
@@ -238,7 +238,7 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame);
 void SV_PrepWorldFrame (void);
 
 //
-// sv_send.c
+// server/send.c
 //
 typedef enum {RD_NONE, RD_CLIENT, RD_PACKET} redirect_t;
 #define	SV_OUTPUTBUF_LENGTH	(MAX_MSGLEN - 16)
@@ -259,19 +259,19 @@ void SV_BroadcastPrintf (int level, char *fmt, ...);
 void SV_BroadcastCommand (char *fmt, ...);
 
 //
-// sv_user.c
+// server/user.c
 //
 void SV_Nextserver (void);
 void SV_ExecuteClientMessage (client_t *cl);
 
 //
-// sv_ccmds.c
+// server/ccmds.c
 //
 void SV_ReadLevelFile (void);
 void SV_Status_f (void);
 
 //
-// sv_ents.c
+// server/ents.c
 //
 void SV_WriteFrameToClient (client_t *client, sizebuf_t *msg);
 void SV_RecordDemoMessage (void);
@@ -281,7 +281,7 @@ void SV_BuildClientFrame (client_t *client);
 void SV_Error (char *error, ...);
 
 //
-// sv_game.c
+// server/game.c
 //
 extern	game_export_t	*ge;
 

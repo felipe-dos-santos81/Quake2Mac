@@ -16,29 +16,28 @@ small standalone Python tool (`tools/`) for texture extraction.
 
 | Path | Contents |
 |---|---|
-| `client/` | Client (cl_*), sound (snd_*), menu/keys/console, plus sv_* server sources and shared headers (`client.h`, `ref.h`, `sound.h`) |
-| `server/` | Server headers + sv_* sources compiled into the executable |
-| `qcommon/` | Engine core: `common.c`, `cmd.c`, `cvar.c`, `files.c`, `cmodel.c`, `pmove.c`, crc/md4, `qcommon.h`, `qfiles.h` |
-| `game/` | Game DLL sources: game logic (g_*), player (p_*), monsters (m_*.c + ModelGen-generated m_*.h), `q_shared.c/h` |
-| `ref_gl/` | OpenGL renderer (gl_*) + texture-override loader (`gl_override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
-| `sdl/` | SDL3 platform layer: `vid_sdl.c`, `snd_sdl.c`, `in_sdl.c`, `glw_sdl.c`, `qgl_sdl.c` (GL dispatch loader), `verify_load.c` |
-| `linux/` | POSIX layer kept from the Linux port: `sys_linux.c`, `net_udp.c`, `glob.c`, `q_shlinux.c`, `vid_menu.c` |
+| `client/` | Client core (`main.c`, `input.c`) with `net/` (parse, predict, ents, tents, fx, newfx), `screen/` (scrn, view, cinematic, inv, console, keys, menu, qmenu), `sound/` (dma, mem, mix) subfolders; shared headers (`client.h`, `ref.h`, `vid.h`, `input.h`, `anorms.h`) |
+| `server/` | Server sources compiled into the executable — flat, `sv_*` prefixes dropped: `main.c`, `init.c`, `send.c`, `user.c`, `world.c`, `ents.c`, `game.c`, `ccmds.c` + `server.h` |
+| `qcommon/` | Engine core, unchanged by the restructure: `common.c`, `cmd.c`, `cvar.c`, `files.c`, `cmodel.c`, `pmove.c`, crc/md4, `qcommon.h`, `qfiles.h` |
+| `game/` | Game DLL sources: game logic at the root (was g_*), `player/` (was p_*), `monsters/` (was m_*.c + ModelGen-generated m_*.h), `q_shared.c/h` |
+| `ref_gl/` | OpenGL renderer — flat, `gl_*` prefixes dropped + texture-override loader (`override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
+| `platform/` | Merge of the old `linux/` + `sdl/`: `posix/` (`sys.c`, `udp.c`, `glob.c`, `shared.c`, `vid_menu.c`) + `sdl/` (`vid.c`, `sound.c`, `input.c`, `glw.c`, `qgl.c` GL dispatch loader), plus `verify_load.c` at the platform root |
 | `tools/` | Standalone Python (uv-managed) pak `.wal` → PNG texture extractor + pytest suite |
-| `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit |
+| `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit, folder restructure |
 | `baseq2/` | **User territory** — game data (paks, players/, textures/, saves). Contents selectively git-ignored; only `hudtest.cfg` is tracked |
-| `build/` | Build outputs: `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
+| `build/` | Build outputs; object paths now mirror the source tree (`client/main.c` → `build/client/main.o`): `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
 | `.superpowers/` | Transient SDD agent workspaces (`sdd/<date>-<topic>/` briefs, reports, review diffs). Git-ignored — never commit |
 
 ## Architecture Notes (load-bearing)
 
 - **Three link units:**
-  1. the executable (`build/quake2`) — client + server + qcommon + `linux/` + the SDL platform objects from `sdl/`;
+  1. the executable (`build/quake2`) — client + server + qcommon + the platform layer (`platform/posix/` + `platform/sdl/`);
   2. `build/ref_gl.so` — renderer bundle;
   3. `baseq2/gamearm64.so` — game DLL, dlopened from `<cwd>/baseq2/`.
   Bundles use `-bundle -undefined dynamic_lookup` (flat namespace, symbols resolve against the host executable at load time).
-- **Shared sources compile into multiple units:** `game/q_shared.c` builds into **all three** units (`build/client/q_shared.o`, `build/ref_gl/q_shared.o`, `build/game/q_shared.o`); `game/m_flash.c` into the game DLL and the executable. Code that looks dead in one unit may be alive in another.
-- **Renderer/game ABI:** the engine dlopens both bundles and resolves entry points (`GetRefAPI`, `GetGameAPI`, `RW_IN_*` exports). `sdl/verify_load.c` encodes the expected export contract.
-- **Protected items (survived 4 cleanup rounds, do not disturb without a spec):** the `qgl*` GL dispatch table + 7 `qgl*EXT` pointers in `sdl/qgl_sdl.c`; the byte-swap cluster in `game/q_shared.c` (`Swap_Init`, `_Big*/_Little*`, wrappers — dead in the game DLL only, alive in the other two units); `RW_IN_Activate_fp` in `sdl/vid_sdl.c`; `R_Init()` returning `true` in `ref_gl/gl_rmain.c`.
+- **Shared sources compile once and link into multiple units:** `game/q_shared.c` builds **once** as `build/game/q_shared.o` and links all three units; `game/monsters/flash.c` (`build/game/monsters/flash.o`) into the executable and the game DLL; `platform/posix/{shared,glob}.c` into the executable and `ref_gl.so`. This is safe because CFLAGS is uniform across units — keep it that way, or reintroduce per-unit object directories. Code that looks dead in one unit may be alive in another.
+- **Renderer/game ABI:** the engine dlopens both bundles and resolves entry points (`GetRefAPI`, `GetGameAPI`, `RW_IN_*` exports). `platform/verify_load.c` encodes the expected export contract.
+- **Protected items (survived 4 cleanup rounds, do not disturb without a spec):** the `qgl*` GL dispatch table + 7 `qgl*EXT` pointers in `platform/sdl/qgl.c`; the byte-swap cluster in `game/q_shared.c` (`Swap_Init`, `_Big*/_Little*`, wrappers — dead in the game DLL only, alive in the other two units); `RW_IN_Activate_fp` in `platform/sdl/vid.c`; `R_Init()` returning `true` in `ref_gl/rmain.c`.
 - **Texture overrides:** the renderer probes `baseq2/textures/<path>.{png,tga,jpg}` before the pak `.wal`; cvars `gl_textureoverride`, `gl_override_maxsize`. See README and `2026-09-01-texture-overrides-design.md`.
 
 ## Building and Running
@@ -68,12 +67,13 @@ regression; the `+map base1` smoke is the deterministic substitute.)
 **Known benign build noise:** an `ld` warning
 `reducing alignment of section __DATA,__common`, and ~200+ pre-existing
 `-Wall` warnings (mostly `-Wmissing-braces` in monster frame-array
-initializers, `-Wpointer-sign` in cl_main). Do not "fix" these in
+initializers, `-Wpointer-sign` in client/main.c). Do not "fix" these in
 unrelated changes.
 
 ## Development Conventions
 
 - **id-era C style:** tabs, K&R-ish braces, `/* banner */` function comment blocks, `qboolean`/`vec3_t` typedefs from `game/q_shared.h`. Match surrounding code exactly.
+- **Root-relative includes:** every `#include "..."` is a repo-root-relative path (`-I.` is set in the Makefile). No bare-basename or `../` includes. Lint: `grep -rn '#include "' --include='*.[ch]' client server qcommon game ref_gl platform | grep -v '#include ".*/'` must print nothing.
 - **Minimal blast radius:** prefer the narrowest correct change; reuse existing code paths before adding new ones.
 - **Zero behavior change for cleanup work:** every removal must be *provably* dead — `grep -rnw SYMBOL` must show declarations/writes only, no reads — and remember symbols may be alive in another link unit. `FRAME_*` constants are explicit-value `#define`s (ModelGen headers): removal is value-safe, but they are per-definition (the same name can exist in several monster headers for different translation units).
 - **Git discipline:** stage explicit paths only — never `git add -A` or `git commit -a`. `baseq2/` game data (paks, saves, configs, textures) must never enter a commit — `baseq2/textures/` is id Software data, and the texture recreation kit's batch data lives off-repo. Push only when explicitly asked. Feature work lands on a branch, gated, then `--no-ff` merged to `main`.
