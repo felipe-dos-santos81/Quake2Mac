@@ -12,8 +12,8 @@
 
 #include <SDL3/SDL.h>
 
-#include "../client/client.h"
-#include "../client/snd_loc.h"
+#include "client/client.h"
+#include "client/snd_loc.h"
 
 static SDL_AudioStream *audio_stream;
 static SDL_AudioDeviceID audio_device;

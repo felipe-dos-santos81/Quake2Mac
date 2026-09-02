@@ -25,8 +25,8 @@ boss3
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_boss32.h"
+#include "game/g_local.h"
+#include "game/m_boss32.h"
 
 void Use_Boss3 (edict_t *ent, edict_t *other, edict_t *activator)
 {

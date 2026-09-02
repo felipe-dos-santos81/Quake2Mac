@@ -25,8 +25,8 @@ jorg
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_boss31.h"
+#include "game/g_local.h"
+#include "game/m_boss31.h"
 
 extern void SP_monster_makron (edict_t *self);
 qboolean visible (edict_t *self, edict_t *other);

@@ -25,8 +25,8 @@ TANK
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_tank.h"
+#include "game/g_local.h"
+#include "game/m_tank.h"
 
 
 void tank_refire_rocket (edict_t *self);

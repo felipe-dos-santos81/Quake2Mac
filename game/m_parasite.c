@@ -25,8 +25,8 @@ parasite
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_parasite.h"
+#include "game/g_local.h"
+#include "game/m_parasite.h"
 
 
 static int	sound_pain1;

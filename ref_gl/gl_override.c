@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // decodes the files; it is the only file that includes stb_image.h.
 // Nothing here may call ri.Sys_Error: a bad override falls back to the .wal.
 
-#include "gl_local.h"
+#include "ref_gl/gl_local.h"
 
 // stb_image: only the formats we probe, no stdio (we read through ri.FS_LoadFile)
 #define STB_IMAGE_IMPLEMENTATION
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define STBI_ONLY_TGA
 #define STBI_NO_STDIO
 #define STBI_MAX_DIMENSIONS 16384	// bounds decode memory for absurd files
-#include "stb_image.h"
+#include "ref_gl/stb_image.h"
 
 // probe order; the first file that decodes wins
 static const char *override_exts[] = { "png", "tga", "jpg" };

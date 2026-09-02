@@ -11,7 +11,7 @@ directory. Built and run by `make test-ref`.
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "../gl_local.h"
+#include "ref_gl/gl_local.h"
 
 refimport_t	ri;				/* gl_override.c calls ri.FS_LoadFile / FS_FreeFile / Con_Printf */
 

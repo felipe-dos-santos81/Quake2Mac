@@ -25,8 +25,8 @@ SUPERTANK
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_supertank.h"
+#include "game/g_local.h"
+#include "game/m_supertank.h"
 
 qboolean visible (edict_t *self, edict_t *other);
 

@@ -16,7 +16,7 @@ SDL_LIBS   := $(shell pkg-config sdl3 --libs)
 # -MMD -MP: emit per-object header dependency files so editing a header
 # (e.g. client/ref.h) rebuilds every object that includes it; without
 # this a stale object/ref_gl.so mix corrupted the ref interface at runtime
-BASE_CFLAGS = -O2 -g -Wall $(SDL_CFLAGS) -MMD -MP
+BASE_CFLAGS = -O2 -g -Wall -I. $(SDL_CFLAGS) -MMD -MP
 CFLAGS = $(BASE_CFLAGS)
 
 EXE = $(BUILD_DIR)/quake2

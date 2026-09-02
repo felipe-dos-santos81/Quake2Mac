@@ -25,8 +25,8 @@ SOLDIER
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_soldier.h"
+#include "game/g_local.h"
+#include "game/m_soldier.h"
 
 
 static int	sound_idle;

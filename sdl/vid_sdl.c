@@ -5,9 +5,9 @@
 
 #include <dlfcn.h>
 
-#include "../client/client.h"
+#include "client/client.h"
 
-#include "../linux/rw_linux.h"
+#include "linux/rw_linux.h"
 
 // Structure containing functions exported from refresh DLL
 refexport_t	re;

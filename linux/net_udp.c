@@ -1,6 +1,6 @@
 // net_udp.c
 
-#include "../qcommon/qcommon.h"
+#include "qcommon/qcommon.h"
 
 #include <unistd.h>
 #include <sys/socket.h>

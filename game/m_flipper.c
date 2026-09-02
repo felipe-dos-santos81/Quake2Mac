@@ -25,8 +25,8 @@ FLIPPER
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_flipper.h"
+#include "game/g_local.h"
+#include "game/m_flipper.h"
 
 
 static int	sound_chomp;

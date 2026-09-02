@@ -25,8 +25,8 @@ insane
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_insane.h"
+#include "game/g_local.h"
+#include "game/m_insane.h"
 
 
 static int	sound_fist;

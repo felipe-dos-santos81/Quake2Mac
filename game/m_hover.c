@@ -25,8 +25,8 @@ hover
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_hover.h"
+#include "game/g_local.h"
+#include "game/m_hover.h"
 
 qboolean visible (edict_t *self, edict_t *other);
 

@@ -27,14 +27,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ref.h"
+#include "client/ref.h"
 
-#include "vid.h"
-#include "screen.h"
-#include "sound.h"
-#include "input.h"
-#include "keys.h"
-#include "console.h"
+#include "client/vid.h"
+#include "client/screen.h"
+#include "client/sound.h"
+#include "client/input.h"
+#include "client/keys.h"
+#include "client/console.h"
 
 //=============================================================================
 

@@ -19,8 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // snd_mix.c -- portable code to mix sounds for snd_dma.c
 
-#include "client.h"
-#include "snd_loc.h"
+#include "client/client.h"
+#include "client/snd_loc.h"
 
 #define	PAINTBUFFER_SIZE	2048
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];

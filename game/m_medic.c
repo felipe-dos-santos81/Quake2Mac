@@ -25,8 +25,8 @@ MEDIC
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_medic.h"
+#include "game/g_local.h"
+#include "game/m_medic.h"
 
 qboolean visible (edict_t *self, edict_t *other);
 

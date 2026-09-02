@@ -25,8 +25,8 @@ INFANTRY
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_infantry.h"
+#include "game/g_local.h"
+#include "game/m_infantry.h"
 
 void InfantryMachineGun (edict_t *self);
 

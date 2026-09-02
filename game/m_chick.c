@@ -25,8 +25,8 @@ chick
 ==============================================================================
 */
 
-#include "g_local.h"
-#include "m_chick.h"
+#include "game/g_local.h"
+#include "game/m_chick.h"
 
 qboolean visible (edict_t *self, edict_t *other);
 

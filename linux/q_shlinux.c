@@ -8,9 +8,9 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 
-#include "../linux/glob.h"
+#include "linux/glob.h"
 
-#include "../qcommon/qcommon.h"
+#include "qcommon/qcommon.h"
 
 //===============================================================================
 

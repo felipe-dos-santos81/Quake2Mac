@@ -36,9 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX
 #endif
 
-#include "../client/ref.h"
+#include "client/ref.h"
 
-#include "qgl.h"
+#include "ref_gl/qgl.h"
 
 #define	REF_VERSION	"GL 0.01"
 
@@ -116,7 +116,7 @@ typedef enum
 	rserr_unknown
 } rserr_t;
 
-#include "gl_model.h"
+#include "ref_gl/gl_model.h"
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
