@@ -1333,9 +1333,32 @@ image_t *GL_LoadWal (char *name)
 {
 	miptex_t	*mt;
 	int			width, height, ofs;
+	int			ow, oh;
+	byte		*pic;
 	image_t		*image;
 
 	ri.FS_LoadFile (name, (void **)&mt);
+
+	// hi-res override on disk (textures/<name>.png / .tga / .jpg)? upload
+	// it, but keep the .wal's size in image->width/height: surface texture
+	// coordinates are divided by those (GL_BuildPolygonFromSurface), so a
+	// 4x texture must still cover the same wall area
+	pic = NULL;
+	if (gl_textureoverride->value)
+		pic = GL_LoadOverride (name, &ow, &oh);
+	if (pic)
+	{
+		image = GL_LoadPic (name, pic, ow, oh, it_wall, 32);
+		if (mt)
+		{
+			image->width = LittleLong (mt->width);
+			image->height = LittleLong (mt->height);
+			ri.FS_FreeFile ((void *)mt);
+		}
+		GL_FreeOverride (pic);
+		return image;
+	}
+
 	if (!mt)
 	{
 		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
