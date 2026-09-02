@@ -589,7 +589,6 @@ char *bindnames[][2] =
 { 0, 0 }
 };
 
-int				keys_cursor;
 static int		bind_grab;
 
 static menuframework_s	s_keys_menu;
@@ -1784,8 +1783,6 @@ GAME MENU
 =============================================================================
 */
 
-static int		m_game_cursor;
-
 static menuframework_s	s_game_menu;
 static menuaction_s		s_easy_game_action;
 static menuaction_s		s_medium_game_action;
@@ -1927,7 +1924,6 @@ void M_Menu_Game_f (void)
 {
 	Game_MenuInit();
 	M_PushMenu( Game_MenuDraw, Game_MenuKey );
-	m_game_cursor = 1;
 }
 
 /*

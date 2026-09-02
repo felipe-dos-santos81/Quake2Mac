@@ -41,15 +41,12 @@ int			s_registration_sequence;
 
 channel_t   channels[MAX_CHANNELS];
 
-qboolean	snd_initialized = false;
 int			sound_started=0;
 
 dma_t		dma;
 
 vec3_t		listener_origin;
-vec3_t		listener_forward;
 vec3_t		listener_right;
-vec3_t		listener_up;
 
 qboolean	s_registering;
 
@@ -1027,9 +1024,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		S_InitScaletable ();
 
 	VectorCopy(origin, listener_origin);
-	VectorCopy(forward, listener_forward);
 	VectorCopy(right, listener_right);
-	VectorCopy(up, listener_up);
 
 	combine = NULL;
 

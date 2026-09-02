@@ -76,7 +76,7 @@ cnode_t		map_nodes[MAX_MAP_NODES+6];		// extra for box hull
 
 int			numleafs = 1;	// allow leaf funcs to be called without a map
 cleaf_t		map_leafs[MAX_MAP_LEAFS];
-int			emptyleaf, solidleaf;
+int			emptyleaf;
 
 int			numleafbrushes;
 unsigned short	map_leafbrushes[MAX_MAP_LEAFBRUSHES];
@@ -91,7 +91,6 @@ int			numvisibility;
 byte		map_visibility[MAX_MAP_VISIBILITY];
 dvis_t		*map_vis = (dvis_t *)map_visibility;
 
-int			numentitychars;
 char		map_entitystring[MAX_MAP_ENTSTRING];
 
 int			numareas = 1;
@@ -313,7 +312,6 @@ void CMod_LoadLeafs (lump_t *l)
 
 	if (map_leafs[0].contents != CONTENTS_SOLID)
 		Com_Error (ERR_DROP, "Map leaf 0 is not CONTENTS_SOLID");
-	solidleaf = 0;
 	emptyleaf = -1;
 	for (i=1 ; i<numleafs ; i++)
 	{
@@ -529,7 +527,6 @@ CMod_LoadEntityString
 */
 void CMod_LoadEntityString (lump_t *l)
 {
-	numentitychars = l->filelen;
 	if (l->filelen > MAX_MAP_ENTSTRING)
 		Com_Error (ERR_DROP, "Map has too large entity lump");
 
@@ -572,7 +569,6 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 	numleafs = 0;
 	numcmodels = 0;
 	numvisibility = 0;
-	numentitychars = 0;
 	map_entitystring[0] = 0;
 	map_name[0] = 0;
 

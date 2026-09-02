@@ -43,11 +43,9 @@ CL_ParseEntityBits
 Returns the entity number and the header bits
 =================
 */
-int	bitcounts[32];	/// just for protocol profiling
 int CL_ParseEntityBits (unsigned *bits)
 {
 	unsigned	b, total;
-	int			i;
 	int			number;
 
 	total = MSG_ReadByte (&net_message);
@@ -66,11 +64,6 @@ int CL_ParseEntityBits (unsigned *bits)
 		b = MSG_ReadByte (&net_message);
 		total |= b<<24;
 	}
-
-	// count the bits for net profiling
-	for (i=0 ; i<32 ; i++)
-		if (total&(1<<i))
-			bitcounts[i]++;
 
 	if (total & U_NUMBER16)
 		number = MSG_ReadShort (&net_message);

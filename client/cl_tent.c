@@ -92,8 +92,6 @@ struct sfx_s	*cl_sfx_railg;
 struct sfx_s	*cl_sfx_rockexp;
 struct sfx_s	*cl_sfx_grenexp;
 struct sfx_s	*cl_sfx_watrexp;
-// RAFAEL
-struct sfx_s	*cl_sfx_plasexp;
 struct sfx_s	*cl_sfx_footsteps[4];
 
 struct model_s	*cl_mod_explode;
@@ -101,12 +99,9 @@ struct model_s	*cl_mod_smoke;
 struct model_s	*cl_mod_flash;
 struct model_s	*cl_mod_parasite_segment;
 struct model_s	*cl_mod_grapple_cable;
-struct model_s	*cl_mod_parasite_tip;
 struct model_s	*cl_mod_explo4;
 struct model_s	*cl_mod_bfg_explo;
 struct model_s	*cl_mod_powerscreen;
-// RAFAEL
-struct model_s	*cl_mod_plasmaexplo;
 
 //ROGUE
 struct sfx_s	*cl_sfx_lightning;
@@ -141,8 +136,6 @@ void CL_RegisterTEntSounds (void)
 	cl_sfx_rockexp = S_RegisterSound ("weapons/rocklx1a.wav");
 	cl_sfx_grenexp = S_RegisterSound ("weapons/grenlx1a.wav");
 	cl_sfx_watrexp = S_RegisterSound ("weapons/xpld_wat.wav");
-	// RAFAEL
-	// cl_sfx_plasexp = S_RegisterSound ("weapons/plasexpl.wav");
 	S_RegisterSound ("player/land1.wav");
 
 	S_RegisterSound ("player/fall2.wav");
@@ -176,7 +169,6 @@ void CL_RegisterTEntModels (void)
 	cl_mod_flash = re.RegisterModel ("models/objects/flash/tris.md2");
 	cl_mod_parasite_segment = re.RegisterModel ("models/monsters/parasite/segment/tris.md2");
 	cl_mod_grapple_cable = re.RegisterModel ("models/ctf/segment/tris.md2");
-	cl_mod_parasite_tip = re.RegisterModel ("models/monsters/parasite/tip/tris.md2");
 	cl_mod_explo4 = re.RegisterModel ("models/objects/r_explode/tris.md2");
 	cl_mod_bfg_explo = re.RegisterModel ("sprites/s_bfg2.sp2");
 	cl_mod_powerscreen = re.RegisterModel ("models/items/armor/effect/tris.md2");

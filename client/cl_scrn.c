@@ -181,10 +181,8 @@ CENTER PRINTING
 */
 
 char		scr_centerstring[1024];
-float		scr_centertime_start;	// for slow victory printing
 float		scr_centertime_off;
 int			scr_center_lines;
-int			scr_erase_center;
 
 /*
 ==============
@@ -202,7 +200,6 @@ void SCR_CenterPrint (char *str)
 
 	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
-	scr_centertime_start = cl.time;
 
 	// count the number of lines for centering
 	scr_center_lines = 1;
@@ -262,7 +259,6 @@ void SCR_DrawCenterString (void)
 // the finale prints the characters one at a time
 	remaining = 9999;
 
-	scr_erase_center = 0;
 	start = scr_centerstring;
 	scale = SCR_HUDScale ();
 	cw = CONCHAR_SIZE*scale;
