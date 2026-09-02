@@ -1168,9 +1168,6 @@ int R_Init( void *hinstance, void *hWnd )
 
 	GL_SetDefaultState();
 
-	/*
-	** draw our stereo patterns
-	*/
 
 	GL_InitImages ();
 	Mod_Init ();

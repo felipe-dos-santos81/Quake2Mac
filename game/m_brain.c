@@ -174,14 +174,12 @@ mframe_t brain_frames_walk1 [] =
 };
 mmove_t brain_move_walk1 = {FRAME_walk101, FRAME_walk111, brain_frames_walk1, NULL};
 
-// walk2 is FUBAR, do not use
 
 void brain_walk (edict_t *self)
 {
 //	if (random() <= 0.5)
 		self->monsterinfo.currentmove = &brain_move_walk1;
 //	else
-//		self->monsterinfo.currentmove = &brain_move_walk2;
 }
 
 
