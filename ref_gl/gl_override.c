@@ -27,6 +27,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
+// stb_image: only the formats we probe, no stdio (we read through ri.FS_LoadFile)
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_PNG
+#define STBI_ONLY_JPEG
+#define STBI_ONLY_TGA
+#define STBI_NO_STDIO
+#include "stb_image.h"
+
+// probe order; the first file that decodes wins
+static const char *override_exts[] = { "png", "tga", "jpg" };
+
 /*
 ================
 GL_OverridePath
@@ -61,4 +72,52 @@ qboolean GL_OverridePath (const char *walname, const char *ext, char *out, size_
 	out[stem] = '.';
 	strcpy (out + stem + 1, ext);
 	return true;
+}
+
+/*
+================
+GL_LoadOverride
+
+Probes textures/<name>.png, .tga, .jpg through the engine filesystem and
+decodes the first hit to RGBA (4 bytes per texel, top row first). Returns
+NULL if nothing decodes. A file that exists but does not decode is reported
+and skipped -- never fatal.
+================
+*/
+byte *GL_LoadOverride (const char *walname, int *width, int *height)
+{
+	char	path[MAX_QPATH];
+	byte	*buf, *pix;
+	int		len, i, w, h;
+
+	for (i = 0 ; i < (int)(sizeof(override_exts)/sizeof(override_exts[0])) ; i++)
+	{
+		if (!GL_OverridePath (walname, override_exts[i], path, sizeof(path)))
+			return NULL;
+		len = ri.FS_LoadFile (path, (void **)&buf);
+		if (!buf)
+			continue;
+		pix = stbi_load_from_memory (buf, len, &w, &h, NULL, STBI_rgb_alpha);
+		ri.FS_FreeFile (buf);
+		if (!pix)
+		{
+			ri.Con_Printf (PRINT_ALL, "GL_LoadOverride: bad %s: %s\n", path, stbi_failure_reason ());
+			continue;
+		}
+		ri.Con_Printf (PRINT_DEVELOPER, "GL_LoadOverride: %s (%ix%i)\n", path, w, h);
+		*width = w;
+		*height = h;
+		return pix;
+	}
+	return NULL;
+}
+
+/*
+================
+GL_FreeOverride
+================
+*/
+void GL_FreeOverride (byte *pixels)
+{
+	stbi_image_free (pixels);
 }
