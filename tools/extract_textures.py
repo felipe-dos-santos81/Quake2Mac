@@ -11,11 +11,14 @@ Run with:  uv run --project tools tools/extract_textures.py --gamedir baseq2
 """
 from __future__ import annotations
 
+import argparse
 import io
+import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 from PIL import Image
-from vgio.quake2 import pak
+from vgio.quake2 import pak, wal
 
 COLORMAP = "pics/colormap.pcx"
 TRANSPARENT = 255  # palette index the engine treats as fully transparent
@@ -92,3 +95,80 @@ def wal_to_image(mip0: bytes, width: int, height: int, palette: list[int]) -> Im
     out = indexed.convert("RGB")
     out.putalpha(Image.frombytes("L", (width, height), mip0.translate(_ALPHA_TABLE)))
     return out
+
+
+@dataclass
+class Summary:
+    extracted: int = 0
+    skipped: int = 0
+    failed: int = 0
+
+
+def dest_path(out: Path, pak_name: str) -> Path:
+    """textures/e1u1/PIP04_4.wal -> <out>/textures/e1u1/pip04_4.png (the renderer probes lowercase)."""
+    return out / Path(pak_name.lower()).with_suffix(".png")
+
+
+def _is_world_texture(name: str) -> bool:
+    return name.startswith("textures/") and name.lower().endswith(".wal")
+
+
+def extract(gamedir: Path, out: Path, force: bool = False) -> Summary:
+    """Write every textures/**/*.wal in gamedir's paks as PNG under out/textures/."""
+    paks = open_paks(gamedir)
+    if not paks:
+        raise FileNotFoundError(f"no pak0.pak … pak9.pak in {gamedir}")
+    try:
+        index = build_index(paks)
+        palette = load_palette(index)
+        summary = Summary()
+        for name in sorted(n for n in index if _is_world_texture(n)):
+            dest = dest_path(out, name)
+            if dest.exists() and not force:
+                summary.skipped += 1
+                continue
+            try:
+                w = wal.Wal.open(io.BytesIO(index[name].read(name)))
+                img = wal_to_image(w.pixels[: w.width * w.height], w.width, w.height, palette)
+            except Exception as exc:  # one bad texture must not stop the run
+                print(f"FAILED {name}: {type(exc).__name__}: {exc}", file=sys.stderr)
+                summary.failed += 1
+                continue
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            img.save(dest)
+            summary.extracted += 1
+        return summary
+    finally:
+        for pf in paks:
+            pf.close()
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--gamedir", type=Path, default=Path("baseq2"),
+        help="directory holding pak0.pak … pak9.pak (default: baseq2)",
+    )
+    parser.add_argument(
+        "--out", type=Path, default=None,
+        help="output root; PNGs land in <out>/textures (default: same as --gamedir)",
+    )
+    parser.add_argument(
+        "--force", action="store_true",
+        help="overwrite existing files instead of skipping them",
+    )
+    args = parser.parse_args(argv)
+    out = args.out if args.out is not None else args.gamedir
+    try:
+        summary = extract(args.gamedir, out, args.force)
+    except FileNotFoundError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(f"extracted {summary.extracted}, skipped {summary.skipped}, failed {summary.failed}")
+    return 1 if summary.failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

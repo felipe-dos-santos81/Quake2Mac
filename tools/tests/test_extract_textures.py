@@ -157,3 +157,96 @@ def test_neighbour_prefers_texel_above(palette: list[int]) -> None:
 def test_wal_to_image_rejects_wrong_length(palette: list[int]) -> None:
     with pytest.raises(ValueError):
         extract_textures.wal_to_image(bytes(3), 2, 2, palette)
+
+
+# --- Task 3: extract() and main() ----------------------------------------------
+
+
+def png_names(root: Path) -> list[str]:
+    return sorted(p.relative_to(root).as_posix() for p in root.rglob("*.png"))
+
+
+def test_dest_path_lowercases_and_swaps_extension(tmp_path: Path) -> None:
+    assert extract_textures.dest_path(tmp_path, "textures/e1u1/PIP04_4.wal") == (
+        tmp_path / "textures" / "e1u1" / "pip04_4.png"
+    )
+
+
+def test_extract_writes_lowercase_pngs_mirroring_pak_layout(gamedir: Path) -> None:
+    summary = extract_textures.extract(gamedir, gamedir)
+    assert summary == extract_textures.Summary(extracted=3, skipped=0, failed=0)
+    assert png_names(gamedir) == [
+        "textures/e1u1/floor.png",
+        "textures/e1u1/grate.png",
+        "textures/e2u1/wall.png",
+    ]
+
+
+def test_extract_uses_mip0_and_palette(gamedir: Path, palette: list[int]) -> None:
+    extract_textures.extract(gamedir, gamedir)
+    floor = Image.open(gamedir / "textures/e1u1/floor.png")
+    assert floor.mode == "RGB"
+    assert floor.size == (4, 2)
+    assert floor.getpixel((0, 0)) == rgb(palette, 1)
+    assert floor.getpixel((3, 1)) == rgb(palette, 8)
+    grate = Image.open(gamedir / "textures/e1u1/grate.png")
+    assert grate.mode == "RGBA"
+    assert grate.getpixel((1, 0)) == rgb(palette, 9) + (0,)
+
+
+def test_extract_uses_winning_pak(gamedir: Path, palette: list[int]) -> None:
+    extract_textures.extract(gamedir, gamedir)
+    wall = Image.open(gamedir / "textures/e2u1/wall.png")
+    assert wall.getpixel((0, 0)) == rgb(palette, 20)
+
+
+def test_extract_skips_existing_unless_force(gamedir: Path) -> None:
+    dest = gamedir / "textures/e1u1/floor.png"
+    dest.parent.mkdir(parents=True)
+    dest.write_bytes(b"keep me")
+    summary = extract_textures.extract(gamedir, gamedir)
+    assert summary == extract_textures.Summary(extracted=2, skipped=1, failed=0)
+    assert dest.read_bytes() == b"keep me"
+    summary = extract_textures.extract(gamedir, gamedir, force=True)
+    assert summary == extract_textures.Summary(extracted=3, skipped=0, failed=0)
+    assert dest.read_bytes() != b"keep me"
+    assert Image.open(dest).size == (4, 2)
+
+
+def test_extract_out_redirects_root(gamedir: Path, tmp_path: Path) -> None:
+    out = tmp_path / "elsewhere"
+    extract_textures.extract(gamedir, out)
+    assert (out / "textures/e1u1/floor.png").is_file()
+    assert not (gamedir / "textures").exists()
+
+
+def test_extract_reports_corrupt_wal_and_continues(gamedir: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    write_pak(gamedir / "pak2.pak", {"textures/e1u1/bad.wal": b"garbage"})
+    summary = extract_textures.extract(gamedir, gamedir)
+    assert summary == extract_textures.Summary(extracted=3, skipped=0, failed=1)
+    assert "FAILED textures/e1u1/bad.wal" in capsys.readouterr().err
+    assert not (gamedir / "textures/e1u1/bad.png").exists()
+
+
+def test_extract_without_paks_raises(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError):
+        extract_textures.extract(tmp_path, tmp_path)
+
+
+def test_main_exit_codes_and_summary(gamedir: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert extract_textures.main(["--gamedir", str(gamedir)]) == 0
+    assert "extracted 3, skipped 0, failed 0" in capsys.readouterr().out
+    assert extract_textures.main(["--gamedir", str(gamedir)]) == 0
+    assert "extracted 0, skipped 3, failed 0" in capsys.readouterr().out
+    write_pak(gamedir / "pak2.pak", {"textures/e1u1/bad.wal": b"garbage"})
+    assert extract_textures.main(["--gamedir", str(gamedir), "--force"]) == 1
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    assert extract_textures.main(["--gamedir", str(empty)]) == 2
+    assert "error:" in capsys.readouterr().err
+
+
+def test_main_out_option(gamedir: Path, tmp_path: Path) -> None:
+    out = tmp_path / "o"
+    assert extract_textures.main(["--gamedir", str(gamedir), "--out", str(out)]) == 0
+    assert (out / "textures/e2u1/wall.png").is_file()

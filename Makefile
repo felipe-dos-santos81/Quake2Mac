@@ -27,7 +27,7 @@ BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 
 .DEFAULT_GOAL := build
 
-.PHONY: help install data objects build all verify-load run clean tools-test
+.PHONY: help install data objects build all verify-load run clean tools-test textures
 
 # ── Stage 0 · Help ───────────────────────────────────────────────────────────
 
@@ -196,6 +196,10 @@ define require_uv
 	@command -v $(UV) > /dev/null 2>&1 || \
 		{ echo "ERROR: uv not found. Install: brew install uv"; exit 1; }
 endef
+
+textures: ## Extract pak .wal textures to baseq2/textures/*.png (skips existing; FORCE=1 overwrites)
+	$(require_uv)
+	$(UV) run --project tools tools/extract_textures.py --gamedir baseq2 $(if $(FORCE),--force,)
 
 tools-test: ## Run the tools/ pytest suite (extractor tests, no game data needed)
 	$(require_uv)
