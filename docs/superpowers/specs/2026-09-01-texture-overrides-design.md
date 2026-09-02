@@ -202,7 +202,10 @@ today's 8-bit upload from mt                              (unchanged)
   of the fixed 1024.
 - Everything else (power-of-two rounding, `gl_round_down`, `gl_picmip`,
   mip generation, paletted path, filters) is unchanged. Original WALs are
-  ≤256, so at the default cap their uploads are identical to before.
+  ≤256, so at the default cap their uploads are identical to before. Note
+  that 33 of the 2188 originals are not power-of-two (96×32, 240×128, …);
+  they are resampled at load today and overrides of them will be too, so
+  the README recommends rather than requires power-of-two overrides.
 - Memory note: at the default cap a 1024² RGBA texture with mips is ~5.3 MB;
   a typical map's 150–300 world textures at 4× original size land in the
   hundreds of MB, fine for Apple Silicon unified memory. `gl_override_maxsize

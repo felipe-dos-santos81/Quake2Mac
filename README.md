@@ -59,8 +59,10 @@ baseq2/textures/e1u1/floor1_1.jpg
 
 The first file that decodes is uploaded at its own resolution. Texture
 coordinates still use the original `.wal` size, so a 4× image covers the
-same wall area. Keep overrides power-of-two (2× and 4× upscales of the
-originals already are) and lowercase.
+same wall area. Any size works: non-power-of-two images are resampled at
+load, as the engine already does for the 33 original textures that are not
+power-of-two (96×32, 240×128, …). Power-of-two overrides skip that
+resampling. File names must be lowercase.
 
 To dump the originals as PNGs, the starting point for recreating them:
 
