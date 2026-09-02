@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_TGA
 #define STBI_NO_STDIO
+#define STBI_MAX_DIMENSIONS 16384	// bounds decode memory for absurd files
 #include "stb_image.h"
 
 // probe order; the first file that decodes wins

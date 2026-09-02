@@ -326,7 +326,7 @@ void	GL_ImageList_f (void)
 			break;
 		}
 
-		ri.Con_Printf (PRINT_ALL,  " %3i %3i %s: %s\n",
+		ri.Con_Printf (PRINT_ALL,  " %4i %4i %s: %s\n",
 			image->upload_width, image->upload_height, palstrings[image->paletted], image->name);
 	}
 	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
@@ -999,6 +999,10 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 		max_size = gl_config.max_texsize;
 	if (max_size < 1)
 		max_size = 1;
+	// keep it a power of two: GL_MipMap halves width and height each
+	// level and assumes even sizes all the way down
+	while (max_size & (max_size - 1))
+		max_size &= max_size - 1;
 	if (scaled_width > max_size)
 		scaled_width = max_size;
 	if (scaled_height > max_size)

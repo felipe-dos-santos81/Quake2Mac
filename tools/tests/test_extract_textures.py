@@ -172,6 +172,14 @@ def test_dest_path_lowercases_and_swaps_extension(tmp_path: Path) -> None:
     )
 
 
+def test_extract_accepts_uppercase_textures_prefix(gamedir: Path, palette: list[int]) -> None:
+    write_pak(gamedir / "pak2.pak", {"TEXTURES/E1U1/SHOUT.WAL": make_wal("e1u1/shout", 2, 2, bytes([5, 5, 5, 5]))})
+    summary = extract_textures.extract(gamedir, gamedir)
+    assert summary.extracted == 4
+    shout = Image.open(gamedir / "textures/e1u1/shout.png")
+    assert shout.getpixel((0, 0)) == rgb(palette, 5)
+
+
 def test_extract_writes_lowercase_pngs_mirroring_pak_layout(gamedir: Path) -> None:
     summary = extract_textures.extract(gamedir, gamedir)
     assert summary == extract_textures.Summary(extracted=3, skipped=0, failed=0)

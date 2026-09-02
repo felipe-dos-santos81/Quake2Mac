@@ -110,7 +110,8 @@ def dest_path(out: Path, pak_name: str) -> Path:
 
 
 def _is_world_texture(name: str) -> bool:
-    return name.startswith("textures/") and name.lower().endswith(".wal")
+    lowered = name.lower()
+    return lowered.startswith("textures/") and lowered.endswith(".wal")
 
 
 def extract(gamedir: Path, out: Path, force: bool = False) -> Summary:
