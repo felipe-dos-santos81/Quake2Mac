@@ -189,8 +189,12 @@ today's 8-bit upload from mt                              (unchanged)
   paletted buffer only when the paletted path is taken).
 - For **mipmapped** uploads (world textures and skins) replace the literal
   256 clamp with `gl_override_maxsize->value`, clamped at each use to
-  `[1, gl_config.max_texsize]`, where `gl_config.max_texsize` is filled by
+  `[1, gl_config.max_texsize]` and then rounded down to a power of two
+  (`GL_MipMap` assumes even sizes at every level, so a value like 1000
+  would skew distant mips), where `gl_config.max_texsize` is filled by
   `qglGetIntegerv(GL_MAX_TEXTURE_SIZE, ...)` in `GL_InitImages`.
+  `gl_override.c` also defines `STBI_MAX_DIMENSIONS 16384` so an absurd
+  override file cannot allocate gigabytes during decode.
   Non-mipmapped uploads (HUD pics, skies) keep the literal 256: `gl_round_down`
   never rounds those down, so a stock 320×240 pic would otherwise jump from
   256×256 to 512×256 at the defaults. (Ruled during implementation review.)
