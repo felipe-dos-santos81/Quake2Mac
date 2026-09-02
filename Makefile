@@ -90,7 +90,7 @@ CLIENT_OBJS = \
 	$(BUILD_DIR)/client/keys.o $(BUILD_DIR)/client/menu.o \
 	$(BUILD_DIR)/client/snd_dma.o $(BUILD_DIR)/client/snd_mem.o \
 	$(BUILD_DIR)/client/snd_mix.o $(BUILD_DIR)/client/qmenu.o \
-	$(BUILD_DIR)/game/m_flash.o $(BUILD_DIR)/client/cl_newfx.o
+	$(BUILD_DIR)/game/monsters/flash.o $(BUILD_DIR)/client/cl_newfx.o
 
 # server
 SERVER_OBJS = \
@@ -121,30 +121,30 @@ REF_EXTRA_OBJS = \
 
 # game DLL
 GAME_OBJS = \
-	$(BUILD_DIR)/game/g_ai.o $(BUILD_DIR)/game/p_client.o \
-	$(BUILD_DIR)/game/g_cmds.o $(BUILD_DIR)/game/g_svcmds.o \
-	$(BUILD_DIR)/game/g_combat.o $(BUILD_DIR)/game/g_func.o \
-	$(BUILD_DIR)/game/g_items.o $(BUILD_DIR)/game/g_main.o \
-	$(BUILD_DIR)/game/g_misc.o $(BUILD_DIR)/game/g_monster.o \
-	$(BUILD_DIR)/game/g_phys.o $(BUILD_DIR)/game/g_save.o \
-	$(BUILD_DIR)/game/g_spawn.o $(BUILD_DIR)/game/g_target.o \
-	$(BUILD_DIR)/game/g_trigger.o $(BUILD_DIR)/game/g_turret.o \
-	$(BUILD_DIR)/game/g_utils.o $(BUILD_DIR)/game/g_weapon.o \
-	$(BUILD_DIR)/game/m_actor.o $(BUILD_DIR)/game/m_berserk.o \
-	$(BUILD_DIR)/game/m_boss2.o $(BUILD_DIR)/game/m_boss3.o \
-	$(BUILD_DIR)/game/m_boss31.o $(BUILD_DIR)/game/m_boss32.o \
-	$(BUILD_DIR)/game/m_brain.o $(BUILD_DIR)/game/m_chick.o \
-	$(BUILD_DIR)/game/m_flipper.o $(BUILD_DIR)/game/m_float.o \
-	$(BUILD_DIR)/game/m_flyer.o $(BUILD_DIR)/game/m_gladiator.o \
-	$(BUILD_DIR)/game/m_gunner.o $(BUILD_DIR)/game/m_hover.o \
-	$(BUILD_DIR)/game/m_infantry.o $(BUILD_DIR)/game/m_insane.o \
-	$(BUILD_DIR)/game/m_medic.o $(BUILD_DIR)/game/m_move.o \
-	$(BUILD_DIR)/game/m_mutant.o $(BUILD_DIR)/game/m_parasite.o \
-	$(BUILD_DIR)/game/m_soldier.o $(BUILD_DIR)/game/m_supertank.o \
-	$(BUILD_DIR)/game/m_tank.o $(BUILD_DIR)/game/p_hud.o \
-	$(BUILD_DIR)/game/p_trail.o $(BUILD_DIR)/game/p_view.o \
-	$(BUILD_DIR)/game/p_weapon.o $(BUILD_DIR)/game/q_shared.o \
-	$(BUILD_DIR)/game/m_flash.o $(BUILD_DIR)/game/g_chase.o
+	$(BUILD_DIR)/game/ai.o $(BUILD_DIR)/game/player/client.o \
+	$(BUILD_DIR)/game/cmds.o $(BUILD_DIR)/game/svcmds.o \
+	$(BUILD_DIR)/game/combat.o $(BUILD_DIR)/game/func.o \
+	$(BUILD_DIR)/game/items.o $(BUILD_DIR)/game/main.o \
+	$(BUILD_DIR)/game/misc.o $(BUILD_DIR)/game/monster.o \
+	$(BUILD_DIR)/game/phys.o $(BUILD_DIR)/game/save.o \
+	$(BUILD_DIR)/game/spawn.o $(BUILD_DIR)/game/target.o \
+	$(BUILD_DIR)/game/trigger.o $(BUILD_DIR)/game/turret.o \
+	$(BUILD_DIR)/game/utils.o $(BUILD_DIR)/game/weapon.o \
+	$(BUILD_DIR)/game/monsters/actor.o $(BUILD_DIR)/game/monsters/berserk.o \
+	$(BUILD_DIR)/game/monsters/boss2.o $(BUILD_DIR)/game/monsters/boss3.o \
+	$(BUILD_DIR)/game/monsters/boss31.o $(BUILD_DIR)/game/monsters/boss32.o \
+	$(BUILD_DIR)/game/monsters/brain.o $(BUILD_DIR)/game/monsters/chick.o \
+	$(BUILD_DIR)/game/monsters/flipper.o $(BUILD_DIR)/game/monsters/float.o \
+	$(BUILD_DIR)/game/monsters/flyer.o $(BUILD_DIR)/game/monsters/gladiator.o \
+	$(BUILD_DIR)/game/monsters/gunner.o $(BUILD_DIR)/game/monsters/hover.o \
+	$(BUILD_DIR)/game/monsters/infantry.o $(BUILD_DIR)/game/monsters/insane.o \
+	$(BUILD_DIR)/game/monsters/medic.o $(BUILD_DIR)/game/monsters/move.o \
+	$(BUILD_DIR)/game/monsters/mutant.o $(BUILD_DIR)/game/monsters/parasite.o \
+	$(BUILD_DIR)/game/monsters/soldier.o $(BUILD_DIR)/game/monsters/supertank.o \
+	$(BUILD_DIR)/game/monsters/tank.o $(BUILD_DIR)/game/player/hud.o \
+	$(BUILD_DIR)/game/player/trail.o $(BUILD_DIR)/game/player/view.o \
+	$(BUILD_DIR)/game/player/weapon.o $(BUILD_DIR)/game/q_shared.o \
+	$(BUILD_DIR)/game/monsters/flash.o $(BUILD_DIR)/game/chase.o
 
 ALL_ORIGINAL_OBJS = $(COMMON_OBJS) $(CLIENT_OBJS) $(SERVER_OBJS) \
 	$(SYS_EXE_OBJS) $(REF_CORE_OBJS) $(REF_EXTRA_OBJS) $(GAME_OBJS)
