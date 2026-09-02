@@ -48,13 +48,6 @@ void *Hunk_Alloc (int size)
 
 int Hunk_End (void)
 {
-#ifndef __APPLE__
-	byte *n;
-
-	n = mremap(membase, maxhunksize, curhunksize + sizeof(int), 0);
-	if (n != membase)
-		Sys_Error("Hunk_End:  Could not remap virtual block (%d)", errno);
-#endif
 	*((int *)membase) = curhunksize + sizeof(int);
 
 	return curhunksize;

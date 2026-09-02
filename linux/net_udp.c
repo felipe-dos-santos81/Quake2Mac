@@ -243,6 +243,11 @@ void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 	loop = &loopbacks[sock^1];
 
+	// queue full: unread packets are about to be overwritten; the one-shot
+	// reliables (connect/new/begin) die silently here, so log the transition
+	if (loop->send - loop->get == MAX_LOOPBACK)
+		Com_Printf ("NET_SendLoopPacket: loopback overflow, unread packets overwritten\n");
+
 	i = loop->send & (MAX_LOOPBACK-1);
 	loop->send++;
 
@@ -465,7 +470,7 @@ int NET_Socket (char *net_interface, int port)
 		return 0;
 	}
 
-	if (!net_interface || !net_interface[0] || !stricmp(net_interface, "localhost"))
+	if (!net_interface || !net_interface[0] || !Q_stricmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
 		NET_StringToSockaddr (net_interface, (struct sockaddr *)&address);

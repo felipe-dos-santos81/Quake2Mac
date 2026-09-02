@@ -19,10 +19,46 @@ static SDL_AudioStream *audio_stream;
 static SDL_AudioDeviceID audio_device;
 static int snd_inited;
 static int last_pushed;      /* absolute frame cursor handed to SDL (paintedtime units) */
+static int out_frame_bytes;  /* device output format, fixed for its lifetime */
+static int out_freq;
 
 cvar_t *sndbits;
 cvar_t *sndspeed;
 cvar_t *sndchannels;
+
+/* Unwinds whatever subset of the audio stack SNDDMA_Init already set up;
+ * all steps tolerate the not-yet-initialized state. */
+static void SNDDMA_Teardown(void)
+{
+	if (audio_stream)
+	{
+		SDL_DestroyAudioStream(audio_stream);
+		audio_stream = NULL;
+	}
+	if (audio_device)
+	{
+		SDL_CloseAudioDevice(audio_device);
+		audio_device = 0;
+	}
+	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+}
+
+/* The stream is bound to the device, so queued bytes are reported in the
+ * device's (possibly resampled) output format; cache it once to convert
+ * them back to input frames in SNDDMA_GetDMAPos. */
+static void SNDDMA_CacheDeviceFormat(void)
+{
+	SDL_AudioSpec dspec;
+
+	SDL_GetAudioDeviceFormat(audio_device, &dspec, NULL);
+	out_frame_bytes = SDL_AUDIO_FRAMESIZE(dspec);
+	out_freq = dspec.freq;
+	if (out_frame_bytes <= 0 || out_freq <= 0)
+	{
+		out_frame_bytes = dma.channels * (dma.samplebits / 8);
+		out_freq = dma.speed;
+	}
+}
 
 qboolean SNDDMA_Init(void)
 {
@@ -57,7 +93,7 @@ qboolean SNDDMA_Init(void)
 	if (!audio_device)
 	{
 		Com_Printf("SDL_OpenAudioDevice failed: %s\n", SDL_GetError());
-		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		SNDDMA_Teardown();
 		return false;
 	}
 
@@ -65,14 +101,11 @@ qboolean SNDDMA_Init(void)
 	if (!audio_stream || !SDL_BindAudioStream(audio_device, audio_stream))
 	{
 		Com_Printf("SDL audio stream setup failed: %s\n", SDL_GetError());
-		if (audio_stream)
-			SDL_DestroyAudioStream(audio_stream);
-		audio_stream = NULL;
-		SDL_CloseAudioDevice(audio_device);
-		audio_device = 0;
-		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		SNDDMA_Teardown();
 		return false;
 	}
+
+	SNDDMA_CacheDeviceFormat();
 
 	/* MUST stay a power of two: the mixer masks indices with dma.samples-1 */
 	dma.samples = 32768;           /* mono-equivalent samples in the ring */
@@ -81,11 +114,7 @@ qboolean SNDDMA_Init(void)
 	if (!dma.buffer)
 	{
 		Com_Printf("SNDDMA_Init: could not allocate dma buffer\n");
-		SDL_DestroyAudioStream(audio_stream);
-		audio_stream = NULL;
-		SDL_CloseAudioDevice(audio_device);
-		audio_device = 0;
-		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		SNDDMA_Teardown();
 		return false;
 	}
 	memset(dma.buffer, 0, dma.samples * (dma.samplebits / 8));
@@ -110,8 +139,7 @@ qboolean SNDDMA_Init(void)
 */
 int SNDDMA_GetDMAPos(void)
 {
-	SDL_AudioSpec dspec;
-	int avail, out_frame_bytes;
+	int avail;
 	long long queued_in_frames, played_in_frames;
 
 	if (!snd_inited)
@@ -123,16 +151,10 @@ int SNDDMA_GetDMAPos(void)
 
 	// the stream is bound to the device, so queued bytes are reported in
 	// the device's (possibly resampled) output format; convert them back
-	// to input frames before comparing against last_pushed
-	SDL_GetAudioDeviceFormat(audio_device, &dspec, NULL);
-	out_frame_bytes = SDL_AUDIO_FRAMESIZE(dspec);
-	if (out_frame_bytes <= 0 || dspec.freq <= 0)
-	{
-		out_frame_bytes = dma.channels * (dma.samplebits / 8);
-		dspec.freq = dma.speed;
-	}
+	// to input frames before comparing against last_pushed (format cached
+	// at init, it is fixed for the device's lifetime)
 	queued_in_frames = ((long long)avail / out_frame_bytes)
-		* dma.speed / dspec.freq;
+		* dma.speed / out_freq;
 
 	played_in_frames = (long long)last_pushed - queued_in_frames;
 	if (played_in_frames < 0)
@@ -204,17 +226,7 @@ void SNDDMA_Shutdown(void)
 	if (!snd_inited)
 		return;
 
-	if (audio_stream)
-	{
-		SDL_DestroyAudioStream(audio_stream);
-		audio_stream = NULL;
-	}
-	if (audio_device)
-	{
-		SDL_CloseAudioDevice(audio_device);
-		audio_device = 0;
-	}
-	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+	SNDDMA_Teardown();
 
 	if (dma.buffer)
 	{

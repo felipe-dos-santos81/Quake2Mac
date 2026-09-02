@@ -27,7 +27,6 @@ cvar_t *nostdout;
 
 unsigned	sys_frame_time;
 
-uid_t saved_euid;
 qboolean stdin_active = true;
 
 // =======================================================================
@@ -260,7 +259,6 @@ int main (int argc, char **argv)
 	int 	time, oldtime, newtime;
 
 	// go back to real user for config loads
-	saved_euid = geteuid();
 	seteuid(getuid());
 
 	Qcommon_Init(argc, argv);

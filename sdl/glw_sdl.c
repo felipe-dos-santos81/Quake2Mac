@@ -107,7 +107,7 @@ void GLimp_BeginFrame( float camera_seperation )
 
 void GLimp_EndFrame( void )
 {
-	qglFlush();
+	/* no qglFlush(): SDL_GL_SwapWindow already flushes the drawable */
 	if ( sdl_window )
 		SDL_GL_SwapWindow( sdl_window );
 }

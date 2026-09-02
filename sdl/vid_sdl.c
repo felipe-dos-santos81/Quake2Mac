@@ -268,22 +268,10 @@ qboolean VID_LoadRefresh( char *name )
 	}
 
 	/* Init KBD */
-#if 1
 	if ((KBD_Init_fp = dlsym(reflib_library, "KBD_Init")) == NULL ||
 		(KBD_Update_fp = dlsym(reflib_library, "KBD_Update")) == NULL ||
 		(KBD_Close_fp = dlsym(reflib_library, "KBD_Close")) == NULL)
 		Sys_Error("No KBD functions in REF.\n");
-#else
-	{
-		void KBD_Init(void);
-		void KBD_Update(void);
-		void KBD_Close(void);
-
-		KBD_Init_fp = KBD_Init;
-		KBD_Update_fp = KBD_Update;
-		KBD_Close_fp = KBD_Close;
-	}
-#endif
 	KBD_Init_fp(Do_Key_Event);
 
 	Com_Printf( "------------------------------------\n");
