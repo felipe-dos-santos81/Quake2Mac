@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // gl_mesh.c: triangle model functions
 
-#include "ref_gl/gl_local.h"
+#include "ref_gl/local.h"
 
 /*
 =============================================================

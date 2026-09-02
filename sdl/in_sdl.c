@@ -8,7 +8,7 @@
 
 #include <SDL3/SDL.h>
 
-#include "ref_gl/gl_local.h"
+#include "ref_gl/local.h"
 #include "client/screen/keys.h"
 #include "linux/rw_linux.h"
 

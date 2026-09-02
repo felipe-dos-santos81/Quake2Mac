@@ -108,11 +108,11 @@ SYS_EXE_OBJS = \
 
 # ref_gl renderer core
 REF_CORE_OBJS = \
-	$(BUILD_DIR)/ref_gl/gl_draw.o $(BUILD_DIR)/ref_gl/gl_image.o \
-	$(BUILD_DIR)/ref_gl/gl_light.o $(BUILD_DIR)/ref_gl/gl_mesh.o \
-	$(BUILD_DIR)/ref_gl/gl_model.o $(BUILD_DIR)/ref_gl/gl_rmain.o \
-	$(BUILD_DIR)/ref_gl/gl_rmisc.o $(BUILD_DIR)/ref_gl/gl_rsurf.o \
-	$(BUILD_DIR)/ref_gl/gl_warp.o $(BUILD_DIR)/ref_gl/gl_override.o
+	$(BUILD_DIR)/ref_gl/draw.o $(BUILD_DIR)/ref_gl/image.o \
+	$(BUILD_DIR)/ref_gl/light.o $(BUILD_DIR)/ref_gl/mesh.o \
+	$(BUILD_DIR)/ref_gl/model.o $(BUILD_DIR)/ref_gl/rmain.o \
+	$(BUILD_DIR)/ref_gl/rmisc.o $(BUILD_DIR)/ref_gl/rsurf.o \
+	$(BUILD_DIR)/ref_gl/warp.o $(BUILD_DIR)/ref_gl/override.o
 REF_EXTRA_OBJS = \
 	$(BUILD_DIR)/game/q_shared.o \
 	$(BUILD_DIR)/linux/q_shlinux.o $(BUILD_DIR)/linux/glob.o \
@@ -182,9 +182,9 @@ verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check e
 # stub refimport_t, so it needs neither a GL context nor game data.
 TEST_OVERRIDE = $(BUILD_DIR)/test_override
 
-$(TEST_OVERRIDE): ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/gl_override.o
+$(TEST_OVERRIDE): ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/override.o
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/gl_override.o
+	$(CC) $(CFLAGS) -o $@ ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/override.o
 
 test-ref: $(TEST_OVERRIDE) ## Host test for the texture override loader (no GL, no game data)
 	./$(TEST_OVERRIDE)

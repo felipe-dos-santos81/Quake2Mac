@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // decodes the files; it is the only file that includes stb_image.h.
 // Nothing here may call ri.Sys_Error: a bad override falls back to the .wal.
 
-#include "ref_gl/gl_local.h"
+#include "ref_gl/local.h"
 
 // stb_image: only the formats we probe, no stdio (we read through ri.FS_LoadFile)
 #define STB_IMAGE_IMPLEMENTATION

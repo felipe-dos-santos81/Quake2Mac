@@ -116,7 +116,7 @@ typedef enum
 	rserr_unknown
 } rserr_t;
 
-#include "ref_gl/gl_model.h"
+#include "ref_gl/model.h"
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);

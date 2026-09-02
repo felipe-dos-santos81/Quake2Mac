@@ -15,7 +15,7 @@
 
 #include <dlfcn.h>
 
-#include "ref_gl/gl_local.h"
+#include "ref_gl/local.h"
 
 /* Global qgl* pointer definitions -- copied verbatim from
  * linux/qgl_linux.c lines 16-361. */

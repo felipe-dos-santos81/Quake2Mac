@@ -4,7 +4,7 @@
 
 #include <SDL3/SDL.h>
 
-#include "ref_gl/gl_local.h"
+#include "ref_gl/local.h"
 
 static SDL_Window    *sdl_window;
 static SDL_GLContext  sdl_context;
