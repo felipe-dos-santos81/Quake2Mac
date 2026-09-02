@@ -135,32 +135,6 @@ static void ApplyChanges( void *unused )
 		break;
 	}
 
-#if 0
-	/*
-	** update appropriate stuff if we're running OpenGL and gamma
-	** has been modified
-	*/
-	if ( Q_stricmp( vid_ref->string, "gl" ) == 0 )
-	{
-		if ( vid_gamma->modified )
-		{
-			vid_ref->modified = true;
-			if ( Q_stricmp( gl_driver->string, "3dfxgl" ) == 0 )
-			{
-				char envbuffer[1024];
-				float g;
-
-				vid_ref->modified = true;
-
-				g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-				Com_sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
-				putenv( envbuffer );
-
-				vid_gamma->modified = false;
-			}
-		}
-	}
-#endif
 
 	M_ForceMenuOff();
 }
@@ -239,16 +213,6 @@ void VID_MenuInit( void )
 	{
 		s_current_menu_index = OPENGL_MENU;
 		s_ref_list[s_current_menu_index].curvalue = REF_OPENGL;
-#if 0
-		if ( strcmp( gl_driver->string, "3dfxgl" ) == 0 )
-			s_ref_list[s_current_menu_index].curvalue = REF_3DFX;
-		else if ( strcmp( gl_driver->string, "pvrgl" ) == 0 )
-			s_ref_list[s_current_menu_index].curvalue = REF_POWERVR;
-		else if ( strcmp( gl_driver->string, "opengl32" ) == 0 )
-			s_ref_list[s_current_menu_index].curvalue = REF_OPENGL;
-		else
-			s_ref_list[s_current_menu_index].curvalue = REF_VERITE;
-#endif
 	}
 
 	s_software_menu.x = viddef.width * 0.50;
