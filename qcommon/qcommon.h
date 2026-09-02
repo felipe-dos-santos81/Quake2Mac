@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	BASEDIRNAME	"baseq2"
 
-#define BUILDSTRING "NON-WIN32"
-#define	CPUSTRING	"NON-WIN32"
+#define BUILDSTRING "MacOS"
+#define	CPUSTRING	"arm64"
 
 //============================================================================
 

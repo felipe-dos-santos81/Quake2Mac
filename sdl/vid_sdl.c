@@ -363,12 +363,9 @@ void VID_Shutdown (void)
 /* INPUT                                                                     */
 /*****************************************************************************/
 
-cvar_t	*in_joystick;
-
 // This if fake, it's acutally done by the Refresh load
 void IN_Init (void)
 {
-	in_joystick	= Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE);
 }
 
 void Real_IN_Init (void)

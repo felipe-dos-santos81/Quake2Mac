@@ -1,4 +1,4 @@
-// net_wins.c
+// net_udp.c
 
 #include "../qcommon/qcommon.h"
 
@@ -12,10 +12,6 @@
 #include <sys/ioctl.h>
 #include <sys/uio.h>
 #include <errno.h>
-
-#ifdef NeXT
-#include <libc.h>
-#endif
 
 netadr_t	net_local_adr;
 
