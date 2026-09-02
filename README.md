@@ -76,6 +76,19 @@ make textures FORCE=1    # re-extract the originals over everything
 `baseq2/textures/` is git-ignored: the extracted files are id Software's
 data. Palette index 255 is written as alpha 0.
 
+To recreate the extracted textures with generative AI, the batch kit lives on
+the GPU box at `~/comfy/batch_regen_q2/` (design in
+`docs/superpowers/specs/2026-09-02-quake2-texture-recreation-kit-design.md`).
+Move the data with:
+
+```
+rsync -a --delete baseq2/textures/ felipe@192.168.1.1:comfy/data/quake2/textures/
+rsync -a felipe@192.168.1.1:comfy/data/quake2/textures-ai/ baseq2/textures/
+```
+
+The second command overwrites the originals in place, which is what the
+renderer probes; `make textures FORCE=1` restores them from the paks.
+
 Cvars (both archived; changes apply on `vid_restart`):
 
 | cvar                  | default | meaning                                                  |
