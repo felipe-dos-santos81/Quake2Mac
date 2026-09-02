@@ -24,7 +24,8 @@ baseq2/
 ├── pak0.pak     required — base game
 ├── pak1.pak     optional — The Reckoning
 ├── pak2.pak     optional — Ground Zero
-└── players/     player models and skins
+├── players/     player models and skins
+└── textures/    optional — PNG/TGA/JPG texture overrides (see below)
 ```
 
 Only `pak0.pak` is required to play. Saves, screenshots, and configs also live
@@ -43,3 +44,45 @@ renderer and game bundles without game data; `make help` lists every target.
 
 The engine reads `baseq2/` from the repository root, and the game DLL is built
 straight into `baseq2/gamearm64.so`.
+
+## Texture overrides
+
+The renderer looks for hi-res replacements of the world textures on disk
+before falling back to the `.wal` inside the paks. For a surface that uses
+`textures/e1u1/floor1_1.wal` it probes, in order:
+
+```
+baseq2/textures/e1u1/floor1_1.png
+baseq2/textures/e1u1/floor1_1.tga
+baseq2/textures/e1u1/floor1_1.jpg
+```
+
+The first file that decodes is uploaded at its own resolution. Texture
+coordinates still use the original `.wal` size, so a 4× image covers the
+same wall area. Any size works, but non-power-of-two images are resampled at load and,
+like the originals, rounded *down* to the next power of two (a 384×128
+override of a 96×32 original becomes 256×128), exactly as the engine
+already treats the 33 original textures that are not power-of-two.
+Power-of-two overrides skip that step. File names must be lowercase.
+
+To dump the originals as PNGs, the starting point for recreating them:
+
+```
+brew install uv          # once
+make textures            # writes baseq2/textures/**/*.png, skips files that exist
+make textures FORCE=1    # re-extract the originals over everything
+```
+
+`baseq2/textures/` is git-ignored: the extracted files are id Software's
+data. Palette index 255 is written as alpha 0.
+
+Cvars (both archived; changes apply on `vid_restart`):
+
+| cvar                  | default | meaning                                                  |
+|-----------------------|---------|----------------------------------------------------------|
+| `gl_textureoverride`  | `1`     | `0` disables the on-disk probe                           |
+| `gl_override_maxsize` | `1024`  | largest edge uploaded for world textures (≤ driver max)  |
+
+The extractor lives in `tools/` and shares no code with the engine.
+`make tools-test` runs its tests; `make test-ref` runs the renderer's
+override-loader host test.

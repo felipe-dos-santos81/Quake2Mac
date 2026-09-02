@@ -112,6 +112,8 @@ cvar_t	*gl_nobind;
 cvar_t	*gl_round_down;
 cvar_t	*gl_picmip;
 cvar_t	*gl_skymip;
+cvar_t	*gl_textureoverride;
+cvar_t	*gl_override_maxsize;
 cvar_t	*gl_showtris;
 cvar_t	*gl_ztrick;
 cvar_t	*gl_finish;
@@ -960,6 +962,8 @@ void R_Register( void )
 	gl_round_down = ri.Cvar_Get ("gl_round_down", "1", 0);
 	gl_picmip = ri.Cvar_Get ("gl_picmip", "0", 0);
 	gl_skymip = ri.Cvar_Get ("gl_skymip", "0", 0);
+	gl_textureoverride = ri.Cvar_Get ("gl_textureoverride", "1", CVAR_ARCHIVE);
+	gl_override_maxsize = ri.Cvar_Get ("gl_override_maxsize", "1024", CVAR_ARCHIVE);
 	gl_showtris = ri.Cvar_Get ("gl_showtris", "0", 0);
 	gl_ztrick = ri.Cvar_Get ("gl_ztrick", "0", 0);
 	gl_finish = ri.Cvar_Get ("gl_finish", "0", CVAR_ARCHIVE);

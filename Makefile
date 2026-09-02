@@ -27,7 +27,7 @@ BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 
 .DEFAULT_GOAL := build
 
-.PHONY: help install data objects build all verify-load run clean
+.PHONY: help install data objects build all verify-load run clean tools-test textures test-ref
 
 # ── Stage 0 · Help ───────────────────────────────────────────────────────────
 
@@ -45,6 +45,8 @@ install: ## Check toolchain and SDL3 dependency (brew install sdl3 if missing)
 	@pkg-config sdl3 --modversion > /dev/null 2>&1 || \
 		{ echo "ERROR: sdl3 not found. Run: brew install sdl3"; exit 1; }
 	@echo "SDL3 $$(pkg-config sdl3 --modversion) OK"
+	@command -v uv > /dev/null 2>&1 && echo "uv $$(uv --version | cut -d' ' -f2) OK" || \
+		echo "uv not found (optional, needed for 'make textures'): brew install uv"
 
 # ── Stage 2 · Game data ──────────────────────────────────────────────────────
 
@@ -110,7 +112,7 @@ REF_CORE_OBJS = \
 	$(BUILD_DIR)/ref_gl/gl_light.o $(BUILD_DIR)/ref_gl/gl_mesh.o \
 	$(BUILD_DIR)/ref_gl/gl_model.o $(BUILD_DIR)/ref_gl/gl_rmain.o \
 	$(BUILD_DIR)/ref_gl/gl_rmisc.o $(BUILD_DIR)/ref_gl/gl_rsurf.o \
-	$(BUILD_DIR)/ref_gl/gl_warp.o
+	$(BUILD_DIR)/ref_gl/gl_warp.o $(BUILD_DIR)/ref_gl/gl_override.o
 REF_EXTRA_OBJS = \
 	$(BUILD_DIR)/ref_gl/q_shared.o $(BUILD_DIR)/ref_gl/q_shlinux.o \
 	$(BUILD_DIR)/ref_gl/glob.o $(BUILD_DIR)/ref_gl/qgl_sdl.o \
@@ -175,6 +177,17 @@ $(VERIFY_LOAD): $(BUILD_DIR)/verify_load.o
 verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check entry points (no game data needed)
 	./$(VERIFY_LOAD)
 
+# Host test for the override loader: links gl_override.o alone against a
+# stub refimport_t, so it needs neither a GL context nor game data.
+TEST_OVERRIDE = $(BUILD_DIR)/test_override
+
+$(TEST_OVERRIDE): ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/gl_override.o
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/gl_override.o
+
+test-ref: $(TEST_OVERRIDE) ## Host test for the texture override loader (no GL, no game data)
+	./$(TEST_OVERRIDE)
+
 # ── Stage 4 · Run ────────────────────────────────────────────────────────────
 
 run: build data ## Launch Quake II (windowed, GL renderer, no cursor grab)
@@ -185,3 +198,20 @@ run: build data ## Launch Quake II (windowed, GL renderer, no cursor grab)
 clean: ## Remove build outputs (build/ and the baseq2 game DLL copy)
 	rm -rf $(BUILD_DIR)
 	rm -f $(GAME_DLL)
+
+# ── Stage 6 · Tools (standalone Python in tools/, needs uv) ──────────────────
+
+UV ?= uv
+
+define require_uv
+	@command -v $(UV) > /dev/null 2>&1 || \
+		{ echo "ERROR: uv not found. Install: brew install uv"; exit 1; }
+endef
+
+textures: ## Extract pak .wal textures to baseq2/textures/*.png (skips existing; FORCE=1 overwrites)
+	$(require_uv)
+	$(UV) run --project tools tools/extract_textures.py --gamedir baseq2 $(if $(FORCE),--force,)
+
+tools-test: ## Run the tools/ pytest suite (extractor tests, no game data needed)
+	$(require_uv)
+	$(UV) run --project tools pytest tools/tests

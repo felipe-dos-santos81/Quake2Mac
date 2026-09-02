@@ -214,6 +214,8 @@ extern	cvar_t	*gl_nobind;
 extern	cvar_t	*gl_round_down;
 extern	cvar_t	*gl_picmip;
 extern	cvar_t	*gl_skymip;
+extern	cvar_t	*gl_textureoverride;	// 0 = never probe textures/*.png/.tga/.jpg
+extern	cvar_t	*gl_override_maxsize;	// largest edge uploaded for world textures
 extern	cvar_t	*gl_showtris;
 extern	cvar_t	*gl_finish;
 extern	cvar_t	*gl_ztrick;
@@ -335,6 +337,12 @@ struct image_s *R_RegisterSkin (char *name);
 void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *height);
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits);
 image_t	*GL_FindImage (char *name, imagetype_t type);
+
+// gl_override.c -- on-disk PNG/TGA/JPG replacements for .wal world textures
+qboolean	GL_OverridePath (const char *walname, const char *ext, char *out, size_t outsize);
+byte		*GL_LoadOverride (const char *walname, int *width, int *height);
+void		GL_FreeOverride (byte *pixels);
+
 void	GL_TextureMode( char *string );
 void	GL_ImageList_f (void);
 
@@ -405,6 +413,7 @@ typedef struct
 	const char *extensions_string;
 
 	qboolean	allow_cds;
+	int			max_texsize;		// GL_MAX_TEXTURE_SIZE, bounds gl_override_maxsize
 } glconfig_t;
 
 typedef struct

@@ -12,3 +12,11 @@ baseq2/*.log
 baseq2/save/
 baseq2/scrnshot/
 baseq2/video/
+
+# extracted / recreated textures: id Software data, never committed
+baseq2/textures/
+
+# tools/ (python)
+tools/.venv/
+__pycache__/
+.pytest_cache/
