@@ -16,9 +16,9 @@ small standalone Python tool (`tools/`) for texture extraction.
 
 | Path | Contents |
 |---|---|
-| `client/` | Client core (`main.c`, `input.c`) with `net/` (parse, predict, ents, tents, fx, newfx), `screen/` (scrn, view, cinematic, inv, console, keys, menu, qmenu), `sound/` (dma, mem, mix) subfolders; shared headers (`client.h`, `ref.h`, `vid.h`, `input.h`, `anorms.h`) |
+| `client/` | Client core (`main.c`, `input.c`) with `net/` (parse, predict, ents, tents, fx, newfx), `screen/` (scrn, view, cinematic, inv, console, keys, menu, qmenu), `sound/` (dma, mem, mix) subfolders; shared headers (`client.h`, `ref.h`, `vid.h`, `input.h`) |
 | `server/` | Server sources compiled into the executable: `main.c`, `init.c`, `send.c`, `user.c`, `world.c`, `ents.c`, `game.c`, `ccmds.c` + `server.h` |
-| `qcommon/` | Engine core: `common.c`, `cmd.c`, `cvar.c`, `files.c`, `cmodel.c`, `pmove.c`, crc/md4, `qcommon.h`, `qfiles.h` |
+| `qcommon/` | Engine core: `common.c`, `cmd.c`, `cvar.c`, `files.c`, `cmodel.c`, `pmove.c`, crc/md4, `qcommon.h`, `qfiles.h`, `anorms.h` (shared vertex-normal table) |
 | `game/` | Game DLL sources: game logic at the root, `player/`, `monsters/` (.c + ModelGen-generated .h), `q_shared.c/h` |
 | `ref_gl/` | OpenGL renderer + texture-override loader (`override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
 | `platform/` | Platform layer: `posix/` (`sys.c`, `udp.c`, `glob.c`, `shared.c`, `vid_menu.c`) + `sdl/` (`vid.c`, `sound.c`, `input.c`, `glw.c`, `qgl.c` GL dispatch loader), plus `verify_load.c` at the platform root |
