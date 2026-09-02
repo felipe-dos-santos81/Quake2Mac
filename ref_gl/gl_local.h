@@ -214,6 +214,8 @@ extern	cvar_t	*gl_nobind;
 extern	cvar_t	*gl_round_down;
 extern	cvar_t	*gl_picmip;
 extern	cvar_t	*gl_skymip;
+extern	cvar_t	*gl_textureoverride;	// 0 = never probe textures/*.png/.tga/.jpg
+extern	cvar_t	*gl_override_maxsize;	// largest edge uploaded for world textures
 extern	cvar_t	*gl_showtris;
 extern	cvar_t	*gl_finish;
 extern	cvar_t	*gl_ztrick;
@@ -411,6 +413,7 @@ typedef struct
 	const char *extensions_string;
 
 	qboolean	allow_cds;
+	int			max_texsize;		// GL_MAX_TEXTURE_SIZE, bounds gl_override_maxsize
 } glconfig_t;
 
 typedef struct

@@ -817,8 +817,13 @@ void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,
 	int		i, j;
 	unsigned	*inrow, *inrow2;
 	unsigned	frac, fracstep;
-	unsigned	p1[1024], p2[1024];
+	unsigned	*p1, *p2;		// heap: outwidth may exceed the old fixed 1024
 	byte		*pix1, *pix2, *pix3, *pix4;
+
+	p1 = malloc (outwidth * sizeof(unsigned));
+	p2 = malloc (outwidth * sizeof(unsigned));
+	if (!p1 || !p2)
+		ri.Sys_Error (ERR_DROP, "GL_ResampleTexture: out of memory");
 
 	fracstep = inwidth*0x10000/outwidth;
 
@@ -852,6 +857,9 @@ void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,
 			((byte *)(out+j))[3] = (pix1[3] + pix2[3] + pix3[3] + pix4[3])>>2;
 		}
 	}
+
+	free (p1);
+	free (p2);
 }
 
 /*
@@ -956,9 +964,10 @@ qboolean uploaded_paletted;
 qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 {
 	int			samples;
-	unsigned	scaled[256*256];
-	unsigned char paletted_texture[256*256];
+	unsigned	*scaled;					// heap: sized to the upload, was a fixed 256*256
+	unsigned char *paletted_texture = NULL;
 	int			scaled_width, scaled_height;
+	int			max_size;
 	int			i, c;
 	byte		*scan;
 	int comp;
@@ -981,11 +990,17 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 		scaled_height >>= (int)gl_picmip->value;
 	}
 
-	// don't ever bother with >256 textures
-	if (scaled_width > 256)
-		scaled_width = 256;
-	if (scaled_height > 256)
-		scaled_height = 256;
+	// cap at gl_override_maxsize (the original engine hard-coded 256 here),
+	// never above what the driver reports
+	max_size = (int)gl_override_maxsize->value;
+	if (max_size > gl_config.max_texsize)
+		max_size = gl_config.max_texsize;
+	if (max_size < 1)
+		max_size = 1;
+	if (scaled_width > max_size)
+		scaled_width = max_size;
+	if (scaled_height > max_size)
+		scaled_height = max_size;
 
 	if (scaled_width < 1)
 		scaled_width = 1;
@@ -995,8 +1010,15 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 	upload_width = scaled_width;
 	upload_height = scaled_height;
 
-	if (scaled_width * scaled_height > sizeof(scaled)/4)
-		ri.Sys_Error (ERR_DROP, "GL_Upload32: too big");
+	scaled = malloc (scaled_width * scaled_height * 4);
+	if (!scaled)
+		ri.Sys_Error (ERR_DROP, "GL_Upload32: out of memory");
+	if ( qglColorTableEXT && gl_ext_palettedtexture->value )
+	{
+		paletted_texture = malloc (scaled_width * scaled_height);
+		if (!paletted_texture)
+			ri.Sys_Error (ERR_DROP, "GL_Upload32: out of memory");
+	}
 
 	// scan the texture for any non-255 alpha
 	c = width*height;
@@ -1021,19 +1043,6 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 			   samples);
 	    comp = samples;
 	}
-
-#if 0
-	if (mipmap)
-		gluBuild2DMipmaps (GL_TEXTURE_2D, samples, width, height, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	else if (scaled_width == width && scaled_height == height)
-		qglTexImage2D (GL_TEXTURE_2D, 0, comp, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	else
-	{
-		gluScaleImage (GL_RGBA, width, height, GL_UNSIGNED_BYTE, trans,
-			scaled_width, scaled_height, GL_UNSIGNED_BYTE, scaled);
-		qglTexImage2D (GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-	}
-#else
 
 	if (scaled_width == width && scaled_height == height)
 	{
@@ -1121,8 +1130,8 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 		}
 	}
 done: ;
-#endif
-
+	free (scaled);
+	free (paletted_texture);
 
 	if (mipmap)
 	{
@@ -1498,6 +1507,12 @@ void	GL_InitImages (void)
 	float	g = vid_gamma->value;
 
 	registration_sequence = 1;
+
+	// largest texture the driver accepts; caps gl_override_maxsize in GL_Upload32
+	gl_config.max_texsize = 0;
+	qglGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_config.max_texsize);
+	if (gl_config.max_texsize < 256)
+		gl_config.max_texsize = 256;
 
 	// init intensity conversions
 	intensity = ri.Cvar_Get ("intensity", "2", 0);
