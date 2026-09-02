@@ -1,5 +1,5 @@
 # Makefile for Quake II — Apple Silicon (arm64) with SDL3
-# Stages: 1 install → 2 data → 3 build → 4 run; plus help/clean.
+# Stages: 1 install → 2 data → 3 build → 4 run; plus help/clean/tools.
 # Styled after the "3AM Reel" template: self-documenting `help` via grep/awk.
 # The -include'd .d dependency files land in MAKEFILE_LIST after a build, so
 # `help` filters them out (and uses grep -h) to keep filenames out of the list.
@@ -150,6 +150,7 @@ ALL_ORIGINAL_OBJS = $(COMMON_OBJS) $(CLIENT_OBJS) $(SERVER_OBJS) \
 	$(SYS_EXE_OBJS) $(REF_CORE_OBJS) $(REF_EXTRA_OBJS) $(GAME_OBJS)
 
 -include $(ALL_ORIGINAL_OBJS:.o=.d)
+-include $(BUILD_DIR)/ref_gl/tests/test_override.d
 
 objects: $(ALL_ORIGINAL_OBJS) ## Compile all engine objects (no linking)
 
@@ -180,11 +181,11 @@ verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check e
 
 # Host test for the override loader: links override.o alone against a
 # stub refimport_t, so it needs neither a GL context nor game data.
+# Its own object goes through the mirror rule so -MMD keeps it fresh.
 TEST_OVERRIDE = $(BUILD_DIR)/test_override
 
-$(TEST_OVERRIDE): ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/override.o
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/override.o
+$(TEST_OVERRIDE): $(BUILD_DIR)/ref_gl/tests/test_override.o $(BUILD_DIR)/ref_gl/override.o
+	$(CC) $(CFLAGS) -o $@ $(BUILD_DIR)/ref_gl/tests/test_override.o $(BUILD_DIR)/ref_gl/override.o
 
 test-ref: $(TEST_OVERRIDE) ## Host test for the texture override loader (no GL, no game data)
 	./$(TEST_OVERRIDE)

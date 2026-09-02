@@ -17,15 +17,15 @@ small standalone Python tool (`tools/`) for texture extraction.
 | Path | Contents |
 |---|---|
 | `client/` | Client core (`main.c`, `input.c`) with `net/` (parse, predict, ents, tents, fx, newfx), `screen/` (scrn, view, cinematic, inv, console, keys, menu, qmenu), `sound/` (dma, mem, mix) subfolders; shared headers (`client.h`, `ref.h`, `vid.h`, `input.h`, `anorms.h`) |
-| `server/` | Server sources compiled into the executable — flat, `sv_*` prefixes dropped: `main.c`, `init.c`, `send.c`, `user.c`, `world.c`, `ents.c`, `game.c`, `ccmds.c` + `server.h` |
-| `qcommon/` | Engine core, unchanged by the restructure: `common.c`, `cmd.c`, `cvar.c`, `files.c`, `cmodel.c`, `pmove.c`, crc/md4, `qcommon.h`, `qfiles.h` |
-| `game/` | Game DLL sources: game logic at the root (was g_*), `player/` (was p_*), `monsters/` (was m_*.c + ModelGen-generated m_*.h), `q_shared.c/h` |
-| `ref_gl/` | OpenGL renderer — flat, `gl_*` prefixes dropped + texture-override loader (`override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
-| `platform/` | Merge of the old `linux/` + `sdl/`: `posix/` (`sys.c`, `udp.c`, `glob.c`, `shared.c`, `vid_menu.c`) + `sdl/` (`vid.c`, `sound.c`, `input.c`, `glw.c`, `qgl.c` GL dispatch loader), plus `verify_load.c` at the platform root |
+| `server/` | Server sources compiled into the executable: `main.c`, `init.c`, `send.c`, `user.c`, `world.c`, `ents.c`, `game.c`, `ccmds.c` + `server.h` |
+| `qcommon/` | Engine core: `common.c`, `cmd.c`, `cvar.c`, `files.c`, `cmodel.c`, `pmove.c`, crc/md4, `qcommon.h`, `qfiles.h` |
+| `game/` | Game DLL sources: game logic at the root, `player/`, `monsters/` (.c + ModelGen-generated .h), `q_shared.c/h` |
+| `ref_gl/` | OpenGL renderer + texture-override loader (`override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
+| `platform/` | Platform layer: `posix/` (`sys.c`, `udp.c`, `glob.c`, `shared.c`, `vid_menu.c`) + `sdl/` (`vid.c`, `sound.c`, `input.c`, `glw.c`, `qgl.c` GL dispatch loader), plus `verify_load.c` at the platform root |
 | `tools/` | Standalone Python (uv-managed) pak `.wal` → PNG texture extractor + pytest suite |
 | `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit, folder restructure |
 | `baseq2/` | **User territory** — game data (paks, players/, textures/, saves). Contents selectively git-ignored; only `hudtest.cfg` is tracked |
-| `build/` | Build outputs; object paths now mirror the source tree (`client/main.c` → `build/client/main.o`): `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
+| `build/` | Build outputs; object paths mirror the source tree (`client/main.c` → `build/client/main.o`): `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
 | `.superpowers/` | Transient SDD agent workspaces (`sdd/<date>-<topic>/` briefs, reports, review diffs). Git-ignored — never commit |
 
 ## Architecture Notes (load-bearing)
@@ -73,7 +73,7 @@ unrelated changes.
 ## Development Conventions
 
 - **id-era C style:** tabs, K&R-ish braces, `/* banner */` function comment blocks, `qboolean`/`vec3_t` typedefs from `game/q_shared.h`. Match surrounding code exactly.
-- **Root-relative includes:** every `#include "..."` is a repo-root-relative path (`-I.` is set in the Makefile). No bare-basename or `../` includes. Lint: `grep -rn '#include "' --include='*.[ch]' client server qcommon game ref_gl platform | grep -v '#include ".*/'` must print nothing.
+- **Root-relative includes:** every `#include "..."` is a repo-root-relative path (`-I.` is set in the Makefile). No bare-basename or `../` includes. Lint (both must print nothing): `grep -rn '#include "' --include='*.[ch]' client server qcommon game ref_gl platform | grep -v '#include ".*/'` (no bare basenames) and `grep -rn '#include "\.\./' --include='*.[ch]' client server qcommon game ref_gl platform` (no `../`).
 - **Minimal blast radius:** prefer the narrowest correct change; reuse existing code paths before adding new ones.
 - **Zero behavior change for cleanup work:** every removal must be *provably* dead — `grep -rnw SYMBOL` must show declarations/writes only, no reads — and remember symbols may be alive in another link unit. `FRAME_*` constants are explicit-value `#define`s (ModelGen headers): removal is value-safe, but they are per-definition (the same name can exist in several monster headers for different translation units).
 - **Git discipline:** stage explicit paths only — never `git add -A` or `git commit -a`. `baseq2/` game data (paks, saves, configs, textures) must never enter a commit — `baseq2/textures/` is id Software data, and the texture recreation kit's batch data lives off-repo. Push only when explicitly asked. Feature work lands on a branch, gated, then `--no-ff` merged to `main`.
