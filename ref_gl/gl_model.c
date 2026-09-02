@@ -731,7 +731,6 @@ void Mod_LoadLeafs (lump_t *l)
 			LittleShort(in->firstleafface);
 		out->nummarksurfaces = LittleShort(in->numleaffaces);
 		
-		// gl underwater warp
 	}	
 }
 

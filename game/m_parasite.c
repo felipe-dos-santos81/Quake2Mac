@@ -39,7 +39,6 @@ static int	sound_reelin;
 static int	sound_sight;
 static int	sound_tap;
 static int	sound_scratch;
-static int	sound_search;
 
 
 void parasite_stand (edict_t *self);
@@ -176,17 +175,6 @@ mframe_t parasite_frames_start_run [] =
 };
 mmove_t parasite_move_start_run = {FRAME_run01, FRAME_run02, parasite_frames_start_run, parasite_run};
 
-mframe_t parasite_frames_stop_run [] =
-{	
-	ai_run, 20, NULL,
-	ai_run, 20,	NULL,
-	ai_run, 12, NULL,
-	ai_run, 10, NULL,
-	ai_run, 0,  NULL,
-	ai_run, 0,  NULL
-};
-mmove_t parasite_move_stop_run = {FRAME_run10, FRAME_run15, parasite_frames_stop_run, NULL};
-
 void parasite_start_run (edict_t *self)
 {	
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
@@ -222,17 +210,6 @@ mframe_t parasite_frames_start_walk [] =
 	ai_walk, 30, parasite_walk
 };
 mmove_t parasite_move_start_walk = {FRAME_run01, FRAME_run02, parasite_frames_start_walk, NULL};
-
-mframe_t parasite_frames_stop_walk [] =
-{	
-	ai_walk, 20, NULL,
-	ai_walk, 20,	NULL,
-	ai_walk, 12, NULL,
-	ai_walk, 10, NULL,
-	ai_walk, 0,  NULL,
-	ai_walk, 0,  NULL
-};
-mmove_t parasite_move_stop_walk = {FRAME_run10, FRAME_run15, parasite_frames_stop_walk, NULL};
 
 void parasite_start_walk (edict_t *self)
 {	
@@ -510,7 +487,6 @@ void SP_monster_parasite (edict_t *self)
 	sound_sight = gi.soundindex("parasite/parsght1.wav");
 	sound_tap = gi.soundindex("parasite/paridle1.wav");
 	sound_scratch = gi.soundindex("parasite/paridle2.wav");
-	sound_search = gi.soundindex("parasite/parsrch1.wav");
 
 	self->s.modelindex = gi.modelindex ("models/monsters/parasite/tris.md2");
 	VectorSet (self->mins, -16, -16, -24);

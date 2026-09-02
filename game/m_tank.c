@@ -124,15 +124,6 @@ void tank_stand (edict_t *self)
 
 void tank_walk (edict_t *self);
 
-mframe_t tank_frames_start_walk [] =
-{
-	ai_walk,  0, NULL,
-	ai_walk,  6, NULL,
-	ai_walk,  6, NULL,
-	ai_walk, 11, tank_footstep
-};
-mmove_t	tank_move_start_walk = {FRAME_walk01, FRAME_walk04, tank_frames_start_walk, tank_walk};
-
 mframe_t tank_frames_walk [] =
 {
 	ai_walk, 4,	NULL,
@@ -153,16 +144,6 @@ mframe_t tank_frames_walk [] =
 	ai_walk, 6,	tank_footstep
 };
 mmove_t	tank_move_walk = {FRAME_walk05, FRAME_walk20, tank_frames_walk, NULL};
-
-mframe_t tank_frames_stop_walk [] =
-{
-	ai_walk,  3, NULL,
-	ai_walk,  3, NULL,
-	ai_walk,  2, NULL,
-	ai_walk,  2, NULL,
-	ai_walk,  4, tank_footstep
-};
-mmove_t	tank_move_stop_walk = {FRAME_walk21, FRAME_walk25, tank_frames_stop_walk, tank_stand};
 
 void tank_walk (edict_t *self)
 {
@@ -205,16 +186,6 @@ mframe_t tank_frames_run [] =
 	ai_run, 6,	tank_footstep
 };
 mmove_t	tank_move_run = {FRAME_walk05, FRAME_walk20, tank_frames_run, NULL};
-
-mframe_t tank_frames_stop_run [] =
-{
-	ai_run,  3, NULL,
-	ai_run,  3, NULL,
-	ai_run,  2, NULL,
-	ai_run,  2, NULL,
-	ai_run,  4, tank_footstep
-};
-mmove_t	tank_move_stop_run = {FRAME_walk21, FRAME_walk25, tank_frames_stop_run, tank_walk};
 
 void tank_run (edict_t *self)
 {

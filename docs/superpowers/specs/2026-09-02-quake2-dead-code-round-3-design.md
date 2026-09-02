@@ -127,6 +127,14 @@ end-function `floater_dead` (`game/m_float.c` decl :53, def :593) is referenced
 forward declaration too. All other end-functions are shared with live moves and
 stay.
 
+**Cascading per-frame think-function orphans.** Beyond end-functions, a deleted
+`mframe_t` array can orphan a per-frame think function (the third field of a
+frame entry) referenced *only* by that array. Exactly one occurred:
+`berserk_strike` (`game/m_berserk.c`), sole consumer was the deleted
+`berserk_frames_attack_strike`; removed in its own commit. All other deleted
+arrays were NULL-think. Total functions removed with the chains: 2
+(`floater_dead` + `berserk_strike`).
+
 ### 3b. game/ — standalone orphan frames array (1)
 - `makron_frames_walk` — `game/m_boss32.c:189`. Unreferenced, not transitive:
   the alive `makron_move_walk` (:202) uses `makron_frames_run` instead.

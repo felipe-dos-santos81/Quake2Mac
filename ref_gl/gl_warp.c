@@ -257,7 +257,6 @@ vec3_t	skyclip[6] = {
 	{1,0,1},
 	{-1,0,1} 
 };
-int	c_sky;
 
 // 1 = s, 2 = t, 3 = 2048
 int	st_to_vec[6][3] =
@@ -302,7 +301,6 @@ void DrawSkyPolygon (int nump, vec3_t vecs)
 	int		axis;
 	float	*vp;
 
-	c_sky++;
 	// decide which face it maps to
 	VectorCopy (vec3_origin, v);
 	for (i=0, vp=vecs ; i<nump ; i++, vp+=3)

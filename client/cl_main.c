@@ -23,16 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cvar_t	*freelook;
 
-cvar_t	*adr0;
-cvar_t	*adr1;
-cvar_t	*adr2;
-cvar_t	*adr3;
-cvar_t	*adr4;
-cvar_t	*adr5;
-cvar_t	*adr6;
-cvar_t	*adr7;
-cvar_t	*adr8;
-
 cvar_t	*cl_stereo_separation;
 cvar_t	*cl_stereo;
 
@@ -40,7 +30,6 @@ cvar_t	*rcon_client_password;
 cvar_t	*rcon_address;
 
 cvar_t	*cl_noskins;
-cvar_t	*cl_autoskins;
 cvar_t	*cl_footsteps;
 cvar_t	*cl_timeout;
 cvar_t	*cl_predict;
@@ -74,8 +63,6 @@ cvar_t	*cl_lightlevel;
 //
 // userinfo
 //
-cvar_t	*info_password;
-cvar_t	*info_spectator;
 cvar_t	*name;
 cvar_t	*skin;
 cvar_t	*rate;
@@ -1416,15 +1403,15 @@ void CL_InitLocal (void)
 
 	CL_InitInput ();
 
-	adr0 = Cvar_Get( "adr0", "", CVAR_ARCHIVE );
-	adr1 = Cvar_Get( "adr1", "", CVAR_ARCHIVE );
-	adr2 = Cvar_Get( "adr2", "", CVAR_ARCHIVE );
-	adr3 = Cvar_Get( "adr3", "", CVAR_ARCHIVE );
-	adr4 = Cvar_Get( "adr4", "", CVAR_ARCHIVE );
-	adr5 = Cvar_Get( "adr5", "", CVAR_ARCHIVE );
-	adr6 = Cvar_Get( "adr6", "", CVAR_ARCHIVE );
-	adr7 = Cvar_Get( "adr7", "", CVAR_ARCHIVE );
-	adr8 = Cvar_Get( "adr8", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr0", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr1", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr2", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr3", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr4", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr5", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr6", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr7", "", CVAR_ARCHIVE );
+	Cvar_Get( "adr8", "", CVAR_ARCHIVE );
 
 //
 // register our variables
@@ -1439,7 +1426,7 @@ void CL_InitLocal (void)
 	cl_gun = Cvar_Get ("cl_gun", "1", 0);
 	cl_footsteps = Cvar_Get ("cl_footsteps", "1", 0);
 	cl_noskins = Cvar_Get ("cl_noskins", "0", 0);
-	cl_autoskins = Cvar_Get ("cl_autoskins", "0", 0);
+	Cvar_Get ("cl_autoskins", "0", 0);
 	cl_predict = Cvar_Get ("cl_predict", "1", 0);
 //	cl_minfps = Cvar_Get ("cl_minfps", "5", 0);
 	cl_maxfps = Cvar_Get ("cl_maxfps", "90", 0);
@@ -1477,8 +1464,8 @@ void CL_InitLocal (void)
 	//
 	// userinfo
 	//
-	info_password = Cvar_Get ("password", "", CVAR_USERINFO);
-	info_spectator = Cvar_Get ("spectator", "0", CVAR_USERINFO);
+	Cvar_Get ("password", "", CVAR_USERINFO);
+	Cvar_Get ("spectator", "0", CVAR_USERINFO);
 	name = Cvar_Get ("name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE);
 	skin = Cvar_Get ("skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE);
 	rate = Cvar_Get ("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);	// FIXME

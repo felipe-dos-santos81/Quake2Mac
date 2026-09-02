@@ -30,11 +30,8 @@ brain
 
 
 static int	sound_chest_open;
-static int	sound_tentacles_extend;
 static int	sound_tentacles_retract;
 static int	sound_death;
-static int	sound_idle1;
-static int	sound_idle2;
 static int	sound_idle3;
 static int	sound_pain1;
 static int	sound_pain2;
@@ -174,31 +171,15 @@ mframe_t brain_frames_walk1 [] =
 };
 mmove_t brain_move_walk1 = {FRAME_walk101, FRAME_walk111, brain_frames_walk1, NULL};
 
-// walk2 is FUBAR, do not use
 
 void brain_walk (edict_t *self)
 {
 //	if (random() <= 0.5)
 		self->monsterinfo.currentmove = &brain_move_walk1;
 //	else
-//		self->monsterinfo.currentmove = &brain_move_walk2;
 }
 
 
-
-mframe_t brain_frames_defense [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t brain_move_defense = {FRAME_defens01, FRAME_defens08, brain_frames_defense, NULL};
 
 mframe_t brain_frames_pain3 [] =
 {
@@ -572,11 +553,8 @@ void SP_monster_brain (edict_t *self)
 	}
 
 	sound_chest_open = gi.soundindex ("brain/brnatck1.wav");
-	sound_tentacles_extend = gi.soundindex ("brain/brnatck2.wav");
 	sound_tentacles_retract = gi.soundindex ("brain/brnatck3.wav");
 	sound_death = gi.soundindex ("brain/brndeth1.wav");
-	sound_idle1 = gi.soundindex ("brain/brnidle1.wav");
-	sound_idle2 = gi.soundindex ("brain/brnidle2.wav");
 	sound_idle3 = gi.soundindex ("brain/brnlens1.wav");
 	sound_pain1 = gi.soundindex ("brain/brnpain1.wav");
 	sound_pain2 = gi.soundindex ("brain/brnpain2.wav");

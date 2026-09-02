@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 image_t		gltextures[MAX_GLTEXTURES];
 int			numgltextures;
-int			base_textureid;		// gltextures[i] = base_textureid+i
 
 static byte			 intensitytable[256];
 static unsigned char gammatable[256];
@@ -394,11 +393,8 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 //	Sys_Error ("Scrap_AllocBlock: full");
 }
 
-int	scrap_uploads;
-
 void Scrap_Upload (void)
 {
-	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
 	GL_Upload8 (scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, false, false );
 	scrap_dirty = false;
