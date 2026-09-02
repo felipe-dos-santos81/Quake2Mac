@@ -178,16 +178,6 @@ mmove_t	jorg_move_run = {FRAME_walk06, FRAME_walk19, jorg_frames_run, NULL};
 // walk
 //
 
-mframe_t jorg_frames_start_walk [] =
-{
-	ai_walk,	5,	NULL,
-	ai_walk,	6,	NULL,
-	ai_walk,	7,	NULL,
-	ai_walk,	9,	NULL,
-	ai_walk,	15,	NULL
-};
-mmove_t jorg_move_start_walk = {FRAME_walk01, FRAME_walk05, jorg_frames_start_walk, NULL};
-
 mframe_t jorg_frames_walk [] =
 {
 	ai_walk, 17,	NULL,
@@ -206,17 +196,6 @@ mframe_t jorg_frames_walk [] =
 	ai_walk, 9,	NULL
 };
 mmove_t	jorg_move_walk = {FRAME_walk06, FRAME_walk19, jorg_frames_walk, NULL};
-
-mframe_t jorg_frames_end_walk [] =
-{
-	ai_walk,	11,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	-8,	NULL
-};
-mmove_t jorg_move_end_walk = {FRAME_walk20, FRAME_walk25, jorg_frames_end_walk, NULL};
 
 void jorg_walk (edict_t *self)
 {

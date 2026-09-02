@@ -181,20 +181,6 @@ void brain_walk (edict_t *self)
 
 
 
-mframe_t brain_frames_defense [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t brain_move_defense = {FRAME_defens01, FRAME_defens08, brain_frames_defense, NULL};
-
 mframe_t brain_frames_pain3 [] =
 {
 	ai_move,	-2,	NULL,
