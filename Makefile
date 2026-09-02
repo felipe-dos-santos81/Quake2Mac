@@ -94,10 +94,10 @@ CLIENT_OBJS = \
 
 # server
 SERVER_OBJS = \
-	$(BUILD_DIR)/server/sv_ccmds.o $(BUILD_DIR)/server/sv_ents.o \
-	$(BUILD_DIR)/server/sv_game.o $(BUILD_DIR)/server/sv_init.o \
-	$(BUILD_DIR)/server/sv_main.o $(BUILD_DIR)/server/sv_send.o \
-	$(BUILD_DIR)/server/sv_user.o $(BUILD_DIR)/server/sv_world.o
+	$(BUILD_DIR)/server/ccmds.o $(BUILD_DIR)/server/ents.o \
+	$(BUILD_DIR)/server/game.o $(BUILD_DIR)/server/init.o \
+	$(BUILD_DIR)/server/main.o $(BUILD_DIR)/server/send.o \
+	$(BUILD_DIR)/server/user.o $(BUILD_DIR)/server/world.o
 
 # platform layer linked into the executable
 SYS_EXE_OBJS = \
