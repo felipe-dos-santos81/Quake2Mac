@@ -39,7 +39,6 @@ static int	sound_reelin;
 static int	sound_sight;
 static int	sound_tap;
 static int	sound_scratch;
-static int	sound_search;
 
 
 void parasite_stand (edict_t *self);
@@ -510,7 +509,6 @@ void SP_monster_parasite (edict_t *self)
 	sound_sight = gi.soundindex("parasite/parsght1.wav");
 	sound_tap = gi.soundindex("parasite/paridle1.wav");
 	sound_scratch = gi.soundindex("parasite/paridle2.wav");
-	sound_search = gi.soundindex("parasite/parsrch1.wav");
 
 	self->s.modelindex = gi.modelindex ("models/monsters/parasite/tris.md2");
 	VectorSet (self->mins, -16, -16, -24);

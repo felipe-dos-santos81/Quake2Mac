@@ -186,19 +186,6 @@ void makron_prerailgun (edict_t *self)
 }
 
 
-mframe_t makron_frames_walk [] =
-{
-	ai_walk, 3,	makron_step_left,
-	ai_walk, 12,	NULL,
-	ai_walk, 8,	NULL,
-	ai_walk, 8,	NULL,
-	ai_walk, 8,	makron_step_right,
-	ai_walk, 6,	NULL,
-	ai_walk, 12,	NULL,
-	ai_walk, 9,	NULL,
-	ai_walk, 6,	NULL,
-	ai_walk, 12,	NULL
-};
 mmove_t	makron_move_walk = {FRAME_walk204, FRAME_walk213, makron_frames_run, NULL};
 
 void makron_walk (edict_t *self)

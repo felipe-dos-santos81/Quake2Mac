@@ -262,10 +262,6 @@ float	anglemod(float a)
 	return a;
 }
 
-	int		i;
-	vec3_t	corners[2];
-
-
 /*
 ==================
 BoxOnPlaneSide
@@ -784,14 +780,12 @@ Com_PageInMemory
 
 ===============
 */
-int	paged_total;
-
 void Com_PageInMemory (byte *buffer, int size)
 {
 	int		i;
 
 	for (i=size-1 ; i>0 ; i-=4096)
-		paged_total += buffer[i];
+		;
 }
 
 
