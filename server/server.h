@@ -233,7 +233,7 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame);
 
 
 //
-// sv_phys.c
+// server/main.c
 //
 void SV_PrepWorldFrame (void);
 

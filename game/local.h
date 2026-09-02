@@ -729,7 +729,7 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
 
 //
-// g_ptrail.c
+// game/player/trail.c
 //
 void PlayerTrail_Init (void);
 void PlayerTrail_Add (vec3_t spot);
@@ -738,7 +738,7 @@ edict_t *PlayerTrail_PickNext (edict_t *self);
 edict_t	*PlayerTrail_LastSpot (void);
 
 //
-// g_client.c
+// game/player/client.c
 //
 void respawn (edict_t *ent);
 void BeginIntermission (edict_t *targ);
@@ -748,9 +748,6 @@ void InitClientResp (gclient_t *client);
 void InitBodyQue (void);
 void ClientBeginServerFrame (edict_t *ent);
 
-//
-// g_player.c
-//
 void player_pain (edict_t *self, edict_t *other, float kick, int damage);
 void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
 
@@ -776,7 +773,7 @@ void ValidateSelectedItem (edict_t *ent);
 void DeathmatchScoreboardMessage (edict_t *client, edict_t *killer);
 
 //
-// g_pweapon.c
+// game/player/weapon.c
 //
 void PlayerNoise(edict_t *who, vec3_t where, int type);
 

@@ -490,7 +490,7 @@ float CL_KeyState (kbutton_t *key);
 char *Key_KeynumToString (int keynum);
 
 //
-// cl_demo.c
+// client/main.c
 //
 void CL_WriteDemoMessage (void);
 void CL_Stop_f (void);
