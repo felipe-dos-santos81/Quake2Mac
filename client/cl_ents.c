@@ -36,161 +36,6 @@ FRAME PARSING
 =========================================================================
 */
 
-#if 0
-
-typedef struct
-{
-	int		modelindex;
-	int		num; // entity number
-	int		effects;
-	vec3_t	origin;
-	vec3_t	oldorigin;
-	vec3_t	angles;
-	qboolean present;
-} projectile_t;
-
-#define	MAX_PROJECTILES	64
-projectile_t	cl_projectiles[MAX_PROJECTILES];
-
-void CL_ClearProjectiles (void)
-{
-	int i;
-
-	for (i = 0; i < MAX_PROJECTILES; i++) {
-//		if (cl_projectiles[i].present)
-//			Com_DPrintf("PROJ: %d CLEARED\n", cl_projectiles[i].num);
-		cl_projectiles[i].present = false;
-	}
-}
-
-/*
-=====================
-CL_ParseProjectiles
-
-Flechettes are passed as efficient temporary entities
-=====================
-*/
-void CL_ParseProjectiles (void)
-{
-	int		i, c, j;
-	byte	bits[8];
-	byte	b;
-	projectile_t	pr;
-	int lastempty = -1;
-	qboolean old = false;
-
-	c = MSG_ReadByte (&net_message);
-	for (i=0 ; i<c ; i++)
-	{
-		bits[0] = MSG_ReadByte (&net_message);
-		bits[1] = MSG_ReadByte (&net_message);
-		bits[2] = MSG_ReadByte (&net_message);
-		bits[3] = MSG_ReadByte (&net_message);
-		bits[4] = MSG_ReadByte (&net_message);
-		pr.origin[0] = ( ( bits[0] + ((bits[1]&15)<<8) ) <<1) - 4096;
-		pr.origin[1] = ( ( (bits[1]>>4) + (bits[2]<<4) ) <<1) - 4096;
-		pr.origin[2] = ( ( bits[3] + ((bits[4]&15)<<8) ) <<1) - 4096;
-		VectorCopy(pr.origin, pr.oldorigin);
-
-		if (bits[4] & 64)
-			pr.effects = EF_BLASTER;
-		else
-			pr.effects = 0;
-
-		if (bits[4] & 128) {
-			old = true;
-			bits[0] = MSG_ReadByte (&net_message);
-			bits[1] = MSG_ReadByte (&net_message);
-			bits[2] = MSG_ReadByte (&net_message);
-			bits[3] = MSG_ReadByte (&net_message);
-			bits[4] = MSG_ReadByte (&net_message);
-			pr.oldorigin[0] = ( ( bits[0] + ((bits[1]&15)<<8) ) <<1) - 4096;
-			pr.oldorigin[1] = ( ( (bits[1]>>4) + (bits[2]<<4) ) <<1) - 4096;
-			pr.oldorigin[2] = ( ( bits[3] + ((bits[4]&15)<<8) ) <<1) - 4096;
-		}
-
-		bits[0] = MSG_ReadByte (&net_message);
-		bits[1] = MSG_ReadByte (&net_message);
-		bits[2] = MSG_ReadByte (&net_message);
-
-		pr.angles[0] = 360*bits[0]/256;
-		pr.angles[1] = 360*bits[1]/256;
-		pr.modelindex = bits[2];
-
-		b = MSG_ReadByte (&net_message);
-		pr.num = (b & 0x7f);
-		if (b & 128) // extra entity number byte
-			pr.num |= (MSG_ReadByte (&net_message) << 7);
-
-		pr.present = true;
-
-		// find if this projectile already exists from previous frame 
-		for (j = 0; j < MAX_PROJECTILES; j++) {
-			if (cl_projectiles[j].modelindex) {
-				if (cl_projectiles[j].num == pr.num) {
-					// already present, set up oldorigin for interpolation
-					if (!old)
-						VectorCopy(cl_projectiles[j].origin, pr.oldorigin);
-					cl_projectiles[j] = pr;
-					break;
-				}
-			} else
-				lastempty = j;
-		}
-
-		// not present previous frame, add it
-		if (j == MAX_PROJECTILES) {
-			if (lastempty != -1) {
-				cl_projectiles[lastempty] = pr;
-			}
-		}
-	}
-}
-
-/*
-=============
-CL_LinkProjectiles
-
-=============
-*/
-void CL_AddProjectiles (void)
-{
-	int		i, j;
-	projectile_t	*pr;
-	entity_t		ent;
-
-	memset (&ent, 0, sizeof(ent));
-
-	for (i=0, pr=cl_projectiles ; i < MAX_PROJECTILES ; i++, pr++)
-	{
-		// grab an entity to fill in
-		if (pr->modelindex < 1)
-			continue;
-		if (!pr->present) {
-			pr->modelindex = 0;
-			continue; // not present this frame (it was in the previous frame)
-		}
-
-		ent.model = cl.model_draw[pr->modelindex];
-
-		// interpolate origin
-		for (j=0 ; j<3 ; j++)
-		{
-			ent.origin[j] = ent.oldorigin[j] = pr->oldorigin[j] + cl.lerpfrac * 
-				(pr->origin[j] - pr->oldorigin[j]);
-
-		}
-
-		if (pr->effects & EF_BLASTER)
-			CL_BlasterTrail (pr->oldorigin, ent.origin);
-		V_AddLight (pr->origin, 200, 1, 1, 0);
-
-		VectorCopy (pr->angles, ent.angles);
-		V_AddEntity (&ent);
-	}
-}
-#endif
-
 /*
 =================
 CL_ParseEntityBits
@@ -668,10 +513,6 @@ void CL_ParseFrame (void)
 
 	memset (&cl.frame, 0, sizeof(cl.frame));
 
-#if 0
-	CL_ClearProjectiles(); // clear projectiles for new frame
-#endif
-
 	cl.frame.serverframe = MSG_ReadLong (&net_message);
 	cl.frame.deltaframe = MSG_ReadLong (&net_message);
 	cl.frame.servertime = cl.frame.serverframe*100;
@@ -737,11 +578,6 @@ void CL_ParseFrame (void)
 	if (cmd != svc_packetentities)
 		Com_Error (ERR_DROP, "CL_ParseFrame: not packetentities");
 	CL_ParsePacketEntities (old, &cl.frame);
-
-#if 0
-	if (cmd == svc_packetentities2)
-		CL_ParseProjectiles();
-#endif
 
 	// save the frame off in the backup array for later delta comparisons
 	cl.frames[cl.frame.serverframe & UPDATE_MASK] = cl.frame;
@@ -1421,9 +1257,6 @@ void CL_AddEntities (void)
 	CL_CalcViewValues ();
 	// PMM - moved this here so the heat beam has the right values for the vieworg, and can lock the beam to the gun
 	CL_AddPacketEntities (&cl.frame);
-#if 0
-	CL_AddProjectiles ();
-#endif
 	CL_AddTEnts ();
 	CL_AddParticles ();
 	CL_AddDLights ();

@@ -1272,12 +1272,6 @@ void CM_RecursiveHullCheck (int num, float p1f, float p2f, vec3_t p1, vec3_t p2)
 	}
 
 
-#if 0
-CM_RecursiveHullCheck (node->children[0], p1f, p2f, p1, p2);
-CM_RecursiveHullCheck (node->children[1], p1f, p2f, p1, p2);
-return;
-#endif
-
 	// see which sides we need to consider
 	if (t1 >= offset && t2 >= offset)
 	{

@@ -594,16 +594,10 @@ void Con_DrawConsole (float frac)
 
 // draw the text
 	con.vislines = lines;
-	
-#if 0
-	rows = (lines-8)>>3;		// rows of text to draw
 
-	y = lines - 24;
-#else
 	rows = (lines-22)>>3;		// rows of text to draw
 
 	y = lines - 30;
-#endif
 
 // draw from the bottom up
 	if (con.display != con.current)

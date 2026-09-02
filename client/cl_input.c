@@ -198,13 +198,6 @@ float CL_KeyState (kbutton_t *key)
 		key->downtime = sys_frame_time;
 	}
 
-#if 0
-	if (msec)
-	{
-		Com_Printf ("%i ", msec);
-	}
-#endif
-
 	val = (float)msec / frame_msec;
 	if (val < 0)
 		val = 0;
