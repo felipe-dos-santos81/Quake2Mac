@@ -54,10 +54,12 @@ Companion specs (this work preserves them):
 | Dead menu items | Remove four: *CD music* (`cd_nocd`), *sound compatibility* (`s_primary`), *joystick* (`in_joystick`), *alt-tab disable* (`win_noalttab`), plus their callbacks and cvar plumbing |
 | `BUILDSTRING`/`CPUSTRING` | `"MacOS"` / `"arm64"` (used only in the version banner, `common.c:1441`) |
 | Git workflow | Branch `cleanup/dead-code-round-2` → one commit per phase (phase 3: ≤ 3 subsystem-batched commits) → `--no-ff` merge to `main`; **no push** |
-| Regression gate | Per phase: `make clean && make build && make verify-load`. Pre-merge: scripted headless newgame smoke (throwaway harness in `.qwen/tmp/`, never committed) |
+| Root Makefile default goal | `.DEFAULT_GOAL := build` → **`help`** — bare `make` prints the self-documenting help menu (user instruction, 2026-09-01). Explicit `make build` still compiles; all gates use explicit targets |
+| Regression gate | Per phase: `make clean && make build && make verify-load`. Pre-merge: validated bare-launch attract-loop smoke (§8) |
 
 ### Headline numbers
-- 164 tracked files at start; branch base is `main` tip `6732e52`.
+- 164 tracked files at start; branch base is `main` tip (the committed spec,
+  `c2f3819` or later).
 - 3 files deleted (phases 1–2): `null/cd_null.c`, `client/cdaudio.h`,
   `game/m_rider.h`. `null/` becomes empty and disappears.
 - 52 `#if 0` blocks swept across ~25 files (phase 3).
@@ -81,6 +83,10 @@ Companion specs (this work preserves them):
 | Last platform conditional | `linux/net_udp.c:16` `#ifdef NeXT` (3-line block) |
 | Version strings are Win32-relative | `qcommon/qcommon.h:30-31` `"NON-WIN32"` ×2; sole consumer `common.c:1441` |
 | `game/m_rider.h` is orphaned | Zero includers (the rider monster was cut content; boss3 models referencing `boss3/rider` paths are asset strings, not header uses) |
+| `newgame` is a pak alias, not a command | Defined in `default.cfg` inside `pak0.pak` (`alias newgame " killserver ; maxclients 1 ; deathmatch 0 ; map *ntro.cin+base1"`); absent from the GPL C sources entirely (verified against an upstream clone). The vanilla menu's `Cbuf_AddText ("loading ; killserver ; wait ; newgame\n")` depends on it |
+| Headless command injection is impossible in listen mode | `Sys_ConsoleInput` (`linux/sys_linux.c`) reads stdin only when `dedicated 1`; `Con_ToggleConsole_f` restarts the demo loop (`d1`) whenever `cls.state == ca_disconnected`; boot-time cinematics pause while `cls.key_dest != key_game` (the menu owns it at boot). Verified empirically 2026-09-01 |
+| Bare launch drives the full runtime stack | With no arguments, `Com_Init` queues `d1` (`qcommon/common.c`): the attract chain plays `idlog.cin`, then `demo1.dm2`/`demo2.dm2` via `nextserver`, cycling server spawns, client connects, cinematic play/finish (`SCR_PlayCinematic`/`SCR_RunCinematic`/`SCR_FinishCinematic`), configstring updates, and full map precaches — no input required. Verified empirically 2026-09-01 |
+| `SpawnServer:` needs developer mode | `sv_init.c:179` prints it via `Com_DPrintf`; assert it only with `+set developer 1` |
 
 ---
 
@@ -148,7 +154,8 @@ CD-music item-name array.
 
 - Delete `null/cd_null.c`, `client/cdaudio.h`, `game/m_rider.h`.
 - `Makefile`: remove `$(BUILD_DIR)/client/cd_null.o` from `SYS_EXE_OBJS`;
-  remove `null` from the `vpath %.c` line. No other Makefile change.
+  remove `null` from the `vpath %.c` line; change `.DEFAULT_GOAL := build`
+  to `.DEFAULT_GOAL := help`. No other Makefile change.
 - `null/` is now empty; the directory leaves the tree.
 
 ## 6. Phase 3 rules
@@ -175,11 +182,33 @@ CD-music item-name array.
 
 ## 8. Final smoke (pre-merge)
 
-Throwaway harness in `.qwen/tmp/` (never committed): launch
-`./build/quake2` headlessly, drive `newgame`, supply the keypress that ends
-the `ntro.cin` cinematic, and assert the log reaches `SpawnServer: base1` →
-precache → `ca_active`, then clean exit. Same chain verified end-to-end on
-2026-09-01 against the pre-round-2 tree.
+**Design change (2026-09-01, evidence in §2):** the original newgame-driven
+smoke is unreachable headlessly — stdin is dedicated-only, `toggleconsole`
+auto-restarts demos when disconnected, and boot cinematics pause with the
+menu owning `key_dest`. The validated replacement uses the engine's own
+attract chain, which exercises every runtime path this cleanup edits
+(server spawn, game DLL, client connect, cinematic play/finish/nextserver,
+`cl_parse.c` configstrings incl. `CS_CDTRACK`, `cl_view.c` refresh prep,
+`files.c` reads):
+
+```bash
+./build/quake2 > /tmp/q2-smoke.log 2>&1 & SMOKE_PID=$!
+sleep 60
+kill $SMOKE_PID 2>/dev/null
+for m in "Quake2 Initialized" "client_connect"; do
+  grep -q "$m" /tmp/q2-smoke.log || { echo "FAIL: $m"; exit 1; }
+done
+grep -qE "maps/[a-z0-9]+\.bsp" /tmp/q2-smoke.log || { echo "FAIL: no map load"; exit 1; }
+grep -qE "FATAL|ShutdownError" /tmp/q2-smoke.log && { echo "FAIL: fatal"; exit 1; }
+echo "SMOKE PASS"
+```
+
+Assertions: (1) engine init banner, (2) local client connect, (3) at least
+one full map precache (`maps/*.bsp` in the loading dump — observed `base2`,
+`waste2`, and `base1` across validation runs), (4) no fatal errors. Window
+opens during the run (harmless); `kill` ends it — exit code is not asserted
+because the kill is external. Run from the repo root (the engine reads
+`./baseq2/` from the CWD).
 
 ## 9. Risks and mitigations
 
