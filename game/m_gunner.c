@@ -217,18 +217,6 @@ void gunner_run (edict_t *self)
 		self->monsterinfo.currentmove = &gunner_move_run;
 }
 
-mframe_t gunner_frames_runandshoot [] =
-{
-	ai_run, 32, NULL,
-	ai_run, 15, NULL,
-	ai_run, 10, NULL,
-	ai_run, 18, NULL,
-	ai_run, 8,  NULL,
-	ai_run, 20, NULL
-};
-
-mmove_t gunner_move_runandshoot = {FRAME_runs01, FRAME_runs06, gunner_frames_runandshoot, NULL};
-
 mframe_t gunner_frames_pain3 [] =
 {
 	ai_move, -3, NULL,

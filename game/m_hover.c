@@ -97,68 +97,6 @@ mframe_t hover_frames_stand [] =
 };
 mmove_t	hover_move_stand = {FRAME_stand01, FRAME_stand30, hover_frames_stand, NULL};
 
-mframe_t hover_frames_stop1 [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t hover_move_stop1 = {FRAME_stop101, FRAME_stop109, hover_frames_stop1, NULL};
-
-mframe_t hover_frames_stop2 [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t hover_move_stop2 = {FRAME_stop201, FRAME_stop208, hover_frames_stop2, NULL};
-
-mframe_t hover_frames_takeoff [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	5,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	-9,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t hover_move_takeoff = {FRAME_takeof01, FRAME_takeof30, hover_frames_takeoff, NULL};
-
 mframe_t hover_frames_pain3 [] =
 {
 	ai_move,	0,	NULL,
@@ -222,52 +160,6 @@ mframe_t hover_frames_pain1 [] =
 	ai_move,	4,	NULL
 };
 mmove_t hover_move_pain1 = {FRAME_pain101, FRAME_pain128, hover_frames_pain1, hover_run};
-
-mframe_t hover_frames_land [] =
-{
-	ai_move,	0,	NULL
-};
-mmove_t hover_move_land = {FRAME_land01, FRAME_land01, hover_frames_land, NULL};
-
-mframe_t hover_frames_forward [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t hover_move_forward = {FRAME_forwrd01, FRAME_forwrd35, hover_frames_forward, NULL};
 
 mframe_t hover_frames_walk [] =
 {
@@ -364,35 +256,6 @@ mframe_t hover_frames_death1 [] =
 	ai_move,	7,	NULL
 };
 mmove_t hover_move_death1 = {FRAME_death101, FRAME_death111, hover_frames_death1, hover_dead};
-
-mframe_t hover_frames_backward [] =
-{
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
-};
-mmove_t hover_move_backward = {FRAME_backwd01, FRAME_backwd24, hover_frames_backward, NULL};
 
 mframe_t hover_frames_start_attack [] =
 {
