@@ -47,7 +47,6 @@ void parasite_start_run (edict_t *self);
 void parasite_run (edict_t *self);
 void parasite_walk (edict_t *self);
 void parasite_start_walk (edict_t *self);
-void parasite_end_fidget (edict_t *self);
 void parasite_do_fidget (edict_t *self);
 void parasite_refidget (edict_t *self);
 
@@ -110,11 +109,6 @@ mframe_t parasite_frames_end_fidget [] =
 	ai_stand, 0, NULL
 };
 mmove_t parasite_move_end_fidget = {FRAME_stand28, FRAME_stand35, parasite_frames_end_fidget, parasite_stand};
-
-void parasite_end_fidget (edict_t *self)
-{
-	self->monsterinfo.currentmove = &parasite_move_end_fidget;
-}
 
 void parasite_do_fidget (edict_t *self)
 {

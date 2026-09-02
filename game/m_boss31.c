@@ -74,7 +74,6 @@ void jorg_attack1(edict_t *self);
 void jorg_idle(edict_t *self);
 void jorg_step_left(edict_t *self);
 void jorg_step_right(edict_t *self);
-void jorg_death_hit(edict_t *self);
 
 //
 // stand
@@ -139,11 +138,6 @@ mmove_t	jorg_move_stand = {FRAME_stand01, FRAME_stand51, jorg_frames_stand, NULL
 void jorg_idle (edict_t *self)
 {
 	gi.sound (self, CHAN_VOICE, sound_idle, 1, ATTN_NORM,0);
-}
-
-void jorg_death_hit (edict_t *self)
-{
-	gi.sound (self, CHAN_BODY, sound_death_hit, 1, ATTN_NORM,0);
 }
 
 

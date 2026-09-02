@@ -398,12 +398,6 @@ void IN_Frame (void)
 		RW_IN_Frame_fp();
 }
 
-void IN_Activate (qboolean active)
-{
-	if (RW_IN_Activate_fp)
-		RW_IN_Activate_fp(active);
-}
-
 void Do_Key_Event(int key, qboolean down)
 {
 	Key_Event(key, down, Sys_Milliseconds());

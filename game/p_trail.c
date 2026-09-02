@@ -82,16 +82,6 @@ void PlayerTrail_Add (vec3_t spot)
 }
 
 
-void PlayerTrail_New (vec3_t spot)
-{
-	if (!trail_active)
-		return;
-
-	PlayerTrail_Init ();
-	PlayerTrail_Add (spot);
-}
-
-
 edict_t *PlayerTrail_PickFirst (edict_t *self)
 {
 	int		marker;

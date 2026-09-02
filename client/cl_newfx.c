@@ -276,65 +276,6 @@ void CL_ForceWall (vec3_t start, vec3_t end, int color)
 	}
 }
 
-void CL_FlameEffects (centity_t *ent, vec3_t origin)
-{
-	int			n, count;
-	int			j;
-	cparticle_t	*p;
-
-	count = rand() & 0xF;
-
-	for(n=0;n<count;n++)
-	{
-		if (!free_particles)
-			return;
-			
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-		
-		VectorClear (p->accel);
-		p->time = cl.time;
-
-		p->alpha = 1.0;
-		p->alphavel = -1.0 / (1+frand()*0.2);
-		p->color = 226 + (rand() % 4);
-		for (j=0 ; j<3 ; j++)
-		{
-			p->org[j] = origin[j] + crand()*5;
-			p->vel[j] = crand()*5;
-		}
-		p->vel[2] = crand() * -10;
-		p->accel[2] = -PARTICLE_GRAVITY;
-	}
-
-	count = rand() & 0x7;
-
-	for(n=0;n<count;n++)
-	{
-		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-		VectorClear (p->accel);
-		
-		p->time = cl.time;
-
-		p->alpha = 1.0;
-		p->alphavel = -1.0 / (1+frand()*0.5);
-		p->color = 0 + (rand() % 4);
-		for (j=0 ; j<3 ; j++)
-		{
-			p->org[j] = origin[j] + crand()*3;
-		}
-		p->vel[2] = 20 + crand()*5;
-	}
-
-}
-
 
 /*
 ===============
@@ -1062,40 +1003,6 @@ void CL_WidowSplash (vec3_t org)
 		p->alphavel = -0.8 / (0.5 + frand()*0.3);
 	}
 
-}
-
-void CL_Tracker_Explode(vec3_t	origin)
-{
-	vec3_t			dir, backdir;
-	int				i;
-	cparticle_t		*p;
-
-	for(i=0;i<300;i++)
-	{
-		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-		VectorClear (p->accel);
-		
-		p->time = cl.time;
-
-		p->alpha = 1.0;
-		p->alphavel = -1.0;
-		p->color = 0;
-
-		dir[0] = crand();
-		dir[1] = crand();
-		dir[2] = crand();
-		VectorNormalize(dir);
-		VectorScale(dir, -1, backdir);
-	
-		VectorMA(origin, 64, dir, p->org);
-		VectorScale(backdir, 64, p->vel);
-	}
-	
 }
 
 /*

@@ -736,31 +736,6 @@ int MSG_ReadLong (sizebuf_t *msg_read)
 	return c;
 }
 
-float MSG_ReadFloat (sizebuf_t *msg_read)
-{
-	union
-	{
-		byte	b[4];
-		float	f;
-		int	l;
-	} dat;
-	
-	if (msg_read->readcount+4 > msg_read->cursize)
-		dat.f = -1;
-	else
-	{
-		dat.b[0] =	msg_read->data[msg_read->readcount];
-		dat.b[1] =	msg_read->data[msg_read->readcount+1];
-		dat.b[2] =	msg_read->data[msg_read->readcount+2];
-		dat.b[3] =	msg_read->data[msg_read->readcount+3];
-	}
-	msg_read->readcount += 4;
-	
-	dat.l = LittleLong (dat.l);
-
-	return dat.f;	
-}
-
 char *MSG_ReadString (sizebuf_t *msg_read)
 {
 	static char	string[2048];

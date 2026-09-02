@@ -636,8 +636,6 @@ void	G_FreeEdict (edict_t *e);
 void	G_TouchTriggers (edict_t *ent);
 void	G_TouchSolids (edict_t *ent);
 
-char	*G_CopyString (char *in);
-
 float	*tv (float x, float y, float z);
 char	*vtos (vec3_t v);
 
@@ -735,7 +733,6 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 //
 void PlayerTrail_Init (void);
 void PlayerTrail_Add (vec3_t spot);
-void PlayerTrail_New (vec3_t spot);
 edict_t *PlayerTrail_PickFirst (edict_t *self);
 edict_t *PlayerTrail_PickNext (edict_t *self);
 edict_t	*PlayerTrail_LastSpot (void);

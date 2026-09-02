@@ -42,16 +42,6 @@ void DrawString (int x, int y, char *s)
 	}
 }
 
-void DrawAltString (int x, int y, char *s)
-{
-	while (*s)
-	{
-		re.DrawChar (x, y, *s ^ 0x80);
-		x+=8;
-		s++;
-	}
-}
-
 
 void Key_ClearTyping (void)
 {
