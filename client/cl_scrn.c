@@ -265,7 +265,7 @@ void SCR_DrawCenterString (void)
 	scr_erase_center = 0;
 	start = scr_centerstring;
 	scale = SCR_HUDScale ();
-	cw = 8*scale;
+	cw = CONCHAR_SIZE*scale;
 
 	if (scr_center_lines <= 4)
 		y = viddef.height*0.35;
@@ -852,8 +852,8 @@ void SizeHUDString (char *string, int *w, int *h)
 		string++;
 	}
 
-	*w = width * 8;
-	*h = lines * 8;
+	*w = width * CONCHAR_SIZE;
+	*h = lines * CONCHAR_SIZE;
 }
 
 void DrawHUDString (char *string, int x, int y, int centerwidth, int xor,
@@ -865,7 +865,7 @@ void DrawHUDString (char *string, int x, int y, int centerwidth, int xor,
 	int		i;
 	int		cw;
 
-	cw = 8*scale;
+	cw = CONCHAR_SIZE*scale;
 	margin = x;
 
 	while (*string)
@@ -877,7 +877,7 @@ void DrawHUDString (char *string, int x, int y, int centerwidth, int xor,
 		line[width] = 0;
 
 		if (centerwidth)
-			x = margin + (centerwidth - width*8)*scale/2;
+			x = margin + (centerwidth - width*CONCHAR_SIZE)*scale/2;
 		else
 			x = margin;
 		for (i=0 ; i<width ; i++)
@@ -899,28 +899,48 @@ void DrawHUDString (char *string, int x, int y, int centerwidth, int xor,
 SCR_DrawStringScaled
 ==============
 */
-static void SCR_DrawStringScaled (int x, int y, char *string, float scale)
+static void SCR_DrawStringScaledXor (int x, int y, char *string, float scale,
+	int xor)
 {
-	int		cw = 8*scale;
+	int		cw = CONCHAR_SIZE*scale;
 
 	while (*string)
 	{
-		re.DrawStretchChar (x, y, cw, cw, *string);
+		re.DrawStretchChar (x, y, cw, cw, *string ^ xor);
 		x += cw;
 		string++;
 	}
 }
 
+void SCR_DrawStringScaled (int x, int y, char *string, float scale)
+{
+	SCR_DrawStringScaledXor (x, y, string, scale, 0);
+}
+
 static void SCR_DrawAltStringScaled (int x, int y, char *string, float scale)
 {
-	int		cw = 8*scale;
+	SCR_DrawStringScaledXor (x, y, string, scale, 0x80);
+}
 
-	while (*string)
-	{
-		re.DrawStretchChar (x, y, cw, cw, *string ^ 0x80);
-		x += cw;
-		string++;
-	}
+/*
+==============
+SCR_DrawScaledPic
+
+Draws a pic at its natural size times scale; optionally hands the
+natural size back for dirty-rect computation.
+==============
+*/
+static void SCR_DrawScaledPic (int x, int y, float scale, char *name,
+	int *pw, int *ph)
+{
+	int		w, h;
+
+	re.DrawGetPicSize (&w, &h, name);
+	if (pw)
+		*pw = w;
+	if (ph)
+		*ph = h;
+	re.DrawStretchPic (x, y, w*scale, h*scale, name);
 }
 
 
@@ -934,7 +954,6 @@ void SCR_DrawField (int x, int y, int color, int width, int value, float scale)
 	char	num[16], *ptr;
 	int		l;
 	int		frame;
-	int		pw, ph;
 
 	if (width < 1)
 		return;
@@ -960,8 +979,7 @@ void SCR_DrawField (int x, int y, int color, int width, int value, float scale)
 		else
 			frame = *ptr -'0';
 
-		re.DrawGetPicSize (&pw, &ph, sb_nums[color][frame]);
-		re.DrawStretchPic (x, y, pw*scale, ph*scale, sb_nums[color][frame]);
+		SCR_DrawScaledPic (x, y, scale, sb_nums[color][frame], NULL, NULL);
 		x += CHAR_WIDTH*scale;
 		ptr++;
 		l--;
@@ -1074,11 +1092,10 @@ void SCR_ExecuteLayoutString (char *s)
 				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES");
 			if (cl.configstrings[CS_IMAGES+value])
 			{
-				re.DrawGetPicSize (&pw, &ph, cl.configstrings[CS_IMAGES+value]);
+				SCR_DrawScaledPic (x, y, scale,
+					cl.configstrings[CS_IMAGES+value], &pw, &ph);
 				SCR_AddDirtyPoint (x, y);
 				SCR_AddDirtyPoint (x+pw*scale, y+ph*scale);
-				re.DrawStretchPic (x, y, pw*scale, ph*scale,
-					cl.configstrings[CS_IMAGES+value]);
 			}
 			continue;
 		}
@@ -1110,9 +1127,10 @@ void SCR_ExecuteLayoutString (char *s)
 			time = atoi(token);
 
 			SCR_DrawAltStringScaled (x+32*scale, y, ci->name, scale);
-			SCR_DrawStringScaled (x+32*scale, y+8*scale, "Score: ", scale);
-			SCR_DrawAltStringScaled (x+32*scale+7*8*scale, y+8*scale,
-				va("%i", score), scale);
+			SCR_DrawStringScaled (x+32*scale, y+CONCHAR_SIZE*scale,
+				"Score: ", scale);
+			SCR_DrawAltStringScaled (x+32*scale+7*CONCHAR_SIZE*scale,
+				y+CONCHAR_SIZE*scale, va("%i", score), scale);
 			SCR_DrawStringScaled (x+32*scale, y+16*scale,
 				va("Ping:  %i", ping), scale);
 			SCR_DrawStringScaled (x+32*scale, y+24*scale,
@@ -1120,8 +1138,7 @@ void SCR_ExecuteLayoutString (char *s)
 
 			if (!ci->icon)
 				ci = &cl.baseclientinfo;
-			re.DrawGetPicSize (&pw, &ph, ci->iconname);
-			re.DrawStretchPic (x, y, pw*scale, ph*scale, ci->iconname);
+			SCR_DrawScaledPic (x, y, scale, ci->iconname, NULL, NULL);
 			continue;
 		}
 
@@ -1163,10 +1180,9 @@ void SCR_ExecuteLayoutString (char *s)
 		if (!strcmp(token, "picn"))
 		{	// draw a pic from a name
 			token = COM_Parse (&s);
-			re.DrawGetPicSize (&pw, &ph, token);
+			SCR_DrawScaledPic (x, y, scale, token, &pw, &ph);
 			SCR_AddDirtyPoint (x, y);
 			SCR_AddDirtyPoint (x+pw*scale, y+ph*scale);
-			re.DrawStretchPic (x, y, pw*scale, ph*scale, token);
 			continue;
 		}
 
@@ -1195,8 +1211,7 @@ void SCR_ExecuteLayoutString (char *s)
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 1)
 			{
-				re.DrawGetPicSize (&pw, &ph, "field_3");
-				re.DrawStretchPic (x, y, pw*scale, ph*scale, "field_3");
+				SCR_DrawScaledPic (x, y, scale, "field_3", NULL, NULL);
 			}
 
 			SCR_DrawField (x, y, color, width, value, scale);
@@ -1218,8 +1233,7 @@ void SCR_ExecuteLayoutString (char *s)
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 4)
 			{
-				re.DrawGetPicSize (&pw, &ph, "field_3");
-				re.DrawStretchPic (x, y, pw*scale, ph*scale, "field_3");
+				SCR_DrawScaledPic (x, y, scale, "field_3", NULL, NULL);
 			}
 
 			SCR_DrawField (x, y, color, width, value, scale);
@@ -1239,8 +1253,7 @@ void SCR_ExecuteLayoutString (char *s)
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 2)
 			{
-				re.DrawGetPicSize (&pw, &ph, "field_3");
-				re.DrawStretchPic (x, y, pw*scale, ph*scale, "field_3");
+				SCR_DrawScaledPic (x, y, scale, "field_3", NULL, NULL);
 			}
 
 			SCR_DrawField (x, y, color, width, value, scale);

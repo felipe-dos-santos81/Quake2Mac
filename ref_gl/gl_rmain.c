@@ -1356,11 +1356,6 @@ void R_BeginFrame( float camera_separation )
 		gl_texturesolidmode->modified = false;
 	}
 
-	/*
-	** swapinterval stuff
-	*/
-	GL_UpdateSwapInterval();
-
 	//
 	// clear screen if desired
 	//
@@ -1530,7 +1525,7 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	re.DrawStretchRaw = Draw_StretchRaw;
 
-	re.Init = (qboolean (*)(void *, void *))R_Init;
+	re.Init = R_Init;
 	re.Shutdown = R_Shutdown;
 
 	re.CinematicSetPalette = R_SetPalette;

@@ -133,8 +133,8 @@ typedef struct
 	// if api_version is different, the dll cannot be used
 	int		api_version;
 
-	// called when the library is loaded
-	qboolean	(*Init) ( void *hinstance, void *wndproc );
+	// called when the library is loaded; returns -1 on failure
+	int		(*Init) ( void *hinstance, void *wndproc );
 
 	// called before the library is unloaded
 	void	(*Shutdown) (void);

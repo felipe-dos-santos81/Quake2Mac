@@ -35,6 +35,10 @@ void	SCR_TouchPics (void);
 
 float	SCR_HUDScale (void);
 
+#define	CONCHAR_SIZE	8		// conchars glyph cell in pixels at scale 1
+
+void	SCR_DrawStringScaled (int x, int y, char *string, float scale);
+
 void	SCR_RunConsole (void);
 
 extern	float		scr_con_current;

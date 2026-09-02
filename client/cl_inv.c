@@ -35,23 +35,6 @@ void CL_ParseInventory (void)
 }
 
 
-/*
-================
-Inv_DrawString
-================
-*/
-void Inv_DrawString (int x, int y, char *string, float scale)
-{
-	int		cw = 8*scale;
-
-	while (*string)
-	{
-		re.DrawStretchChar (x, y, cw, cw, *string);
-		x+=cw;
-		string++;
-	}
-}
-
 void SetStringHighBit (char *s)
 {
 	while (*s)
@@ -81,7 +64,7 @@ void CL_DrawInventory (void)
 	int		cw;
 
 	scale = SCR_HUDScale ();
-	cw = 8*scale;
+	cw = CONCHAR_SIZE*scale;
 
 	selected = cl.frame.playerstate.stats[STAT_SELECTED_ITEM];
 
@@ -112,12 +95,12 @@ void CL_DrawInventory (void)
 	SCR_DirtyScreen ();
 
 	re.DrawGetPicSize (&pw, &ph, "inventory");
-	re.DrawStretchPic (x, y+8*scale, pw*scale, ph*scale, "inventory");
+	re.DrawStretchPic (x, y+CONCHAR_SIZE*scale, pw*scale, ph*scale, "inventory");
 
 	y += 24*scale;
 	x += 24*scale;
-	Inv_DrawString (x, y, "hotkey ### item", scale);
-	Inv_DrawString (x, y+8*scale, "------ --- ----", scale);
+	SCR_DrawStringScaled (x, y, "hotkey ### item", scale);
+	SCR_DrawStringScaled (x, y+CONCHAR_SIZE*scale, "------ --- ----", scale);
 	y += 16*scale;
 	for (i=top ; i<num && i < top+DISPLAY_ITEMS ; i++)
 	{
@@ -141,7 +124,7 @@ void CL_DrawInventory (void)
 			if ( (int)(cls.realtime*10) & 1)
 				re.DrawStretchChar (x-cw, y, cw, cw, 15);
 		}
-		Inv_DrawString (x, y, string, scale);
+		SCR_DrawStringScaled (x, y, string, scale);
 		y += cw;
 	}
 

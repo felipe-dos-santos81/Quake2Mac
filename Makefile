@@ -14,7 +14,7 @@ SDL_LIBS   := $(shell pkg-config sdl3 --libs)
 # -MMD -MP: emit per-object header dependency files so editing a header
 # (e.g. client/ref.h) rebuilds every object that includes it; without
 # this a stale object/ref_gl.so mix corrupted the ref interface at runtime
-BASE_CFLAGS = -O2 -g -Wall -Dstricmp=strcasecmp $(SDL_CFLAGS) -MMD -MP
+BASE_CFLAGS = -O2 -g -Wall $(SDL_CFLAGS) -MMD -MP
 CFLAGS = $(BASE_CFLAGS)
 
 EXE = $(BUILD_DIR)/quake2
@@ -98,14 +98,13 @@ SERVER_OBJS = \
 	$(BUILD_DIR)/client/sv_user.o $(BUILD_DIR)/client/sv_world.o
 
 # platform layer linked into the executable
-# (sdl/vid_sdl.o is appended by Task 8)
 SYS_EXE_OBJS = \
 	$(BUILD_DIR)/client/cd_null.o $(BUILD_DIR)/client/q_shlinux.o \
 	$(BUILD_DIR)/client/vid_menu.o $(BUILD_DIR)/client/sys_linux.o \
 	$(BUILD_DIR)/client/glob.o $(BUILD_DIR)/client/net_udp.o \
 	$(BUILD_DIR)/client/snd_sdl.o $(BUILD_DIR)/client/vid_sdl.o
 
-# ref_gl renderer core (sdl/ objects appended by Tasks 3-5)
+# ref_gl renderer core
 REF_CORE_OBJS = \
 	$(BUILD_DIR)/ref_gl/gl_draw.o $(BUILD_DIR)/ref_gl/gl_image.o \
 	$(BUILD_DIR)/ref_gl/gl_light.o $(BUILD_DIR)/ref_gl/gl_mesh.o \

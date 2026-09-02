@@ -226,13 +226,4 @@ void GL_SetDefaultState( void )
 		GL_SetTexturePalette( d_8to24table );
 	}
 
-	GL_UpdateSwapInterval();
-}
-
-void GL_UpdateSwapInterval( void )
-{
-	if ( gl_swapinterval->modified )
-	{
-		gl_swapinterval->modified = false;
-	}
 }
