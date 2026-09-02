@@ -238,7 +238,8 @@ with a mixed-case name, plus a `pak1.pak` redefining one texture. Tests:
 
 Makefile: `tools-test` → `uv run --project tools pytest tools/tests`.
 End-to-end check after implementation: run against the real `baseq2/` and
-confirm 2118 PNGs under `baseq2/textures/`.
+confirm 2188 PNGs under `baseq2/textures/` (2118 from pak0, 70 more from the
+point-release pak1).
 
 ### 5.2 Renderer — `ref_gl/tests/test_override.c` (host binary, no GL)
 

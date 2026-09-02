@@ -721,16 +721,16 @@ textures: ## Extract pak .wal textures to baseq2/textures/*.png (skips existing;
 - [ ] **Step 6: End-to-end run against the real game data**
 
 Run: `make textures`
-Expected last line: `extracted 2118, skipped 0, failed 0`.
+Expected last line: `extracted 2188, skipped 0, failed 0` (2118 world textures in pak0 plus 70 more introduced by the point-release pak1).
 
 Run: `find baseq2/textures -name '*.png' | wc -l`
-Expected: `2118`.
+Expected: `2188`.
 
 Run: `ls baseq2/textures/e1u1/pip04_4.png baseq2/textures/region.png && uv run --project tools python -c "from PIL import Image; im = Image.open('baseq2/textures/e1u1/metal2_1.png'); print(im.mode, im.size)"`
 Expected: both files listed, then `RGB (64, 128)`.
 
 Run: `make textures`
-Expected last line: `extracted 0, skipped 2118, failed 0`.
+Expected last line: `extracted 0, skipped 2188, failed 0`.
 
 Run: `git status --short`
 Expected: only the Makefile and tools files are listed; nothing under `baseq2/` (the ignore rule from Task 1 is working). If anything under `baseq2/` shows, stop and report.
@@ -744,7 +744,8 @@ git commit -m "feat(tools): extract pak textures to baseq2/textures as PNG
 extract() mirrors the pak layout under <out>/textures with lowercase
 names, skips existing files unless --force, reports corrupt WALs and
 continues. Exit codes: 0 ok, 1 failures, 2 no paks. 'make textures'
-wraps it; run against pak0 it writes all 2118 world textures.
+wraps it; run against this baseq2 (pak0+pak1) it writes all 2188 world
+textures.
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01WaN2RkmjoSHWdV5qHV8Nny"
@@ -1779,7 +1780,7 @@ In the game: `map base1`, then in the console `imagelist`. Expected: `textures/e
 rm baseq2/textures/e1u1/metal2_1.png && make textures
 ```
 
-Expected: `extracted 1, skipped 2117, failed 0`.
+Expected: `extracted 1, skipped 2187, failed 0`.
 
 - [ ] **Step 4: Commit**
 
