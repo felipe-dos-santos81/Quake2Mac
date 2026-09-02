@@ -25,7 +25,7 @@ small standalone Python tool (`tools/`) for texture extraction.
 | `linux/` | POSIX layer kept from the Linux port: `sys_linux.c`, `net_udp.c`, `glob.c`, `q_shlinux.c`, `vid_menu.c` |
 | `tools/` | Standalone Python (uv-managed) pak `.wal` → PNG texture extractor + pytest suite |
 | `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit |
-| `baseq2/` | **User territory** — game data (paks, players/, textures/, saves). Git-ignored except `hudtest.cfg` |
+| `baseq2/` | **User territory** — game data (paks, players/, textures/, saves). Contents selectively git-ignored; only `hudtest.cfg` is tracked |
 | `build/` | Build outputs: `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
 | `.superpowers/` | Transient SDD agent workspaces (`sdd/<date>-<topic>/` briefs, reports, review diffs). Git-ignored — never commit |
 
@@ -46,25 +46,19 @@ small standalone Python tool (`tools/`) for texture extraction.
 Requirements: macOS/arm64, Xcode CLT (`cc`, `make`), `brew install sdl3`
 (optional: `brew install uv` for the texture tools).
 
-```sh
-make install      # check toolchain + SDL3
-make build        # compile engine, ref_gl.so, gamearm64.so
-make all          # data check + build
-make verify-load  # dlopen both bundles + check entry points (no game data needed)
-make run          # launch windowed GL (requires baseq2/pak0.pak)
-make clean        # remove build/ and the baseq2 game DLL copy
-make textures     # extract pak textures to baseq2/textures/ (FORCE=1 to overwrite)
-make tools-test   # pytest suite for tools/
-make test-ref     # host test for the texture override loader (no GL, no data)
-make help         # self-documenting target list
-```
+`make help` lists every target with its description (the Makefile's `##`
+comments are the source of truth). Targets agents use most: `build`,
+`verify-load`, `run`, `clean`, `test-ref`, `tools-test`, `textures`.
 
 **Regression gate used by all cleanup rounds:**
 
 ```sh
-make clean && make build && make verify-load   # must exit 0
+make clean && make verify-load                 # must exit 0 (verify-load implies build)
 ./build/quake2 +set developer 1 +map base1     # runtime smoke
 ```
+
+For iterative work an incremental `make verify-load` (header-dependency-aware
+via `-MMD -MP`) suffices; run the full clean gate for final verification.
 
 Smoke assertions: `SpawnServer: base1`, `client_connect`, `maps/base1.bsp`
 loaded, no `FATAL`/`ShutdownError`. (The attract-loop launch can hit a
@@ -82,6 +76,5 @@ unrelated changes.
 - **id-era C style:** tabs, K&R-ish braces, `/* banner */` function comment blocks, `qboolean`/`vec3_t` typedefs from `game/q_shared.h`. Match surrounding code exactly.
 - **Minimal blast radius:** prefer the narrowest correct change; reuse existing code paths before adding new ones.
 - **Zero behavior change for cleanup work:** every removal must be *provably* dead — `grep -rnw SYMBOL` must show declarations/writes only, no reads — and remember symbols may be alive in another link unit. `FRAME_*` constants are explicit-value `#define`s (ModelGen headers): removal is value-safe, but they are per-definition (the same name can exist in several monster headers for different translation units).
-- **Git discipline:** stage explicit paths only — never `git add -A` or `git commit -a`. `baseq2/` game data (paks, saves, configs, textures) must never enter a commit. Push only when explicitly asked. Feature work lands on a branch, gated, then `--no-ff` merged to `main`.
+- **Git discipline:** stage explicit paths only — never `git add -A` or `git commit -a`. `baseq2/` game data (paks, saves, configs, textures) must never enter a commit — `baseq2/textures/` is id Software data, and the texture recreation kit's batch data lives off-repo. Push only when explicitly asked. Feature work lands on a branch, gated, then `--no-ff` merged to `main`.
 - **Specs before rounds:** larger changes follow the pattern in `docs/superpowers/specs/` — dated design doc committed on the branch, then per-unit commits, then the gate.
-- **No commits of generated/extracted data:** `baseq2/textures/` is id Software data (git-ignored); the texture recreation kit's batch data lives off-repo.
