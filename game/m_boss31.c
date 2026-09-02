@@ -74,7 +74,6 @@ void jorg_attack1(edict_t *self);
 void jorg_idle(edict_t *self);
 void jorg_step_left(edict_t *self);
 void jorg_step_right(edict_t *self);
-void jorg_death_hit(edict_t *self);
 
 //
 // stand
@@ -139,11 +138,6 @@ mmove_t	jorg_move_stand = {FRAME_stand01, FRAME_stand51, jorg_frames_stand, NULL
 void jorg_idle (edict_t *self)
 {
 	gi.sound (self, CHAN_VOICE, sound_idle, 1, ATTN_NORM,0);
-}
-
-void jorg_death_hit (edict_t *self)
-{
-	gi.sound (self, CHAN_BODY, sound_death_hit, 1, ATTN_NORM,0);
 }
 
 
@@ -559,30 +553,6 @@ void jorg_attack(edict_t *self)
 
 void jorg_dead (edict_t *self)
 {
-#if 0
-	edict_t	*tempent;
-	/*
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, -8);
-	*/
-	
-	// Jorg is on modelindex2. Do not clear him.
-	VectorSet (self->mins, -60, -60, 0);
-	VectorSet (self->maxs, 60, 60, 72);
-	self->movetype = MOVETYPE_TOSS;
-	self->nextthink = 0;
-	gi.linkentity (self);
-
-	tempent = G_Spawn();
-	VectorCopy (self->s.origin, tempent->s.origin);
-	VectorCopy (self->s.angles, tempent->s.angles);
-	tempent->killtarget = self->killtarget;
-	tempent->target = self->target;
-	tempent->activator = self->enemy;
-	self->killtarget = 0;
-	self->target = 0;
-	SP_monster_makron (tempent);
-#endif
 }
 
 

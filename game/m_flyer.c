@@ -44,7 +44,6 @@ static int	sound_die;
 void flyer_check_melee(edict_t *self);
 void flyer_loop_melee (edict_t *self);
 void flyer_melee (edict_t *self);
-void flyer_setstart (edict_t *self);
 void flyer_stand (edict_t *self);
 void flyer_nextmove (edict_t *self);
 
@@ -482,12 +481,6 @@ void flyer_attack (edict_t *self)
 		self->monsterinfo.currentmove = &flyer_move_attack1;
 	else */
 	self->monsterinfo.currentmove = &flyer_move_attack2;
-}
-
-void flyer_setstart (edict_t *self)
-{
-	nextmove = ACTION_run;
-	self->monsterinfo.currentmove = &flyer_move_start;
 }
 
 void flyer_nextmove (edict_t *self)

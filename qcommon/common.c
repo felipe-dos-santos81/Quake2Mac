@@ -736,31 +736,6 @@ int MSG_ReadLong (sizebuf_t *msg_read)
 	return c;
 }
 
-float MSG_ReadFloat (sizebuf_t *msg_read)
-{
-	union
-	{
-		byte	b[4];
-		float	f;
-		int	l;
-	} dat;
-	
-	if (msg_read->readcount+4 > msg_read->cursize)
-		dat.f = -1;
-	else
-	{
-		dat.b[0] =	msg_read->data[msg_read->readcount];
-		dat.b[1] =	msg_read->data[msg_read->readcount+1];
-		dat.b[2] =	msg_read->data[msg_read->readcount+2];
-		dat.b[3] =	msg_read->data[msg_read->readcount+3];
-	}
-	msg_read->readcount += 4;
-	
-	dat.l = LittleLong (dat.l);
-
-	return dat.f;	
-}
-
 char *MSG_ReadString (sizebuf_t *msg_read)
 {
 	static char	string[2048];
@@ -1200,43 +1175,6 @@ byte	COM_BlockSequenceCheckByte (byte *base, int length, int sequence, int chall
 {
 	Sys_Error("COM_BlockSequenceCheckByte called\n");
 
-#if 0
-	int		checksum;
-	byte	buf[68];
-	byte	*p;
-	float temp;
-	byte c;
-
-	temp = bytedirs[(sequence/3) % NUMVERTEXNORMALS][sequence % 3];
-	temp = LittleFloat(temp);
-	p = ((byte *)&temp);
-
-	if (length > 60)
-		length = 60;
-	memcpy (buf, base, length);
-
-	buf[length] = (sequence & 0xff) ^ p[0];
-	buf[length+1] = p[1];
-	buf[length+2] = ((sequence>>8) & 0xff) ^ p[2];
-	buf[length+3] = p[3];
-
-	temp = bytedirs[((sequence+challenge)/3) % NUMVERTEXNORMALS][(sequence+challenge) % 3];
-	temp = LittleFloat(temp);
-	p = ((byte *)&temp);
-
-	buf[length+4] = (sequence & 0xff) ^ p[3];
-	buf[length+5] = (challenge & 0xff) ^ p[2];
-	buf[length+6] = ((sequence>>8) & 0xff) ^ p[1];
-	buf[length+7] = ((challenge >> 7) & 0xff) ^ p[0];
-
-	length += 8;
-
-	checksum = LittleLong(Com_BlockChecksum (buf, length));
-
-	checksum &= 0xff;
-
-	return checksum;
-#endif
 	return 0;
 }
 

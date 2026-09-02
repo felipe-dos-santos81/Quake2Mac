@@ -35,7 +35,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "input.h"
 #include "keys.h"
 #include "console.h"
-#include "cdaudio.h"
 
 //=============================================================================
 
@@ -317,7 +316,6 @@ extern	netadr_t	net_from;
 extern	sizebuf_t	net_message;
 
 void DrawString (int x, int y, char *s);
-void DrawAltString (int x, int y, char *s);	// toggle high bit
 qboolean	CL_CheckOrDownloadFile (char *filename);
 
 void CL_AddNetgraph (void);
@@ -395,13 +393,11 @@ void CL_DebugTrail (vec3_t start, vec3_t end);
 void CL_SmokeTrail (vec3_t start, vec3_t end, int colorStart, int colorRun, int spacing);
 void CL_Flashlight (int ent, vec3_t pos);
 void CL_ForceWall (vec3_t start, vec3_t end, int color);
-void CL_FlameEffects (centity_t *ent, vec3_t origin);
 void CL_GenericParticleEffect (vec3_t org, vec3_t dir, int color, int count, int numcolors, int dirspread, float alphavel);
 void CL_BubbleTrail2 (vec3_t start, vec3_t end, int dist);
 void CL_Heatbeam (vec3_t start, vec3_t end);
 void CL_ParticleSteamEffect (vec3_t org, vec3_t dir, int color, int count, int magnitude);
 void CL_TrackerTrail (vec3_t start, vec3_t end, int particleColor);
-void CL_Tracker_Explode(vec3_t origin);
 void CL_TagTrail (vec3_t start, vec3_t end, float color);
 void CL_ColorFlash (vec3_t pos, int ent, int intensity, float r, float g, float b);
 void CL_Tracker_Shell(vec3_t origin);

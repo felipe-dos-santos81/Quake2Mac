@@ -363,12 +363,9 @@ void VID_Shutdown (void)
 /* INPUT                                                                     */
 /*****************************************************************************/
 
-cvar_t	*in_joystick;
-
 // This if fake, it's acutally done by the Refresh load
 void IN_Init (void)
 {
-	in_joystick	= Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE);
 }
 
 void Real_IN_Init (void)
@@ -399,12 +396,6 @@ void IN_Frame (void)
 {
 	if (RW_IN_Frame_fp)
 		RW_IN_Frame_fp();
-}
-
-void IN_Activate (qboolean active)
-{
-	if (RW_IN_Activate_fp)
-		RW_IN_Activate_fp(active);
 }
 
 void Do_Key_Event(int key, qboolean down)

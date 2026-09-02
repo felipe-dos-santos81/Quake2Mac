@@ -788,20 +788,6 @@ void R_DrawAliasModel (entity_t *e)
 
 	qglPopMatrix ();
 
-#if 0
-	qglDisable( GL_CULL_FACE );
-	qglPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	qglDisable( GL_TEXTURE_2D );
-	qglBegin( GL_TRIANGLE_STRIP );
-	for ( i = 0; i < 8; i++ )
-	{
-		qglVertex3fv( bbox[i] );
-	}
-	qglEnd();
-	qglEnable( GL_TEXTURE_2D );
-	qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	qglEnable( GL_CULL_FACE );
-#endif
 
 	if ( ( currententity->flags & RF_WEAPONMODEL ) && ( r_lefthand->value == 1.0F ) )
 	{

@@ -1542,14 +1542,6 @@ trace_t	PM_trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 		return gi.trace (start, mins, maxs, end, pm_passent, MASK_DEADSOLID);
 }
 
-unsigned CheckBlock (void *b, int c)
-{
-	int	v,i;
-	v = 0;
-	for (i=0 ; i<c ; i++)
-		v+= ((byte *)b)[i];
-	return v;
-}
 /*
 ==============
 ClientThink

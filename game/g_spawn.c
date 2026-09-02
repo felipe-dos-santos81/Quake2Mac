@@ -622,28 +622,6 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 //===================================================================
 
-#if 0
-	// cursor positioning
-	xl <value>
-	xr <value>
-	yb <value>
-	yt <value>
-	xv <value>
-	yv <value>
-
-	// drawing
-	statpic <name>
-	pic <stat>
-	num <fieldwidth> <stat>
-	string <stat>
-
-	// control
-	if <stat>
-	ifeq <stat> <value>
-	ifbit <stat> <value>
-	endif
-
-#endif
 
 char *single_statusbar = 
 "yb	-24 "

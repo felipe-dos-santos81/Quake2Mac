@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	BASEDIRNAME	"baseq2"
 
-#define BUILDSTRING "NON-WIN32"
-#define	CPUSTRING	"NON-WIN32"
+#define BUILDSTRING "MacOS"
+#define	CPUSTRING	"arm64"
 
 //============================================================================
 
@@ -74,7 +74,6 @@ int		MSG_ReadChar (sizebuf_t *sb);
 int		MSG_ReadByte (sizebuf_t *sb);
 int		MSG_ReadShort (sizebuf_t *sb);
 int		MSG_ReadLong (sizebuf_t *sb);
-float	MSG_ReadFloat (sizebuf_t *sb);
 char	*MSG_ReadString (sizebuf_t *sb);
 char	*MSG_ReadStringLine (sizebuf_t *sb);
 
@@ -94,9 +93,7 @@ extern	qboolean		bigendien;
 
 extern	short	BigShort (short l);
 extern	short	LittleShort (short l);
-extern	int		BigLong (int l);
 extern	int		LittleLong (int l);
-extern	float	BigFloat (float l);
 extern	float	LittleFloat (float l);
 
 //============================================================================
@@ -121,8 +118,6 @@ void Info_Print (char *s);
 /* crc.h */
 
 void CRC_Init(unsigned short *crcvalue);
-void CRC_ProcessByte(unsigned short *crcvalue, byte data);
-unsigned short CRC_Value(unsigned short crcvalue);
 unsigned short CRC_Block (byte *start, int count);
 
 

@@ -243,14 +243,6 @@ void CL_ParseDownload (void)
 	{
 		// request next block
 // change display routines by zoid
-#if 0
-		Com_Printf (".");
-		if (10*(percent/10) != cls.downloadpercent)
-		{
-			cls.downloadpercent = 10*(percent/10);
-			Com_Printf ("%i%%", cls.downloadpercent);
-		}
-#endif
 		cls.downloadpercent = percent;
 
 		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
@@ -531,11 +523,6 @@ void CL_ParseConfigString (void)
 
 	if (i >= CS_LIGHTS && i < CS_LIGHTS+MAX_LIGHTSTYLES)
 		CL_SetLightstyle (i - CS_LIGHTS);
-	else if (i == CS_CDTRACK)
-	{
-		if (cl.refresh_prepped)
-			CDAudio_Play (atoi(cl.configstrings[CS_CDTRACK]), true);
-	}
 	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS)
 	{
 		if (cl.refresh_prepped)

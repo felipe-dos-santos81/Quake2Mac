@@ -171,48 +171,6 @@ void PM_StepSlideMove_ (void)
 		VectorCopy (trace.plane.normal, planes[numplanes]);
 		numplanes++;
 
-#if 0
-	float		rub;
-
-		//
-		// modify velocity so it parallels all of the clip planes
-		//
-		if (numplanes == 1)
-		{	// go along this plane
-			VectorCopy (pml.velocity, dir);
-			VectorNormalize (dir);
-			rub = 1.0 + 0.5 * DotProduct (dir, planes[0]);
-
-			// slide along the plane
-			PM_ClipVelocity (pml.velocity, planes[0], pml.velocity, 1.01);
-			// rub some extra speed off on xy axis
-			// not on Z, or you can scrub down walls
-			pml.velocity[0] *= rub;
-			pml.velocity[1] *= rub;
-			pml.velocity[2] *= rub;
-		}
-		else if (numplanes == 2)
-		{	// go along the crease
-			VectorCopy (pml.velocity, dir);
-			VectorNormalize (dir);
-			rub = 1.0 + 0.5 * DotProduct (dir, planes[0]);
-
-			// slide along the plane
-			CrossProduct (planes[0], planes[1], dir);
-			d = DotProduct (dir, pml.velocity);
-			VectorScale (dir, d, pml.velocity);
-
-			// rub some extra speed off
-			VectorScale (pml.velocity, rub, pml.velocity);
-		}
-		else
-		{
-//			Con_Printf ("clip velocity, numplanes == %i\n",numplanes);
-			VectorCopy (vec3_origin, pml.velocity);
-			break;
-		}
-
-#else
 //
 // modify original_velocity so it parallels all of the clip planes
 //
@@ -244,7 +202,6 @@ void PM_StepSlideMove_ (void)
 			d = DotProduct (dir, pml.velocity);
 			VectorScale (dir, d, pml.velocity);
 		}
-#endif
 		//
 		// if velocity is against the original velocity, stop dead
 		// to avoid tiny occilations in sloping corners
@@ -307,13 +264,6 @@ void PM_StepSlideMove (void)
 		VectorCopy (trace.endpos, pml.origin);
 	}
 
-#if 0
-	VectorSubtract (pml.origin, up, delta);
-	up_dist = DotProduct (delta, start_v);
-
-	VectorSubtract (down_o, start_o, delta);
-	down_dist = DotProduct (delta, start_v);
-#else
 	VectorCopy(pml.origin, up);
 
 	// decide which one went farther
@@ -321,7 +271,6 @@ void PM_StepSlideMove (void)
         + (down_o[1] - start_o[1])*(down_o[1] - start_o[1]);
     up_dist = (up[0] - start_o[0])*(up[0] - start_o[0])
         + (up[1] - start_o[1])*(up[1] - start_o[1]);
-#endif
 
 	if (down_dist > up_dist || trace.plane.normal[2] < MIN_STEP_NORMAL)
 	{
@@ -585,12 +534,6 @@ void PM_AirMove (void)
 	smove = pm->cmd.sidemove;
 	
 //!!!!! pitch should be 1/3 so this isn't needed??!
-#if 0
-	pml.forward[2] = 0;
-	pml.right[2] = 0;
-	VectorNormalize (pml.forward);
-	VectorNormalize (pml.right);
-#endif
 
 	for (i=0 ; i<2 ; i++)
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
@@ -726,11 +669,6 @@ void PM_CatagorizePosition (void)
 				}
 			}
 		}
-
-#if 0
-		if (trace.fraction < 1.0 && trace.ent && pml.velocity[2] < 0)
-			pml.velocity[2] = 0;
-#endif
 
 		if (pm->numtouch < MAXTOUCH && trace.ent)
 		{
@@ -1120,45 +1058,6 @@ void PM_SnapPosition (void)
 //	Com_DPrintf ("using previous_origin\n");
 }
 
-#if 0
-//NO LONGER USED
-/*
-================
-PM_InitialSnapPosition
-
-================
-*/
-void PM_InitialSnapPosition (void)
-{
-	int		x, y, z;
-	short	base[3];
-
-	VectorCopy (pm->s.origin, base);
-
-	for (z=1 ; z>=-1 ; z--)
-	{
-		pm->s.origin[2] = base[2] + z;
-		for (y=1 ; y>=-1 ; y--)
-		{
-			pm->s.origin[1] = base[1] + y;
-			for (x=1 ; x>=-1 ; x--)
-			{
-				pm->s.origin[0] = base[0] + x;
-				if (PM_GoodPosition ())
-				{
-					pml.origin[0] = pm->s.origin[0]*0.125;
-					pml.origin[1] = pm->s.origin[1]*0.125;
-					pml.origin[2] = pm->s.origin[2]*0.125;
-					VectorCopy (pm->s.origin, pml.previous_origin);
-					return;
-				}
-			}
-		}
-	}
-
-	Com_DPrintf ("Bad InitialSnapPosition\n");
-}
-#else
 /*
 ================
 PM_InitialSnapPosition
@@ -1192,8 +1091,6 @@ void PM_InitialSnapPosition(void)
 
 	Com_DPrintf ("Bad InitialSnapPosition\n");
 }
-
-#endif
 
 /*
 ================

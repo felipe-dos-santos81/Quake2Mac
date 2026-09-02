@@ -19,11 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // disable data conversion warnings
 
-#if 0
-#pragma warning(disable : 4244)     // MIPS
-#pragma warning(disable : 4136)     // X86
-#pragma warning(disable : 4051)     // ALPHA
-#endif
 
 #include <stdio.h>
 #include <ctype.h>
@@ -295,22 +290,12 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 void R_RotateForEntity (entity_t *e);
 void R_MarkLeaves (void);
 
-glpoly_t *WaterWarpPolyVerts (glpoly_t *p);
 void EmitWaterPolys (msurface_t *fa);
 void R_AddSkySurface (msurface_t *fa);
 void R_ClearSkyBox (void);
 void R_DrawSkyBox (void);
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 
-#if 0
-short LittleShort (short l);
-short BigShort (short l);
-int	LittleLong (int l);
-float LittleFloat (float f);
-
-char	*va(char *format, ...);
-// does a varargs printf into a temp buffer
-#endif
 
 void COM_StripExtension (char *in, char *out);
 

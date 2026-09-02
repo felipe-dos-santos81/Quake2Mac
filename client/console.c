@@ -42,16 +42,6 @@ void DrawString (int x, int y, char *s)
 	}
 }
 
-void DrawAltString (int x, int y, char *s)
-{
-	while (*s)
-	{
-		re.DrawChar (x, y, *s ^ 0x80);
-		x+=8;
-		s++;
-	}
-}
-
 
 void Key_ClearTyping (void)
 {
@@ -594,16 +584,10 @@ void Con_DrawConsole (float frac)
 
 // draw the text
 	con.vislines = lines;
-	
-#if 0
-	rows = (lines-8)>>3;		// rows of text to draw
 
-	y = lines - 24;
-#else
 	rows = (lines-22)>>3;		// rows of text to draw
 
 	y = lines - 30;
-#endif
 
 // draw from the bottom up
 	if (con.display != con.current)
