@@ -53,3 +53,42 @@ def load_palette(index: dict[str, pak.PakFile]) -> list[int]:
     if palette is None:
         raise ValueError(f"{COLORMAP} has no palette")
     return palette[:768]
+
+
+# alpha byte per palette index: 0 for the transparent index, 255 otherwise
+_ALPHA_TABLE = bytes(0 if i == TRANSPARENT else 255 for i in range(256))
+
+
+def _neighbour(data: bytes, i: int, width: int) -> int:
+    """Palette index of an adjacent opaque texel, in the engine's order (GL_Upload8):
+    above, below, left, right. Falls back to 0. Mirrors ref_gl/gl_image.c so the
+    colour under transparent texels matches what the engine would have used."""
+    s = len(data)
+    if i > width and data[i - width] != TRANSPARENT:
+        return data[i - width]
+    if i < s - width and data[i + width] != TRANSPARENT:
+        return data[i + width]
+    if i > 0 and data[i - 1] != TRANSPARENT:
+        return data[i - 1]
+    if i < s - 1 and data[i + 1] != TRANSPARENT:
+        return data[i + 1]
+    return 0
+
+
+def wal_to_image(mip0: bytes, width: int, height: int, palette: list[int]) -> Image.Image:
+    """RGB when every texel is opaque; RGBA otherwise (index 255 -> alpha 0, colour from a neighbour)."""
+    if len(mip0) != width * height:
+        raise ValueError(f"expected {width * height} texels, got {len(mip0)}")
+    if TRANSPARENT not in mip0:
+        indexed = Image.frombytes("P", (width, height), mip0)
+        indexed.putpalette(palette)
+        return indexed.convert("RGB")
+    filled = bytearray(mip0)
+    for i, p in enumerate(mip0):
+        if p == TRANSPARENT:
+            filled[i] = _neighbour(mip0, i, width)
+    indexed = Image.frombytes("P", (width, height), bytes(filled))
+    indexed.putpalette(palette)
+    out = indexed.convert("RGB")
+    out.putalpha(Image.frombytes("L", (width, height), mip0.translate(_ALPHA_TABLE)))
+    return out

@@ -120,3 +120,40 @@ def test_load_palette_missing_colormap_raises(tmp_path: Path) -> None:
     index = extract_textures.build_index(extract_textures.open_paks(d))
     with pytest.raises(FileNotFoundError):
         extract_textures.load_palette(index)
+
+
+# --- Task 2: wal_to_image ------------------------------------------------------
+
+
+def test_opaque_wal_becomes_rgb(palette: list[int]) -> None:
+    img = extract_textures.wal_to_image(bytes([1, 2, 3, 4]), 2, 2, palette)
+    assert img.mode == "RGB"
+    assert img.size == (2, 2)
+    assert img.getpixel((0, 0)) == rgb(palette, 1)
+    assert img.getpixel((1, 0)) == rgb(palette, 2)
+    assert img.getpixel((0, 1)) == rgb(palette, 3)
+    assert img.getpixel((1, 1)) == rgb(palette, 4)
+
+
+def test_transparent_wal_becomes_rgba_with_neighbour_fill(palette: list[int]) -> None:
+    # texel order: (0,0)=9 opaque, (1,0)=255, (0,1)=255, (1,1)=255
+    img = extract_textures.wal_to_image(bytes([9, 255, 255, 255]), 2, 2, palette)
+    assert img.mode == "RGBA"
+    assert img.getpixel((0, 0)) == rgb(palette, 9) + (255,)
+    # (1,0): above/below are 255 or out of range, left neighbour is 9 -> its colour, alpha 0
+    assert img.getpixel((1, 0)) == rgb(palette, 9) + (0,)
+    # (0,1) and (1,1): no opaque neighbour in the engine's order -> palette 0, alpha 0
+    assert img.getpixel((0, 1)) == rgb(palette, 0) + (0,)
+    assert img.getpixel((1, 1)) == rgb(palette, 0) + (0,)
+
+
+def test_neighbour_prefers_texel_above(palette: list[int]) -> None:
+    # 2 wide, 3 tall; texel index 4 (x=0,y=2) is 255; above it (index 2) is 7, left is out of row
+    mip0 = bytes([1, 1, 7, 1, 255, 3])
+    img = extract_textures.wal_to_image(mip0, 2, 3, palette)
+    assert img.getpixel((0, 2)) == rgb(palette, 7) + (0,)
+
+
+def test_wal_to_image_rejects_wrong_length(palette: list[int]) -> None:
+    with pytest.raises(ValueError):
+        extract_textures.wal_to_image(bytes(3), 2, 2, palette)
