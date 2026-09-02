@@ -30,11 +30,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client/ref.h"
 
 #include "client/vid.h"
-#include "client/screen.h"
-#include "client/sound.h"
+#include "client/screen/screen.h"
+#include "client/sound/sound.h"
 #include "client/input.h"
-#include "client/keys.h"
-#include "client/console.h"
+#include "client/screen/keys.h"
+#include "client/screen/console.h"
 
 //=============================================================================
 

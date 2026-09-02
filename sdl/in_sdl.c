@@ -9,7 +9,7 @@
 #include <SDL3/SDL.h>
 
 #include "ref_gl/gl_local.h"
-#include "client/keys.h"
+#include "client/screen/keys.h"
 #include "linux/rw_linux.h"
 
 /*****************************************************************************/

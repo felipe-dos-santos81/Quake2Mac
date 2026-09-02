@@ -81,16 +81,16 @@ COMMON_OBJS = \
 
 # client
 CLIENT_OBJS = \
-	$(BUILD_DIR)/client/cl_cin.o $(BUILD_DIR)/client/cl_ents.o \
-	$(BUILD_DIR)/client/cl_fx.o $(BUILD_DIR)/client/cl_input.o \
-	$(BUILD_DIR)/client/cl_inv.o $(BUILD_DIR)/client/cl_main.o \
-	$(BUILD_DIR)/client/cl_parse.o $(BUILD_DIR)/client/cl_pred.o \
-	$(BUILD_DIR)/client/cl_tent.o $(BUILD_DIR)/client/cl_scrn.o \
-	$(BUILD_DIR)/client/cl_view.o $(BUILD_DIR)/client/console.o \
-	$(BUILD_DIR)/client/keys.o $(BUILD_DIR)/client/menu.o \
-	$(BUILD_DIR)/client/snd_dma.o $(BUILD_DIR)/client/snd_mem.o \
-	$(BUILD_DIR)/client/snd_mix.o $(BUILD_DIR)/client/qmenu.o \
-	$(BUILD_DIR)/game/monsters/flash.o $(BUILD_DIR)/client/cl_newfx.o
+	$(BUILD_DIR)/client/screen/cinematic.o $(BUILD_DIR)/client/net/ents.o \
+	$(BUILD_DIR)/client/net/fx.o $(BUILD_DIR)/client/input.o \
+	$(BUILD_DIR)/client/screen/inv.o $(BUILD_DIR)/client/main.o \
+	$(BUILD_DIR)/client/net/parse.o $(BUILD_DIR)/client/net/predict.o \
+	$(BUILD_DIR)/client/net/tents.o $(BUILD_DIR)/client/screen/scrn.o \
+	$(BUILD_DIR)/client/screen/view.o $(BUILD_DIR)/client/screen/console.o \
+	$(BUILD_DIR)/client/screen/keys.o $(BUILD_DIR)/client/screen/menu.o \
+	$(BUILD_DIR)/client/sound/dma.o $(BUILD_DIR)/client/sound/mem.o \
+	$(BUILD_DIR)/client/sound/mix.o $(BUILD_DIR)/client/screen/qmenu.o \
+	$(BUILD_DIR)/game/monsters/flash.o $(BUILD_DIR)/client/net/newfx.o
 
 # server
 SERVER_OBJS = \
