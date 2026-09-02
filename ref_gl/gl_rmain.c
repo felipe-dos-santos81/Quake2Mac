@@ -1158,7 +1158,6 @@ int R_Init( void *hinstance, void *hWnd )
 
 	GL_SetDefaultState();
 
-
 	GL_InitImages ();
 	Mod_Init ();
 	R_InitParticleTexture ();

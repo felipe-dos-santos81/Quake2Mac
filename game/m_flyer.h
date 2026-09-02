@@ -27,12 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ACTION_run				3
 #define ACTION_walk				4
 
-#define FRAME_start01         	0
 #define FRAME_start02         	1
 #define FRAME_start03         	2
 #define FRAME_start04         	3
 #define FRAME_start05         	4
-#define FRAME_start06         	5
 #define FRAME_stop01          	6
 #define FRAME_stop02          	7
 #define FRAME_stop03          	8
@@ -123,21 +121,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_attak215        	93
 #define FRAME_attak216        	94
 #define FRAME_attak217        	95
-#define FRAME_bankl01         	96
 #define FRAME_bankl02         	97
 #define FRAME_bankl03         	98
 #define FRAME_bankl04         	99
 #define FRAME_bankl05         	100
 #define FRAME_bankl06         	101
-#define FRAME_bankl07         	102
-#define FRAME_bankr01         	103
 #define FRAME_bankr02         	104
 #define FRAME_bankr03         	105
 #define FRAME_bankr04         	106
 #define FRAME_bankr05         	107
 #define FRAME_bankr06         	108
-#define FRAME_bankr07         	109
-#define FRAME_rollf01         	110
 #define FRAME_rollf02         	111
 #define FRAME_rollf03         	112
 #define FRAME_rollf04         	113
@@ -145,8 +138,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_rollf06         	115
 #define FRAME_rollf07         	116
 #define FRAME_rollf08         	117
-#define FRAME_rollf09         	118
-#define FRAME_rollr01         	119
 #define FRAME_rollr02         	120
 #define FRAME_rollr03         	121
 #define FRAME_rollr04         	122
@@ -154,13 +145,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_rollr06         	124
 #define FRAME_rollr07         	125
 #define FRAME_rollr08         	126
-#define FRAME_rollr09         	127
-#define FRAME_defens01        	128
 #define FRAME_defens02        	129
 #define FRAME_defens03        	130
 #define FRAME_defens04        	131
 #define FRAME_defens05        	132
-#define FRAME_defens06        	133
 #define FRAME_pain101         	134
 #define FRAME_pain102         	135
 #define FRAME_pain103         	136

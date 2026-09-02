@@ -122,7 +122,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_run07           	98
 #define FRAME_run08           	99
 #define FRAME_run09           	100
-#define FRAME_run10           	101
 #define FRAME_run11           	102
 #define FRAME_run12           	103
 #define FRAME_runs01          	104
@@ -130,7 +129,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_runs03          	106
 #define FRAME_runs04          	107
 #define FRAME_runs05          	108
-#define FRAME_runs06          	109
 #define FRAME_runs07          	110
 #define FRAME_runs08          	111
 #define FRAME_runs09          	112

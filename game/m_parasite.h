@@ -98,12 +98,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAME_run07             74
 #define FRAME_run08             75
 #define FRAME_run09             76
-#define FRAME_run10             77
 #define FRAME_run11             78
 #define FRAME_run12             79
 #define FRAME_run13             80
 #define FRAME_run14             81
-#define FRAME_run15             82
 #define FRAME_stand01           83
 #define FRAME_stand02           84
 #define FRAME_stand03           85

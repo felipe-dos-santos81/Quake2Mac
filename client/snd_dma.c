@@ -1000,7 +1000,7 @@ S_Update
 Called once each time through the main loop
 ============
 */
-void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
+void S_Update(vec3_t origin, vec3_t right)
 {
 	int			i;
 	int			total;

@@ -171,7 +171,6 @@ mframe_t brain_frames_walk1 [] =
 };
 mmove_t brain_move_walk1 = {FRAME_walk101, FRAME_walk111, brain_frames_walk1, NULL};
 
-
 void brain_walk (edict_t *self)
 {
 //	if (random() <= 0.5)
