@@ -149,7 +149,7 @@ PROTOCOL
 
 
 //==================
-// the svc_strings[] array in cl_parse.c should mirror this
+// the svc_strings[] array in client/net/parse.c should mirror this
 //==================
 
 //

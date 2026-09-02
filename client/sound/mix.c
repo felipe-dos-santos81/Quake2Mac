@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// snd_mix.c -- portable code to mix sounds for snd_dma.c
+// mix.c -- portable code to mix sounds for dma.c
 
 #include "client/client.h"
 #include "client/sound/loc.h"

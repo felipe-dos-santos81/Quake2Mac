@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// g_local.h -- local definitions for game module
+// local.h -- local definitions for game module
 
 #include "game/q_shared.h"
 
@@ -593,13 +593,13 @@ extern	gitem_t	itemlist[];
 
 
 //
-// g_cmds.c
+// game/cmds.c
 //
 void Cmd_Help_f (edict_t *ent);
 void Cmd_Score_f (edict_t *ent);
 
 //
-// g_items.c
+// game/items.c
 //
 void PrecacheItem (gitem_t *it);
 void InitItems (void);
@@ -619,7 +619,7 @@ qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count);
 void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf);
 
 //
-// g_utils.c
+// game/utils.c
 //
 qboolean	KillBox (edict_t *ent);
 void	G_ProjectSource (vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result);
@@ -643,7 +643,7 @@ float vectoyaw (vec3_t vec);
 void vectoangles (vec3_t vec, vec3_t angles);
 
 //
-// g_combat.c
+// game/combat.c
 //
 qboolean OnSameTeam (edict_t *ent1, edict_t *ent2);
 qboolean CanDamage (edict_t *targ, edict_t *inflictor);
@@ -667,7 +667,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 #define DEFAULT_SSHOTGUN_COUNT	20
 
 //
-// g_monster.c
+// game/monster.c
 //
 void monster_fire_bullet (edict_t *self, vec3_t start, vec3_t dir, int damage, int kick, int hspread, int vspread, int flashtype);
 void monster_fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int count, int flashtype);
@@ -689,7 +689,7 @@ void M_FlyCheck (edict_t *self);
 void M_CheckGround (edict_t *ent);
 
 //
-// g_misc.c
+// game/misc.c
 //
 void ThrowHead (edict_t *self, char *gibname, int damage, int type);
 void ThrowClientHead (edict_t *self, int damage);
@@ -697,7 +697,7 @@ void ThrowGib (edict_t *self, char *gibname, int damage, int type);
 void BecomeExplosion1(edict_t *self);
 
 //
-// g_ai.c
+// game/ai.c
 //
 void AI_SetSightClient (void);
 
@@ -715,7 +715,7 @@ qboolean visible (edict_t *self, edict_t *other);
 qboolean FacingIdeal(edict_t *self);
 
 //
-// g_weapon.c
+// game/weapon.c
 //
 void ThrowDebris (edict_t *self, char *modelname, float speed, vec3_t origin);
 qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick);
@@ -755,18 +755,18 @@ void player_pain (edict_t *self, edict_t *other, float kick, int damage);
 void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
 
 //
-// g_svcmds.c
+// game/svcmds.c
 //
 void	ServerCommand (void);
 qboolean SV_FilterPacket (char *from);
 
 //
-// p_view.c
+// game/player/view.c
 //
 void ClientEndServerFrame (edict_t *ent);
 
 //
-// p_hud.c
+// game/player/hud.c
 //
 void MoveClientToIntermission (edict_t *client);
 void G_SetStats (edict_t *ent);
@@ -781,7 +781,7 @@ void DeathmatchScoreboardMessage (edict_t *client, edict_t *killer);
 void PlayerNoise(edict_t *who, vec3_t where, int type);
 
 //
-// m_move.c
+// game/monsters/move.c
 //
 qboolean M_CheckBottom (edict_t *ent);
 qboolean M_walkmove (edict_t *ent, float yaw, float dist);
@@ -789,18 +789,18 @@ void M_MoveToGoal (edict_t *ent, float dist);
 void M_ChangeYaw (edict_t *ent);
 
 //
-// g_phys.c
+// game/phys.c
 //
 void G_RunEntity (edict_t *ent);
 
 //
-// g_main.c
+// game/main.c
 //
 void SaveClientData (void);
 void FetchClientEntData (edict_t *ent);
 
 //
-// g_chase.c
+// game/chase.c
 //
 void UpdateChaseCam(edict_t *ent);
 void ChaseNext(edict_t *ent);

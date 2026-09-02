@@ -443,7 +443,7 @@ void CL_ParseLayout (void);
 
 
 //
-// cl_main
+// client/main.c
 //
 extern	refexport_t	re;		// interface to refresh .dll
 
@@ -458,7 +458,7 @@ void CL_Snd_Restart_f (void);
 void CL_RequestNextDownload (void);
 
 //
-// cl_input
+// client/input.c
 //
 typedef struct
 {
@@ -497,7 +497,7 @@ void CL_Stop_f (void);
 void CL_Record_f (void);
 
 //
-// cl_parse.c
+// client/net/parse.c
 //
 extern	char *svc_strings[256];
 
@@ -508,7 +508,7 @@ void CL_ParseClientinfo (int player);
 void CL_Download_f (void);
 
 //
-// cl_view.c
+// client/screen/view.c
 //
 extern	int			gun_frame;
 extern	struct model_s	*gun_model;
@@ -521,7 +521,7 @@ void V_AddLight (vec3_t org, float intensity, float r, float g, float b);
 void V_AddLightStyle (int style, float r, float g, float b);
 
 //
-// cl_tent.c
+// client/net/tents.c
 //
 void CL_RegisterTEntSounds (void);
 void CL_RegisterTEntModels (void);
@@ -529,14 +529,14 @@ void CL_SmokeAndFlash(vec3_t origin);
 
 
 //
-// cl_pred.c
+// client/net/predict.c
 //
 void CL_InitPrediction (void);
 void CL_PredictMove (void);
 void CL_CheckPredictionError (void);
 
 //
-// cl_fx.c
+// client/net/fx.c
 //
 cdlight_t *CL_AllocDlight (int key);
 void CL_BigTeleportParticles (vec3_t org);
@@ -560,13 +560,13 @@ void M_ForceMenuOff (void);
 void M_AddToServerList (netadr_t adr, char *info);
 
 //
-// cl_inv.c
+// client/screen/inv.c
 //
 void CL_ParseInventory (void);
 void CL_KeyInventory (int key);
 void CL_DrawInventory (void);
 
 //
-// cl_pred.c
+// client/net/predict.c
 //
 void CL_PredictMovement (void);

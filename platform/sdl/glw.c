@@ -1,4 +1,4 @@
-// glw_sdl.c -- SDL3 implementation of the GLimp_* contract expected by
+// glw.c -- SDL3 implementation of the GLimp_* contract expected by
 // ref_gl (see ref_gl/local.h). Replaces linux/gl_fxmesa.c.
 // Windowed only; the mouse cursor is never grabbed.
 

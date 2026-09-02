@@ -1,4 +1,4 @@
-// in_sdl.c -- SDL3 input for the ref_gl bundle. Replaces
+// input.c -- SDL3 input for the ref_gl bundle. Replaces
 // linux/rw_in_svgalib.c. Exports RW_IN_* and KBD_* which the client's
 // VID layer dlsym's after loading the renderer.
 //

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// snd_dma.c -- main control for any streaming sound output device
+// dma.c -- main control for any streaming sound output device
 
 #include "client/client.h"
 #include "client/sound/loc.h"

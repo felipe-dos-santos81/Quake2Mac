@@ -13,7 +13,7 @@ directory. Built and run by `make test-ref`.
 
 #include "ref_gl/local.h"
 
-refimport_t	ri;				/* gl_override.c calls ri.FS_LoadFile / FS_FreeFile / Con_Printf */
+refimport_t	ri;				/* override.c calls ri.FS_LoadFile / FS_FreeFile / Con_Printf */
 
 static char	tmpdir[1024];
 static int	failures;

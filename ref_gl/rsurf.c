@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// GL_RSURF.C: surface-related refresh code
+// rsurf.c: surface-related refresh code
 #include <assert.h>
 
 #include "ref_gl/local.h"

@@ -1,4 +1,4 @@
-// qgl_sdl.c -- qgl function-pointer table for the SDL3 port.
+// qgl.c -- qgl function-pointer table for the SDL3 port.
 //
 // Entry points are resolved by dlopen'ing Apple's OpenGL framework
 // directly instead of using SDL_GL_GetProcAddress: SDL cannot resolve GL

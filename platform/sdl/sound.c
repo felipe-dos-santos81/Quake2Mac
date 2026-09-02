@@ -1,9 +1,9 @@
-// snd_sdl.c -- SNDDMA_* on an SDL3 audio stream. Replaces
+// sound.c -- SNDDMA_* on an SDL3 audio stream. Replaces
 // linux/snd_linux.c (OSS mmap). The engine paints into dma.buffer
 // (a plain malloc ring); Submit pushes freshly painted regions to SDL.
 //
 // UNITS (critical): paintedtime/soundtime are FRAMES ("sample pairs",
-// see snd_dma.c). dma.samples and ring offsets are MONO-EQUIVALENT
+// see client/sound/dma.c). dma.samples and ring offsets are MONO-EQUIVALENT
 // samples (frames * channels). last_pushed tracks paintedtime in
 // frames; every ring access converts by dma.channels.
 

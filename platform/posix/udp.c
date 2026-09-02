@@ -1,4 +1,4 @@
-// net_udp.c
+// udp.c
 
 #include "qcommon/qcommon.h"
 
