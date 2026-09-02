@@ -27,7 +27,7 @@ BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 
 .DEFAULT_GOAL := build
 
-.PHONY: help install data objects build all verify-load run clean tools-test textures
+.PHONY: help install data objects build all verify-load run clean tools-test textures test-ref
 
 # ── Stage 0 · Help ───────────────────────────────────────────────────────────
 
@@ -112,7 +112,7 @@ REF_CORE_OBJS = \
 	$(BUILD_DIR)/ref_gl/gl_light.o $(BUILD_DIR)/ref_gl/gl_mesh.o \
 	$(BUILD_DIR)/ref_gl/gl_model.o $(BUILD_DIR)/ref_gl/gl_rmain.o \
 	$(BUILD_DIR)/ref_gl/gl_rmisc.o $(BUILD_DIR)/ref_gl/gl_rsurf.o \
-	$(BUILD_DIR)/ref_gl/gl_warp.o
+	$(BUILD_DIR)/ref_gl/gl_warp.o $(BUILD_DIR)/ref_gl/gl_override.o
 REF_EXTRA_OBJS = \
 	$(BUILD_DIR)/ref_gl/q_shared.o $(BUILD_DIR)/ref_gl/q_shlinux.o \
 	$(BUILD_DIR)/ref_gl/glob.o $(BUILD_DIR)/ref_gl/qgl_sdl.o \
@@ -176,6 +176,17 @@ $(VERIFY_LOAD): $(BUILD_DIR)/verify_load.o
 
 verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check entry points (no game data needed)
 	./$(VERIFY_LOAD)
+
+# Host test for the override loader: links gl_override.o alone against a
+# stub refimport_t, so it needs neither a GL context nor game data.
+TEST_OVERRIDE = $(BUILD_DIR)/test_override
+
+$(TEST_OVERRIDE): ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/gl_override.o
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ ref_gl/tests/test_override.c $(BUILD_DIR)/ref_gl/gl_override.o
+
+test-ref: $(TEST_OVERRIDE) ## Host test for the texture override loader (no GL, no game data)
+	./$(TEST_OVERRIDE)
 
 # ── Stage 4 · Run ────────────────────────────────────────────────────────────
 
