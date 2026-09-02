@@ -990,9 +990,11 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 		scaled_height >>= (int)gl_picmip->value;
 	}
 
-	// cap at gl_override_maxsize (the original engine hard-coded 256 here),
-	// never above what the driver reports
-	max_size = (int)gl_override_maxsize->value;
+	// cap mipmapped (world/skin) textures at gl_override_maxsize -- the
+	// original engine hard-coded 256 here -- never above the driver limit.
+	// non-mipmapped pics and skies keep the original 256 so they upload
+	// exactly as before
+	max_size = mipmap ? (int)gl_override_maxsize->value : 256;
 	if (max_size > gl_config.max_texsize)
 		max_size = gl_config.max_texsize;
 	if (max_size < 1)
@@ -1010,7 +1012,10 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 	upload_width = scaled_width;
 	upload_height = scaled_height;
 
-	scaled = malloc (scaled_width * scaled_height * 4);
+	// GL_MipMap consumes two pixels per step, so a 1-pixel-wide mip chain
+	// must be backed as if it were 2 wide; size_t keeps the product from
+	// overflowing int at very large caps
+	scaled = malloc ((size_t)(scaled_width < 2 ? 2 : scaled_width) * scaled_height * 4);
 	if (!scaled)
 		ri.Sys_Error (ERR_DROP, "GL_Upload32: out of memory");
 	if ( qglColorTableEXT && gl_ext_palettedtexture->value )
