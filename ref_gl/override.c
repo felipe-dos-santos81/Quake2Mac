@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// gl_override.c -- hi-res replacements for .wal world textures.
+// override.c -- hi-res replacements for .wal world textures.
 //
 // For textures/<dir>/<name>.wal the renderer may find
 // textures/<dir>/<name>.png / .tga / .jpg on disk (baseq2/textures/, written

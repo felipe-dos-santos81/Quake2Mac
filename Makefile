@@ -63,10 +63,10 @@ data: ## Check that Quake II game data (baseq2/pak0.pak) is present
 
 # ── Stage 3 · Build ──────────────────────────────────────────────────────────
 
-# Object paths mirror source paths (client/cl_main.c → build/client/cl_main.o).
+# Object paths mirror source paths (client/main.c → build/client/main.o).
 # Multi-unit sources compile ONCE and link into several units (game/q_shared.c,
-# game/m_flash.c, linux/q_shlinux.c, linux/glob.c) — CFLAGS is uniform across
-# units; keep it that way or reintroduce per-unit object directories.
+# game/monsters/flash.c, platform/posix/shared.c, platform/posix/glob.c) —
+# CFLAGS is uniform across units; keep it that way or reintroduce per-unit object directories.
 $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ -c $<
@@ -169,8 +169,8 @@ build: objects $(REF_GL) $(GAME_DLL) $(EXE) ## Compile the engine, renderer, and
 
 all: data build ## Check game data, then build everything
 
-# Linked with SDL_LIBS so ref_gl.so's undefined SDL symbols (glw_sdl.o,
-# in_sdl.o) resolve in the flat namespace, as they do inside the engine
+# Linked with SDL_LIBS so ref_gl.so's undefined SDL symbols (glw.o,
+# input.o) resolve in the flat namespace, as they do inside the engine
 # executable; verify_load.c itself uses no SDL APIs.
 $(VERIFY_LOAD): $(BUILD_DIR)/platform/verify_load.o
 	$(CC) $(CFLAGS) -o $@ $(BUILD_DIR)/platform/verify_load.o $(SDL_LIBS) -ldl
@@ -178,7 +178,7 @@ $(VERIFY_LOAD): $(BUILD_DIR)/platform/verify_load.o
 verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check entry points (no game data needed)
 	./$(VERIFY_LOAD)
 
-# Host test for the override loader: links gl_override.o alone against a
+# Host test for the override loader: links override.o alone against a
 # stub refimport_t, so it needs neither a GL context nor game data.
 TEST_OVERRIDE = $(BUILD_DIR)/test_override
 

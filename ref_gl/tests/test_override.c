@@ -1,5 +1,5 @@
 /*
-test_override.c -- host test for ref_gl/gl_override.c.
+test_override.c -- host test for ref_gl/override.c.
 
 No GL context, no game data: a stub refimport_t serves files from a temp
 directory. Built and run by `make test-ref`.
