@@ -8,7 +8,7 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 
-#include "linux/glob.h"
+#include "platform/posix/glob.h"
 
 #include "qcommon/qcommon.h"
 

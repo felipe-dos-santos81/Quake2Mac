@@ -101,10 +101,10 @@ SERVER_OBJS = \
 
 # platform layer linked into the executable
 SYS_EXE_OBJS = \
-	$(BUILD_DIR)/linux/q_shlinux.o \
-	$(BUILD_DIR)/linux/vid_menu.o $(BUILD_DIR)/linux/sys_linux.o \
-	$(BUILD_DIR)/linux/glob.o $(BUILD_DIR)/linux/net_udp.o \
-	$(BUILD_DIR)/sdl/snd_sdl.o $(BUILD_DIR)/sdl/vid_sdl.o
+	$(BUILD_DIR)/platform/posix/shared.o \
+	$(BUILD_DIR)/platform/posix/vid_menu.o $(BUILD_DIR)/platform/posix/sys.o \
+	$(BUILD_DIR)/platform/posix/glob.o $(BUILD_DIR)/platform/posix/udp.o \
+	$(BUILD_DIR)/platform/sdl/sound.o $(BUILD_DIR)/platform/sdl/vid.o
 
 # ref_gl renderer core
 REF_CORE_OBJS = \
@@ -115,9 +115,9 @@ REF_CORE_OBJS = \
 	$(BUILD_DIR)/ref_gl/warp.o $(BUILD_DIR)/ref_gl/override.o
 REF_EXTRA_OBJS = \
 	$(BUILD_DIR)/game/q_shared.o \
-	$(BUILD_DIR)/linux/q_shlinux.o $(BUILD_DIR)/linux/glob.o \
-	$(BUILD_DIR)/sdl/qgl_sdl.o $(BUILD_DIR)/sdl/glw_sdl.o \
-	$(BUILD_DIR)/sdl/in_sdl.o
+	$(BUILD_DIR)/platform/posix/shared.o $(BUILD_DIR)/platform/posix/glob.o \
+	$(BUILD_DIR)/platform/sdl/qgl.o $(BUILD_DIR)/platform/sdl/glw.o \
+	$(BUILD_DIR)/platform/sdl/input.o
 
 # game DLL
 GAME_OBJS = \
@@ -172,8 +172,8 @@ all: data build ## Check game data, then build everything
 # Linked with SDL_LIBS so ref_gl.so's undefined SDL symbols (glw_sdl.o,
 # in_sdl.o) resolve in the flat namespace, as they do inside the engine
 # executable; verify_load.c itself uses no SDL APIs.
-$(VERIFY_LOAD): $(BUILD_DIR)/sdl/verify_load.o
-	$(CC) $(CFLAGS) -o $@ $(BUILD_DIR)/sdl/verify_load.o $(SDL_LIBS) -ldl
+$(VERIFY_LOAD): $(BUILD_DIR)/platform/verify_load.o
+	$(CC) $(CFLAGS) -o $@ $(BUILD_DIR)/platform/verify_load.o $(SDL_LIBS) -ldl
 
 verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check entry points (no game data needed)
 	./$(VERIFY_LOAD)

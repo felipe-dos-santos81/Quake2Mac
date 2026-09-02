@@ -21,7 +21,7 @@
 
 #include "qcommon/qcommon.h"
 
-#include "linux/rw_linux.h"
+#include "platform/posix/rw.h"
 
 cvar_t *nostdout;
 

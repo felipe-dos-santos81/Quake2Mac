@@ -10,7 +10,7 @@
 
 #include "ref_gl/local.h"
 #include "client/screen/keys.h"
-#include "linux/rw_linux.h"
+#include "platform/posix/rw.h"
 
 /*****************************************************************************/
 /* KEYBOARD                                                                  */

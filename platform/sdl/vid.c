@@ -7,7 +7,7 @@
 
 #include "client/client.h"
 
-#include "linux/rw_linux.h"
+#include "platform/posix/rw.h"
 
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
