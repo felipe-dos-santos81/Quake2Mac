@@ -63,23 +63,21 @@ data: ## Check that Quake II game data (baseq2/pak0.pak) is present
 
 # ── Stage 3 · Build ──────────────────────────────────────────────────────────
 
-vpath %.c client server qcommon game ref_gl linux sdl
-
-# GNU make keeps the directory part of the stem (e.g. `client/cmd`) when
-# searching vpath, so strip it: the prerequisite is the basename .c file,
-# resolved through the vpath order above.
-.SECONDEXPANSION:
-$(BUILD_DIR)/%.o: $$(notdir $$*).c
+# Object paths mirror source paths (client/cl_main.c → build/client/cl_main.o).
+# Multi-unit sources compile ONCE and link into several units (game/q_shared.c,
+# game/m_flash.c, linux/q_shlinux.c, linux/glob.c) — CFLAGS is uniform across
+# units; keep it that way or reintroduce per-unit object directories.
+$(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 # qcommon + shared
 COMMON_OBJS = \
-	$(BUILD_DIR)/client/cmd.o $(BUILD_DIR)/client/cmodel.o \
-	$(BUILD_DIR)/client/common.o $(BUILD_DIR)/client/crc.o \
-	$(BUILD_DIR)/client/cvar.o $(BUILD_DIR)/client/files.o \
-	$(BUILD_DIR)/client/md4.o $(BUILD_DIR)/client/net_chan.o \
-	$(BUILD_DIR)/client/q_shared.o $(BUILD_DIR)/client/pmove.o
+	$(BUILD_DIR)/qcommon/cmd.o $(BUILD_DIR)/qcommon/cmodel.o \
+	$(BUILD_DIR)/qcommon/common.o $(BUILD_DIR)/qcommon/crc.o \
+	$(BUILD_DIR)/qcommon/cvar.o $(BUILD_DIR)/qcommon/files.o \
+	$(BUILD_DIR)/qcommon/md4.o $(BUILD_DIR)/qcommon/net_chan.o \
+	$(BUILD_DIR)/qcommon/pmove.o $(BUILD_DIR)/game/q_shared.o
 
 # client
 CLIENT_OBJS = \
@@ -92,21 +90,21 @@ CLIENT_OBJS = \
 	$(BUILD_DIR)/client/keys.o $(BUILD_DIR)/client/menu.o \
 	$(BUILD_DIR)/client/snd_dma.o $(BUILD_DIR)/client/snd_mem.o \
 	$(BUILD_DIR)/client/snd_mix.o $(BUILD_DIR)/client/qmenu.o \
-	$(BUILD_DIR)/client/m_flash.o $(BUILD_DIR)/client/cl_newfx.o
+	$(BUILD_DIR)/game/m_flash.o $(BUILD_DIR)/client/cl_newfx.o
 
 # server
 SERVER_OBJS = \
-	$(BUILD_DIR)/client/sv_ccmds.o $(BUILD_DIR)/client/sv_ents.o \
-	$(BUILD_DIR)/client/sv_game.o $(BUILD_DIR)/client/sv_init.o \
-	$(BUILD_DIR)/client/sv_main.o $(BUILD_DIR)/client/sv_send.o \
-	$(BUILD_DIR)/client/sv_user.o $(BUILD_DIR)/client/sv_world.o
+	$(BUILD_DIR)/server/sv_ccmds.o $(BUILD_DIR)/server/sv_ents.o \
+	$(BUILD_DIR)/server/sv_game.o $(BUILD_DIR)/server/sv_init.o \
+	$(BUILD_DIR)/server/sv_main.o $(BUILD_DIR)/server/sv_send.o \
+	$(BUILD_DIR)/server/sv_user.o $(BUILD_DIR)/server/sv_world.o
 
 # platform layer linked into the executable
 SYS_EXE_OBJS = \
-	$(BUILD_DIR)/client/q_shlinux.o \
-	$(BUILD_DIR)/client/vid_menu.o $(BUILD_DIR)/client/sys_linux.o \
-	$(BUILD_DIR)/client/glob.o $(BUILD_DIR)/client/net_udp.o \
-	$(BUILD_DIR)/client/snd_sdl.o $(BUILD_DIR)/client/vid_sdl.o
+	$(BUILD_DIR)/linux/q_shlinux.o \
+	$(BUILD_DIR)/linux/vid_menu.o $(BUILD_DIR)/linux/sys_linux.o \
+	$(BUILD_DIR)/linux/glob.o $(BUILD_DIR)/linux/net_udp.o \
+	$(BUILD_DIR)/sdl/snd_sdl.o $(BUILD_DIR)/sdl/vid_sdl.o
 
 # ref_gl renderer core
 REF_CORE_OBJS = \
@@ -116,9 +114,10 @@ REF_CORE_OBJS = \
 	$(BUILD_DIR)/ref_gl/gl_rmisc.o $(BUILD_DIR)/ref_gl/gl_rsurf.o \
 	$(BUILD_DIR)/ref_gl/gl_warp.o $(BUILD_DIR)/ref_gl/gl_override.o
 REF_EXTRA_OBJS = \
-	$(BUILD_DIR)/ref_gl/q_shared.o $(BUILD_DIR)/ref_gl/q_shlinux.o \
-	$(BUILD_DIR)/ref_gl/glob.o $(BUILD_DIR)/ref_gl/qgl_sdl.o \
-	$(BUILD_DIR)/ref_gl/glw_sdl.o $(BUILD_DIR)/ref_gl/in_sdl.o
+	$(BUILD_DIR)/game/q_shared.o \
+	$(BUILD_DIR)/linux/q_shlinux.o $(BUILD_DIR)/linux/glob.o \
+	$(BUILD_DIR)/sdl/qgl_sdl.o $(BUILD_DIR)/sdl/glw_sdl.o \
+	$(BUILD_DIR)/sdl/in_sdl.o
 
 # game DLL
 GAME_OBJS = \
@@ -173,8 +172,8 @@ all: data build ## Check game data, then build everything
 # Linked with SDL_LIBS so ref_gl.so's undefined SDL symbols (glw_sdl.o,
 # in_sdl.o) resolve in the flat namespace, as they do inside the engine
 # executable; verify_load.c itself uses no SDL APIs.
-$(VERIFY_LOAD): $(BUILD_DIR)/verify_load.o
-	$(CC) $(CFLAGS) -o $@ $(BUILD_DIR)/verify_load.o $(SDL_LIBS) -ldl
+$(VERIFY_LOAD): $(BUILD_DIR)/sdl/verify_load.o
+	$(CC) $(CFLAGS) -o $@ $(BUILD_DIR)/sdl/verify_load.o $(SDL_LIBS) -ldl
 
 verify-load: build $(VERIFY_LOAD) ## Load-smoke: dlopen both bundles and check entry points (no game data needed)
 	./$(VERIFY_LOAD)
