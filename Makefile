@@ -1,6 +1,8 @@
 # Makefile for Quake II — Apple Silicon (arm64) with SDL3
 # Stages: 1 install → 2 data → 3 build → 4 run; plus help/clean.
 # Styled after the "3AM Reel" template: self-documenting `help` via grep/awk.
+# The -include'd .d dependency files land in MAKEFILE_LIST after a build, so
+# `help` filters them out (and uses grep -h) to keep filenames out of the list.
 
 # Variables ───────────────────────────────────────────────────────────────────
 CC ?= cc
@@ -34,7 +36,7 @@ BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 help: ## Print this help message
 	@printf '\033[01;32mQuake II SDL3 — Apple Silicon build\033[00;37m\n\n'
 	@printf "\033[33mUsage:\033[0m\n  make [target]\n\n\033[33mTargets:\033[0m\n"
-	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+	@grep -hE '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(filter-out %.d,$(MAKEFILE_LIST)) | \
 		awk 'BEGIN {FS = ":.*?## "}; \
 		{printf "  \033[36m%-26s\033[0m %s\n", $$1, $$2}'
 
