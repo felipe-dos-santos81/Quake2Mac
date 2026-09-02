@@ -302,8 +302,8 @@ The driver appends a fixed tail: `photorealistic PBR texture, flat even
 lighting, orthographic straight-on view, highly detailed, 8k`, then
 `UNIT MATERIAL STANDARD: <anchor>` when the folder has one.
 
-Retries: 3 attempts with 5 s, 15 s, 45 s backoff on any exception or on an
-empty response. After the third failure the image **fails** (stderr, counted,
+Retries: one call plus three retries with 5 s, 15 s, 45 s backoff on any exception or on an
+empty response. When the last retry fails the image **fails** (stderr, counted,
 not written) so the next run retries it. There is no fallback prompt. Cached
 in `<dst>/.prompts.json` before the render is queued, so a render failure does
 not repeat the VLM call.
