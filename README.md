@@ -52,11 +52,13 @@ straight into `baseq2/gamearm64.so`.
 ## Mouse controls
 
 The mouse looks by default (X turns, Y looks up/down). Right-click toggles
-**walk mode**: the view levels to the horizon and the mouse moves the player
-instead (X strafes, Y walks). A fixed `WALK`/`LOOK` button at the top right of
-the HUD offers the same toggle for mice without a right button. Left click
-shoots; a left double-click also jumps. The wheel switches weapons.
-`walkmode` is archived, toggles apply immediately.
+**walk mode**: the view levels to the horizon and the cursor steers the
+player like a joystick centered on the screen — hold it above center to
+keep walking forward, below to back up, left/right to strafe (farther from
+center = faster, small dead zone at center). A fixed `WALK`/`LOOK` button at
+the top right of the HUD offers the same toggle for mice without a right
+button. Left click shoots; a left double-click also jumps. The wheel
+switches weapons. `walkmode` is archived, toggles apply immediately.
 
 ## Texture overrides
 
