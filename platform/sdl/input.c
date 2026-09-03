@@ -299,7 +299,8 @@ void RW_IN_Move(usercmd_t *cmd)
 	 * walk mode steers by cursor POSITION relative to the screen center
 	 * (hold the cursor above center to keep walking forward), because the
 	 * cursor is never grabbed and motion deltas die at the window edge.
-	 * Toggled with the right mouse button or the HUD walk button.
+	 * Toggled with the right mouse button or the HUD walk button; a left
+	 * click while walking also exits walk mode.
 	 */
 	if (walkmode->value)
 	{

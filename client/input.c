@@ -408,7 +408,8 @@ void IN_CenterView (void)
 CL_ToggleWalkMode
 
 Right mouse button and HUD button: swap the mouse axes between
-looking and walking.  Entering walk mode levels the pitch so the
+looking and walking.  A left click while walking exits walk mode
+(consumed, no shot).  Entering walk mode levels the pitch so the
 view resets to the horizon.
 ===============
 */
