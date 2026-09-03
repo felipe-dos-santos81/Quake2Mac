@@ -159,15 +159,9 @@ void FS_FCloseFile (FILE *f)
 int	Developer_searchpath (int who)
 {
 	
-	int		ch;
 	// PMM - warning removal
 //	char	*start;
 	searchpath_t	*search;
-	
-	if (who == 1) // xatrix
-		ch = 'x';
-	else if (who == 2)
-		ch = 'r';
 
 	for (search = fs_searchpaths ; search ; search = search->next)
 	{
@@ -451,7 +445,6 @@ pack_t *FS_LoadPackFile (char *packfile)
 	pack_t			*pack;
 	FILE			*packhandle;
 	dpackfile_t		info[MAX_FILES_IN_PACK];
-	unsigned		checksum;
 
 	packhandle = fopen(packfile, "rb");
 	if (!packhandle)
@@ -474,10 +467,8 @@ pack_t *FS_LoadPackFile (char *packfile)
 	fread (info, 1, header.dirlen, packhandle);
 
 // crc the directory to check for modifications
-	checksum = Com_BlockChecksum ((void *)info, header.dirlen);
-
 #ifdef NO_ADDONS
-	if (checksum != PAK0_CHECKSUM)
+	if (Com_BlockChecksum ((void *)info, header.dirlen) != PAK0_CHECKSUM)
 		return NULL;
 #endif
 // parse the directory
