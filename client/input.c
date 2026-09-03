@@ -62,6 +62,9 @@ kbutton_t	in_up, in_down;
 
 int			in_impulse;
 
+static unsigned	mouse1_last_down;
+static qboolean	mouse_jump_pending;
+
 
 void KeyDown (kbutton_t *b)
 {
@@ -223,6 +226,8 @@ cvar_t	*cl_run;
 
 cvar_t	*cl_anglespeedkey;
 
+cvar_t	*walkmode;
+
 
 /*
 ================
@@ -284,6 +289,12 @@ void CL_BaseMove (usercmd_t *cmd)
 
 	cmd->upmove += cl_upspeed->value * CL_KeyState (&in_up);
 	cmd->upmove -= cl_upspeed->value * CL_KeyState (&in_down);
+
+	if (mouse_jump_pending)
+	{
+		cmd->upmove += cl_upspeed->value;
+		mouse_jump_pending = false;
+	}
 
 	if (! (in_klook.state & 1) )
 	{	
@@ -393,6 +404,43 @@ void IN_CenterView (void)
 }
 
 /*
+===============
+CL_ToggleWalkMode
+
+Right mouse button and HUD button: swap the mouse axes between
+looking and walking.  Entering walk mode levels the pitch so the
+view resets to the horizon.
+===============
+*/
+void CL_ToggleWalkMode (void)
+{
+	Cvar_SetValue ("walkmode", !walkmode->value);
+	if (walkmode->value)
+	{
+		IN_CenterView ();
+		Com_Printf ("walk mode on\n");
+	}
+	else
+		Com_Printf ("walk mode off\n");
+}
+
+/*
+===============
+CL_MouseJumpEdge
+
+Left mouse button double-click jump: a second click within 300 ms
+of the previous one queues a one-frame jump on top of the normal
+attack, so shooting is never delayed.
+===============
+*/
+void CL_MouseJumpEdge (unsigned time)
+{
+	if (time - mouse1_last_down < 300)
+		mouse_jump_pending = true;
+	mouse1_last_down = time;
+}
+
+/*
 ============
 CL_InitInput
 ============
@@ -434,6 +482,7 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("-klook", IN_KLookUp);
 
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
+	walkmode = Cvar_Get ("walkmode", "0", CVAR_ARCHIVE);
 }
 
 

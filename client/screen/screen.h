@@ -39,6 +39,8 @@ float	SCR_HUDScale (void);
 
 void	SCR_DrawStringScaled (int x, int y, char *string, float scale);
 
+qboolean	SCR_WalkButtonHit (void);
+
 void	SCR_RunConsole (void);
 
 extern	float		scr_con_current;

@@ -1345,6 +1345,66 @@ void SCR_DrawLayout (void)
 	SCR_ExecuteLayoutString (cl.layout);
 }
 
+/*
+==============
+SCR_DrawWalkButton
+
+Fixed HUD button that toggles walk mode for mice without a right
+button.  Drawn top-right in the same virtual space as the rest of
+the HUD; the rect is kept for click hit-testing.
+==============
+*/
+static int	walk_btn_x, walk_btn_y, walk_btn_w, walk_btn_h;
+
+void SCR_DrawWalkButton (void)
+{
+	float	scale;
+	char	*label;
+	int		cw, w, h;
+
+	if (!walkmode || cls.key_dest != key_game || cls.state != ca_active
+		|| cl.attractloop)
+	{
+		walk_btn_w = walk_btn_h = 0;
+		return;
+	}
+
+	scale = SCR_HUDScale ();
+	label = walkmode->value ? "WALK" : "LOOK";
+	cw = CONCHAR_SIZE*scale;
+	w = 4*cw + 8*scale;
+	h = cw + 6*scale;
+	walk_btn_x = viddef.width - w - 4*scale;
+	walk_btn_y = 4*scale;
+	walk_btn_w = w;
+	walk_btn_h = h;
+
+	re.DrawFill (walk_btn_x, walk_btn_y, w, h, 4);
+	SCR_DrawAltStringScaled (walk_btn_x + 4*scale, walk_btn_y + 3*scale,
+		label, scale);
+	SCR_AddDirtyPoint (walk_btn_x, walk_btn_y);
+	SCR_AddDirtyPoint (walk_btn_x + w, walk_btn_y + h);
+}
+
+/*
+==============
+SCR_WalkButtonHit
+
+True if the mouse cursor is over the walk button as last drawn.
+==============
+*/
+qboolean SCR_WalkButtonHit (void)
+{
+	int	x, y;
+
+	if (!walk_btn_w)
+		return false;
+
+	IN_CursorPos (&x, &y);
+	return x >= walk_btn_x && x < walk_btn_x + walk_btn_w
+		&& y >= walk_btn_y && y < walk_btn_y + walk_btn_h;
+}
+
 //=======================================================
 
 /*
@@ -1469,6 +1529,8 @@ void SCR_UpdateScreen (void)
 				SCR_DrawLayout ();
 			if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 2)
 				CL_DrawInventory ();
+
+			SCR_DrawWalkButton ();
 
 			SCR_DrawNet ();
 			SCR_CheckDrawCenterString ();
