@@ -291,6 +291,48 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	qglEnable (GL_TEXTURE_2D);
 }
 
+/*
+=============
+Draw_FillAlpha
+
+Fills a box of pixels with a single color, blended over the
+framebuffer at the given alpha (1.0 = opaque).
+=============
+*/
+void Draw_FillAlpha (int x, int y, int w, int h, int c, float alpha)
+{
+	union
+	{
+		unsigned	c;
+		byte		v[4];
+	} color;
+
+	if ( (unsigned)c > 255)
+		ri.Sys_Error (ERR_FATAL, "Draw_FillAlpha: bad color");
+
+	qglDisable (GL_TEXTURE_2D);
+	qglEnable (GL_BLEND);
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	color.c = d_8to24table[c];
+	qglColor4f (color.v[0]/255.0,
+		color.v[1]/255.0,
+		color.v[2]/255.0,
+		alpha);
+
+	qglBegin (GL_QUADS);
+
+	qglVertex2f (x,y);
+	qglVertex2f (x+w, y);
+	qglVertex2f (x+w, y+h);
+	qglVertex2f (x, y+h);
+
+	qglEnd ();
+	qglColor4f (1,1,1,1);
+	qglDisable (GL_BLEND);
+	qglEnable (GL_TEXTURE_2D);
+}
+
 //=============================================================================
 
 /*

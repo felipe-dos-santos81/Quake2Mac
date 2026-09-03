@@ -56,9 +56,11 @@ The mouse looks by default (X turns, Y looks up/down). Right-click toggles
 player like a joystick centered on the screen — hold it above center to
 keep walking forward, below to back up, left/right to strafe (farther from
 center = faster, small dead zone at center). A fixed `WALK`/`LOOK` button at
-the top right of the HUD offers the same toggle for mice without a right
-button. Left click shoots; a left double-click also jumps. The wheel
-switches weapons. `walkmode` is archived, toggles apply immediately.
+the bottom center of the HUD offers the same toggle for mice without a
+right button; it is drawn at 70% opacity while the mouse is moving and
+turns solid once the mouse rests. Left click shoots; a left double-click
+also jumps. The wheel switches weapons. `walkmode` is archived, toggles
+apply immediately.
 
 ## Texture overrides
 
