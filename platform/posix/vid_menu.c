@@ -366,36 +366,9 @@ VID_MenuKey
 */
 const char *VID_MenuKey( int key )
 {
-	extern void M_PopMenu( void );
+	extern const char *Default_MenuKey( menuframework_s *m, int key );
 
-	menuframework_s *m = s_current_menu;
-	static const char *sound = "misc/menu1.wav";
-
-	switch ( key )
-	{
-	case K_ESCAPE:
-		M_PopMenu();
-		return NULL;
-	case K_UPARROW:
-		m->cursor--;
-		Menu_AdjustCursor( m, -1 );
-		break;
-	case K_DOWNARROW:
-		m->cursor++;
-		Menu_AdjustCursor( m, 1 );
-		break;
-	case K_LEFTARROW:
-		Menu_SlideItem( m, -1 );
-		break;
-	case K_RIGHTARROW:
-		Menu_SlideItem( m, 1 );
-		break;
-	case K_ENTER:
-		Menu_SelectItem( m );
-		break;
-	}
-
-	return sound;
+	return Default_MenuKey( s_current_menu, key );
 }
 
 
