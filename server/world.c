@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // world.c -- world query functions
 
 #include "server/server.h"
+#include <stdint.h>
 
 /*
 ===============================================================================
@@ -33,7 +34,7 @@ FIXME: this use of "area" is different from the bsp file use
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
 // FIXME: remove this mess!
-#define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
+#define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)(intptr_t)&(((t *)0)->m)))
 
 #define	EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,edict_t,area)
 
@@ -355,9 +356,6 @@ void SV_AreaEdicts_r (areanode_t *node)
 {
 	link_t		*l, *next, *start;
 	edict_t		*check;
-	int			count;
-
-	count = 0;
 
 	// touch linked edicts
 	if (area_type == AREA_SOLID)
@@ -434,7 +432,6 @@ int SV_PointContents (vec3_t p)
 	int			i, num;
 	int			contents, c2;
 	int			headnode;
-	float		*angles;
 
 	// get base contents from world
 	contents = CM_PointContents (p, sv.models[1]->headnode);
@@ -448,9 +445,6 @@ int SV_PointContents (vec3_t p)
 
 		// might intersect, so do an exact clip
 		headnode = SV_HullForEntity (hit);
-		angles = hit->s.angles;
-		if (hit->solid != SOLID_BSP)
-			angles = vec3_origin;	// boxes don't rotate
 
 		c2 = CM_TransformedPointContents (p, headnode, hit->s.origin, hit->s.angles);
 

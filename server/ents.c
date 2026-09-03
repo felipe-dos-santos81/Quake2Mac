@@ -435,7 +435,6 @@ void SV_BuildClientFrame (client_t *client)
 	int		l;
 	int		clientarea, clientcluster;
 	int		leafnum;
-	int		c_fullsend;
 	byte	*clientphs;
 	byte	*bitvector;
 
@@ -470,8 +469,6 @@ void SV_BuildClientFrame (client_t *client)
 	// build up the list of visible entities
 	frame->num_entities = 0;
 	frame->first_entity = svs.next_client_entities;
-
-	c_fullsend = 0;
 
 	for (e=1 ; e<ge->num_edicts ; e++)
 	{
@@ -520,7 +517,6 @@ void SV_BuildClientFrame (client_t *client)
 				{	// too many leafs for individual check, go by headnode
 					if (!CM_HeadnodeVisible (ent->headnode, bitvector))
 						continue;
-					c_fullsend++;
 				}
 				else
 				{	// check individual leafs
