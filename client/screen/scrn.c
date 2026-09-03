@@ -1350,17 +1350,23 @@ void SCR_DrawLayout (void)
 SCR_DrawWalkButton
 
 Fixed HUD button that toggles walk mode for mice without a right
-button.  Drawn top-right in the same virtual space as the rest of
-the HUD; the rect is kept for click hit-testing.
+button.  Drawn bottom-center in the same virtual space as the rest
+of the HUD; the rect is kept for click hit-testing.  Translucent
+(70%) while the mouse is moving, solid once it rests.
 ==============
 */
+#define	WALK_BTN_IDLE_MS	500
+
 static int	walk_btn_x, walk_btn_y, walk_btn_w, walk_btn_h;
 
 void SCR_DrawWalkButton (void)
 {
 	float	scale;
+	float	alpha;
 	char	*label;
 	int		cw, w, h;
+	int		x, y, now;
+	static int	last_x = -1, last_y = -1, last_move_time;
 
 	if (!walkmode || cls.key_dest != key_game || cls.state != ca_active
 		|| cl.attractloop)
@@ -1369,17 +1375,27 @@ void SCR_DrawWalkButton (void)
 		return;
 	}
 
+	now = Sys_Milliseconds ();
+	IN_CursorPos (&x, &y);
+	if (x != last_x || y != last_y)
+	{
+		last_x = x;
+		last_y = y;
+		last_move_time = now;
+	}
+	alpha = (now - last_move_time > WALK_BTN_IDLE_MS) ? 1.0f : 0.7f;
+
 	scale = SCR_HUDScale ();
 	label = walkmode->value ? "WALK" : "LOOK";
 	cw = CONCHAR_SIZE*scale;
 	w = 4*cw + 8*scale;
 	h = cw + 6*scale;
-	walk_btn_x = viddef.width - w - 4*scale;
-	walk_btn_y = 4*scale;
+	walk_btn_x = (viddef.width - w) / 2;
+	walk_btn_y = viddef.height - h - 4*scale;
 	walk_btn_w = w;
 	walk_btn_h = h;
 
-	re.DrawFill (walk_btn_x, walk_btn_y, w, h, 4);
+	re.DrawFillAlpha (walk_btn_x, walk_btn_y, w, h, 4, alpha);
 	SCR_DrawAltStringScaled (walk_btn_x + 4*scale, walk_btn_y + 3*scale,
 		label, scale);
 	SCR_AddDirtyPoint (walk_btn_x, walk_btn_y);
