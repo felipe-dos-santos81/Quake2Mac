@@ -29,7 +29,7 @@ BUNDLE_LDFLAGS = -bundle -undefined dynamic_lookup
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install data objects build all verify-load run clean tools-test textures test-ref
+.PHONY: help install data objects build all verify-load run smoke clean tools-test textures test-ref
 
 # ── Stage 0 · Help ───────────────────────────────────────────────────────────
 
@@ -194,6 +194,27 @@ test-ref: $(TEST_OVERRIDE) ## Host test for the texture override loader (no GL, 
 
 run: build data ## Launch Quake II (windowed, GL renderer, no cursor grab)
 	./$(EXE) +set vid_ref gl +set vid_fullscreen 0
+
+# Runtime smoke: boot +map base1, poll the flushed console log for the spawn /
+# connect / bsp markers, then kill the game and assert on the captured log.
+# stdout is block-buffered when redirected and SIGTERM does not flush it, so
+# the log comes from `logfile 2` (fflush'd every print) instead.
+SMOKE_LOG = baseq2/qconsole.log
+SMOKE_SECS = 20
+
+smoke: build data ## Runtime smoke: boot +map base1 and assert spawn/connect/bsp (rewrites baseq2/qconsole.log)
+	@rm -f $(SMOKE_LOG) $(BUILD_DIR)/smoke.pid
+	@./$(EXE) +set developer 1 +set logfile 2 +map base1 >/dev/null 2>&1 & echo $$! >$(BUILD_DIR)/smoke.pid
+	@for i in $$(seq 1 $(SMOKE_SECS)); do \
+		sleep 1; \
+		if grep -q "client_connect" $(SMOKE_LOG) 2>/dev/null; then break; fi; \
+	done
+	@kill $$(cat $(BUILD_DIR)/smoke.pid) 2>/dev/null || true; rm -f $(BUILD_DIR)/smoke.pid
+	@grep -q "SpawnServer: base1" $(SMOKE_LOG) || { echo "SMOKE FAIL: no 'SpawnServer: base1'"; exit 1; }
+	@grep -q "client_connect" $(SMOKE_LOG) || { echo "SMOKE FAIL: no 'client_connect'"; exit 1; }
+	@grep -q "maps/base1.bsp" $(SMOKE_LOG) || { echo "SMOKE FAIL: no 'maps/base1.bsp'"; exit 1; }
+	@if grep -qE "FATAL|ShutdownError" $(SMOKE_LOG); then echo "SMOKE FAIL: FATAL/ShutdownError in log"; exit 1; fi
+	@echo "SMOKE OK: base1 spawned, client connected, no FATAL/ShutdownError"
 
 # ── Stage 5 · Cleanup ────────────────────────────────────────────────────────
 
