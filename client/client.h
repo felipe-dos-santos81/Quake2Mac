@@ -265,6 +265,8 @@ extern	cvar_t	*cl_pitchspeed;
 
 extern	cvar_t	*cl_run;
 
+extern	cvar_t	*walkmode;
+
 extern	cvar_t	*cl_anglespeedkey;
 
 extern	cvar_t	*cl_shownet;
@@ -485,6 +487,8 @@ void CL_WriteToServer (usercmd_t *cmd);
 void CL_BaseMove (usercmd_t *cmd);
 
 void IN_CenterView (void);
+void CL_ToggleWalkMode (void);
+void CL_MouseJumpEdge (unsigned time);
 
 float CL_KeyState (kbutton_t *key);
 char *Key_KeynumToString (int keynum);

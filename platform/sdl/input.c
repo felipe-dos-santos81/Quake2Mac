@@ -4,7 +4,8 @@
 //
 // The mouse cursor is NEVER grabbed: no SDL_SetWindowMouseGrab and no
 // relative mouse mode. Look-around uses motion deltas delivered while the
-// cursor is inside the window.
+// cursor is inside the window; the absolute position is tracked (in
+// drawable pixels) so the client can hit-test HUD buttons.
 
 #include <SDL3/SDL.h>
 
@@ -98,15 +99,13 @@ void KBD_Close(void)
 static qboolean UseMouse = true;
 
 static int   mx, my;                 /* accumulated motion since last Move */
-
-static qboolean mlooking;
+static int   cursor_x, cursor_y;     /* last absolute position, drawable px */
 
 static in_state_t *in_state;
 
 static cvar_t *m_filter;
 static cvar_t *in_mouse;
-static cvar_t *freelook;
-static cvar_t *lookstrafe;
+static cvar_t *walkmode;
 static cvar_t *sensitivity;
 static cvar_t *m_pitch;
 static cvar_t *m_yaw;
@@ -118,15 +117,17 @@ static void Force_CenterView_f(void)
 	in_state->viewangles[PITCH] = 0;
 }
 
+/*
+ * The walk/look mouse scheme superseded +mlook (look is the default,
+ * walk mode is a right-click toggle); the commands stay registered so
+ * configs that bind them don't error out.
+ */
 static void RW_IN_MLookDown(void)
 {
-	mlooking = true;
 }
 
 static void RW_IN_MLookUp(void)
 {
-	mlooking = false;
-	in_state->IN_CenterView_fp();
 }
 
 void KBD_Update(void)
@@ -154,8 +155,26 @@ void KBD_Update(void)
 		case SDL_EVENT_MOUSE_MOTION:
 			if (UseMouse)
 			{
+				SDL_Window *w;
+				int ww, wh, pw, ph;
+
 				mx += (int)e.motion.xrel;
 				my += (int)e.motion.yrel;
+
+				/* track the absolute position in drawable pixels for
+				   HUD hit-testing; SDL delivers window coordinates */
+				w = SDL_GetWindowFromID(e.motion.windowID);
+				if (w && SDL_GetWindowSize(w, &ww, &wh) &&
+					SDL_GetWindowSizeInPixels(w, &pw, &ph) && ww > 0 && wh > 0)
+				{
+					cursor_x = (int)(e.motion.x * (float)pw / (float)ww);
+					cursor_y = (int)(e.motion.y * (float)ph / (float)wh);
+				}
+				else
+				{
+					cursor_x = (int)e.motion.x;
+					cursor_y = (int)e.motion.y;
+				}
 			}
 			break;
 
@@ -217,8 +236,7 @@ void RW_IN_Init(in_state_t *in_state_p)
 
 	m_filter    = ri.Cvar_Get("m_filter", "0", 0);
 	in_mouse    = ri.Cvar_Get("in_mouse", "1", CVAR_ARCHIVE);
-	freelook    = ri.Cvar_Get("freelook", "0", 0);
-	lookstrafe  = ri.Cvar_Get("lookstrafe", "0", 0);
+	walkmode    = ri.Cvar_Get("walkmode", "0", 0);
 	sensitivity = ri.Cvar_Get("sensitivity", "3", 0);
 	m_pitch     = ri.Cvar_Get("m_pitch", "0.022", 0);
 	m_yaw       = ri.Cvar_Get("m_yaw", "0.022", 0);
@@ -280,26 +298,31 @@ void RW_IN_Move(usercmd_t *cmd)
 	mouse_x *= sensitivity->value;
 	mouse_y *= sensitivity->value;
 
-	/* add mouse X/Y movement to cmd */
-	if ((*in_state->in_strafe_state & 1) ||
-		(lookstrafe->value && mlooking))
-		cmd->sidemove += m_side->value * mouse_x;
-	else
-		in_state->viewangles[YAW] -= m_yaw->value * mouse_x;
-
-	if ((mlooking || freelook->value) &&
-		!(*in_state->in_strafe_state & 1))
+	/*
+	 * walk/look mouse scheme: look is the default (X yaws, Y pitches);
+	 * walk mode moves the player instead (X strafes, Y walks) and is
+	 * toggled with the right mouse button or the HUD walk button.
+	 */
+	if (walkmode->value)
 	{
-		in_state->viewangles[PITCH] += m_pitch->value * mouse_y;
+		cmd->sidemove += m_side->value * mouse_x;
+		cmd->forwardmove -= m_forward->value * mouse_y;
 	}
 	else
 	{
-		cmd->forwardmove -= m_forward->value * mouse_y;
+		in_state->viewangles[YAW] -= m_yaw->value * mouse_x;
+		in_state->viewangles[PITCH] += m_pitch->value * mouse_y;
 	}
 }
 
 void RW_IN_Frame(void)
 {
+}
+
+void RW_IN_CursorPos(int *x, int *y)
+{
+	*x = cursor_x;
+	*y = cursor_y;
 }
 
 void RW_IN_Activate(qboolean active)

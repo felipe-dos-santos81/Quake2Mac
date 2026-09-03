@@ -832,6 +832,32 @@ void Key_Event (int key, qboolean down, unsigned time)
 	}
 
 //
+// walk/look mouse scheme: the right button toggles walk mode, a left
+// click on the HUD walk button toggles instead of shooting, and a left
+// double-click jumps on top of shooting
+//
+	if (cls.key_dest == key_game && !cl.attractloop
+		&& cls.state == ca_active
+		&& (key == K_MOUSE1 || key == K_MOUSE2))
+	{
+		if (key == K_MOUSE2)
+		{
+			if (down)
+				CL_ToggleWalkMode ();
+			return;
+		}
+		if (down)
+		{
+			if (SCR_WalkButtonHit ())
+			{
+				CL_ToggleWalkMode ();
+				return;
+			}
+			CL_MouseJumpEdge (time);
+		}
+	}
+
+//
 // key up events only generate commands if the game key binding is
 // a button command (leading + sign).  These will occur even in console mode,
 // to keep the character from continuing an action started before a console
