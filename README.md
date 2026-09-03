@@ -58,9 +58,10 @@ keep walking forward, below to back up, left/right to strafe (farther from
 center = faster, small dead zone at center). A fixed `WALK`/`LOOK` button at
 the bottom center of the HUD offers the same toggle for mice without a
 right button; it is drawn at 70% opacity while the mouse is moving and
-turns solid once the mouse rests. Left click shoots; a left double-click
-also jumps. The wheel switches weapons. `walkmode` is archived, toggles
-apply immediately.
+turns solid once the mouse rests. While walking, a left click returns
+to look mode without shooting; otherwise left click shoots, and a left
+double-click also jumps. The wheel switches weapons. `walkmode` is
+archived, toggles apply immediately.
 
 ## Texture overrides
 
