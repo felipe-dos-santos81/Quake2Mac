@@ -833,7 +833,8 @@ void Key_Event (int key, qboolean down, unsigned time)
 
 //
 // walk/look mouse scheme: the right button toggles walk mode, a left
-// click on the HUD walk button toggles instead of shooting, and a left
+// click on the HUD walk button toggles instead of shooting, a left
+// click while walking exits walk mode instead of shooting, and a left
 // double-click jumps on top of shooting
 //
 	if (cls.key_dest == key_game && !cl.attractloop
@@ -849,6 +850,11 @@ void Key_Event (int key, qboolean down, unsigned time)
 		if (down)
 		{
 			if (SCR_WalkButtonHit ())
+			{
+				CL_ToggleWalkMode ();
+				return;
+			}
+			if (walkmode->value)
 			{
 				CL_ToggleWalkMode ();
 				return;
