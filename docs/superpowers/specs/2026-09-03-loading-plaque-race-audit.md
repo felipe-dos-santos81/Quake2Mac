@@ -1,9 +1,11 @@
 # Loading-Plaque Race Audit — 2026-09-03
 
-Status: **audit only, no code change**. One user occurrence (2026-09-02, retry
-worked); not reproducible in 19 constructed headless runs. Two latent
-vanilla-inherited fragilities documented below, plus a diagnostic recipe for
-the next recurrence.
+Status: **audit + precautionary hardening**. One user occurrence
+(2026-09-02, retry worked); not reproducible in 19 constructed headless runs.
+Two latent vanilla-inherited fragilities documented below, plus a diagnostic
+recipe for the next recurrence. The F1 hardening (per-frame re-check of the
+plaque end condition in `CL_Frame`, `client/main.c`) landed the same day as a
+precaution, although the bug was never reproduced.
 
 ## Symptom
 
@@ -42,7 +44,9 @@ Boot log showed the attract transition starting (`Changing map...`,
    reload landing between precache completion (`CL_PrepRefresh` at the end of
    the precache machine, `client/main.c` ~1352) and the first frame leaves
    the plaque up over a *live* game for the full 120 s timeout. The only
-   mechanism found that produces the symptom.
+   mechanism found that produces the symptom. Hardened 2026-09-03:
+   `CL_Frame` re-evaluates the end condition every frame, so a late re-prep
+   still ends the plaque.
 2. **`CL_ClearState` eats an unsent `new`.** `CL_ClearState`
    (`client/main.c` ~597) clears the outgoing reliable buffer; a streamed
    demo serverdata arriving between `CL_Reconnect_f` queueing `new` and

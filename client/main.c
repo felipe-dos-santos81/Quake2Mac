@@ -1715,6 +1715,15 @@ void CL_Frame (int msec)
 	if (!cl.refresh_prepped && cls.state == ca_active)
 		CL_PrepRefresh ();
 
+	// a ref reload landing between precache and the first valid frame slips
+	// past the one-shot plaque end in CL_ParseFrame (client/net/ents.c);
+	// re-check the end condition every frame so the plaque cannot outlive
+	// a completed connection (2026-09-03 loading-plaque race audit, F1)
+	if (cls.disable_screen && cls.state == ca_active
+		&& cls.disable_servercount != cl.servercount
+		&& cl.refresh_prepped)
+		SCR_EndLoadingPlaque ();
+
 	// update the screen
 	if (host_speeds->value)
 		time_before_ref = Sys_Milliseconds ();
