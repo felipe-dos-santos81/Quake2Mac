@@ -1471,6 +1471,7 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.DrawStretchChar = Draw_StretchChar;
 	re.DrawTileClear = Draw_TileClear;
 	re.DrawFill = Draw_Fill;
+	re.DrawFillAlpha = Draw_FillAlpha;
 	re.DrawFadeScreen= Draw_FadeScreen;
 
 	re.DrawStretchRaw = Draw_StretchRaw;

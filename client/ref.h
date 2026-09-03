@@ -168,6 +168,7 @@ typedef struct
 	void	(*DrawStretchChar) (int x, int y, int w, int h, int c);
 	void	(*DrawTileClear) (int x, int y, int w, int h, char *name);
 	void	(*DrawFill) (int x, int y, int w, int h, int c);
+	void	(*DrawFillAlpha) (int x, int y, int w, int h, int c, float alpha);
 	void	(*DrawFadeScreen) (void);
 
 	// Draw images for cinematic rendering (which can have a different palette). Note that calls
