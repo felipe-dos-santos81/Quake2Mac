@@ -35,6 +35,7 @@ static void	 SpinControl_DoSlide( menulist_s *s, int dir );
 
 #define RCOLUMN_OFFSET  16
 #define LCOLUMN_OFFSET -16
+#define SLIDER_RANGE	10
 
 extern refexport_t re;
 extern viddef_t viddef;
@@ -69,6 +70,20 @@ void Action_Draw( menuaction_s *a )
 	}
 	if ( a->generic.ownerdraw )
 		a->generic.ownerdraw( a );
+
+	{
+		int	l = ( int ) strlen( a->generic.name );
+		int	bx = a->generic.x + a->generic.parent->x;
+		int	by = a->generic.y + a->generic.parent->y;
+
+		if ( a->generic.flags & QMF_LEFT_JUSTIFY )
+			a->generic.hit_x = bx + LCOLUMN_OFFSET;
+		else
+			a->generic.hit_x = bx + LCOLUMN_OFFSET - 8 * ( l - 1 );
+		a->generic.hit_y = by;
+		a->generic.hit_w = 8 * l;
+		a->generic.hit_h = 8;
+	}
 }
 
 qboolean Field_DoEnter( menufield_s *f )
@@ -127,6 +142,11 @@ void Field_Draw( menufield_s *f )
 					   ' ' );
 		}
 	}
+
+	f->generic.hit_x = f->generic.x + f->generic.parent->x + 16;
+	f->generic.hit_y = f->generic.y + f->generic.parent->y - 4;
+	f->generic.hit_w = f->visible_length * 8 + 8;
+	f->generic.hit_h = 16;
 }
 
 qboolean Field_Key( menufield_s *f, int key )
@@ -476,6 +496,31 @@ void *Menu_ItemAtCursor( menuframework_s *m )
 	return m->items[m->cursor];
 }
 
+/*
+** Menu_ItemAtPoint
+**
+** Returns the item whose last drawn rect contains the point, or 0.
+** Separators are never hit.  Rects exist after the menu's first draw;
+** input cannot arrive before that.
+*/
+void *Menu_ItemAtPoint( menuframework_s *m, int x, int y )
+{
+	int	i;
+	menucommon_s	*item;
+
+	for ( i = 0; i < m->nitems; i++ )
+	{
+		item = ( menucommon_s * ) m->items[i];
+		if ( item->type == MTYPE_SEPARATOR || item->hit_w <= 0 )
+			continue;
+		if ( x >= item->hit_x && x < item->hit_x + item->hit_w
+			&& y >= item->hit_y && y < item->hit_y + item->hit_h )
+			return item;
+	}
+
+	return 0;
+}
+
 qboolean Menu_SelectItem( menuframework_s *s )
 {
 	menucommon_s *item = ( menucommon_s * ) Menu_ItemAtCursor( s );
@@ -566,12 +611,26 @@ void MenuList_Draw( menulist_s *l )
 		n++;
 		y += 10;
 	}
+
+	{
+		int	n = 0;
+		const char **c = l->itemnames;
+
+		while ( *c )
+			n++, c++;
+		l->generic.hit_x = l->generic.x - 112 + l->generic.parent->x;
+		l->generic.hit_y = l->generic.y + l->generic.parent->y;
+		l->generic.hit_w = 128;
+		l->generic.hit_h = 10 * ( n + 1 );
+	}
 }
 
 void Separator_Draw( menuseparator_s *s )
 {
 	if ( s->generic.name )
 		Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->generic.name );
+
+	s->generic.hit_w = s->generic.hit_h = 0;
 }
 
 void Slider_DoSlide( menuslider_s *s, int dir )
@@ -586,8 +645,6 @@ void Slider_DoSlide( menuslider_s *s, int dir )
 	if ( s->generic.callback )
 		s->generic.callback( s );
 }
-
-#define SLIDER_RANGE 10
 
 void Slider_Draw( menuslider_s *s )
 {
@@ -608,6 +665,23 @@ void Slider_Draw( menuslider_s *s )
 		Draw_Char( RCOLUMN_OFFSET + s->generic.x + i*8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 129);
 	Draw_Char( RCOLUMN_OFFSET + s->generic.x + i*8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 130);
 	Draw_Char( ( int ) ( 8 + RCOLUMN_OFFSET + s->generic.parent->x + s->generic.x + (SLIDER_RANGE-1)*8 * s->range ), s->generic.y + s->generic.parent->y, 131);
+
+	{
+		int	bx = s->generic.x + s->generic.parent->x;
+		int	left = bx + RCOLUMN_OFFSET;
+		int	right = left + ( SLIDER_RANGE + 2 ) * 8;
+
+		if ( s->generic.name )
+		{
+			int	ll = bx + LCOLUMN_OFFSET - 8 * ( ( int ) strlen( s->generic.name ) - 1 );
+			if ( ll < left )
+				left = ll;
+		}
+		s->generic.hit_x = left;
+		s->generic.hit_y = s->generic.y + s->generic.parent->y;
+		s->generic.hit_w = right - left;
+		s->generic.hit_h = 8;
+	}
 }
 
 void SpinControl_DoSlide( menulist_s *s, int dir )
@@ -644,6 +718,34 @@ void SpinControl_Draw( menulist_s *s )
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer );
 		strcpy( buffer, strchr( s->itemnames[s->curvalue], '\n' ) + 1 );
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
+	}
+
+	{
+		int	bx = s->generic.x + s->generic.parent->x;
+		const char *v = s->itemnames[s->curvalue];
+		const char *nl = strchr( v, '\n' );
+		int	left = bx + RCOLUMN_OFFSET;
+		int	right;
+
+		if ( s->generic.name )
+		{
+			int	ll = bx + LCOLUMN_OFFSET - 8 * ( ( int ) strlen( s->generic.name ) - 1 );
+			if ( ll < left )
+				left = ll;
+		}
+		if ( nl )
+		{
+			int	r1 = bx + RCOLUMN_OFFSET + 8 * ( int ) ( nl - v );
+			int	r2 = bx + RCOLUMN_OFFSET + 8 * ( int ) strlen( nl + 1 );
+			right = r1 > r2 ? r1 : r2;
+		}
+		else
+			right = bx + RCOLUMN_OFFSET + 8 * ( int ) strlen( v );
+
+		s->generic.hit_x = left;
+		s->generic.hit_y = s->generic.y + s->generic.parent->y;
+		s->generic.hit_w = right - left;
+		s->generic.hit_h = nl ? 18 : 8;
 	}
 }
 

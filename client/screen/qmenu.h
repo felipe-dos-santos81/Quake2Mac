@@ -77,6 +77,8 @@ typedef struct
 	void (*statusbarfunc)( void *self );
 	void (*ownerdraw)( void *self );
 	void (*cursordraw)( void *self );
+
+	int hit_x, hit_y, hit_w, hit_h;	/* last drawn rect, drawable px, for mouse hit-testing */
 } menucommon_s;
 
 typedef struct
@@ -127,6 +129,7 @@ void	Menu_AdjustCursor( menuframework_s *menu, int dir );
 void	Menu_Center( menuframework_s *menu );
 void	Menu_Draw( menuframework_s *menu );
 void	*Menu_ItemAtCursor( menuframework_s *m );
+void	*Menu_ItemAtPoint( menuframework_s *m, int x, int y );
 qboolean Menu_SelectItem( menuframework_s *s );
 void	Menu_SetStatusBar( menuframework_s *s, const char *string );
 void	Menu_SlideItem( menuframework_s *s, int dir );
