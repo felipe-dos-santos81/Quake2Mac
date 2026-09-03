@@ -99,10 +99,13 @@ void Sys_Mkdir (char *path)
 
 char *strlwr (char *s)
 {
+	char	*start = s;
+
 	while (*s) {
 		*s = tolower(*s);
 		s++;
 	}
+	return start;
 }
 
 //============================================
