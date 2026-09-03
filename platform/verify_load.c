@@ -30,7 +30,7 @@ int main(void)
 {
 	static const char *ref_exports[] = {
 		"GetRefAPI", "RW_IN_Init", "RW_IN_Shutdown", "RW_IN_Activate",
-		"RW_IN_Commands", "RW_IN_Move", "RW_IN_Frame",
+		"RW_IN_Commands", "RW_IN_Move", "RW_IN_Frame", "RW_IN_CursorPos",
 		"KBD_Init", "KBD_Update", "KBD_Close"
 	};
 	static const char *game_exports[] = { "GetGameAPI" };

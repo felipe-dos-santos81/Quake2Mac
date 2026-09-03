@@ -42,6 +42,7 @@ void (*RW_IN_Activate_fp)(qboolean active);
 void (*RW_IN_Commands_fp)(void);
 void (*RW_IN_Move_fp)(usercmd_t *cmd);
 void (*RW_IN_Frame_fp)(void);
+void (*RW_IN_CursorPos_fp)(int *x, int *y);
 
 void Real_IN_Init (void);
 
@@ -160,6 +161,7 @@ void VID_FreeReflib (void)
 	RW_IN_Commands_fp = NULL;
 	RW_IN_Move_fp = NULL;
 	RW_IN_Frame_fp = NULL;
+	RW_IN_CursorPos_fp = NULL;
 
 	memset (&re, 0, sizeof(re));
 	reflib_library = NULL;
@@ -253,7 +255,8 @@ qboolean VID_LoadRefresh( char *name )
 		(RW_IN_Activate_fp = dlsym(reflib_library, "RW_IN_Activate")) == NULL ||
 		(RW_IN_Commands_fp = dlsym(reflib_library, "RW_IN_Commands")) == NULL ||
 		(RW_IN_Move_fp = dlsym(reflib_library, "RW_IN_Move")) == NULL ||
-		(RW_IN_Frame_fp = dlsym(reflib_library, "RW_IN_Frame")) == NULL)
+		(RW_IN_Frame_fp = dlsym(reflib_library, "RW_IN_Frame")) == NULL ||
+		(RW_IN_CursorPos_fp = dlsym(reflib_library, "RW_IN_CursorPos")) == NULL)
 		Sys_Error("No RW_IN functions in REF.\n");
 
 	Real_IN_Init();
@@ -388,6 +391,14 @@ void IN_Move (usercmd_t *cmd)
 {
 	if (RW_IN_Move_fp)
 		RW_IN_Move_fp(cmd);
+}
+
+void IN_CursorPos (int *x, int *y)
+{
+	if (RW_IN_CursorPos_fp)
+		RW_IN_CursorPos_fp (x, y);
+	else
+		*x = *y = 0;
 }
 
 void IN_Frame (void)
