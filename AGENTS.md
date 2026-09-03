@@ -23,7 +23,7 @@ small standalone Python tool (`tools/`) for texture extraction.
 | `ref_gl/` | OpenGL renderer + texture-override loader (`override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
 | `platform/` | Platform layer: `posix/` (`sys.c`, `udp.c`, `glob.c`, `shared.c`, `vid_menu.c`) + `sdl/` (`vid.c`, `sound.c`, `input.c`, `glw.c`, `qgl.c` GL dispatch loader), plus `verify_load.c` at the platform root |
 | `tools/` | Standalone Python (uv-managed) pak `.wal` → PNG texture extractor + pytest suite |
-| `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit, folder restructure; plus the 2026-09-03 loading-plaque race audit |
+| `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit, folder restructure; plus the 2026-09-03 loading-plaque race audit and warning-cleanup round 5 |
 | `baseq2/` | **User territory** — game data (paks, players/, textures/, saves). Contents selectively git-ignored; only `hudtest.cfg` is tracked |
 | `build/` | Build outputs; object paths mirror the source tree (`client/main.c` → `build/client/main.o`): `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
 | `.superpowers/` | Transient SDD agent workspaces (`sdd/<date>-<topic>/` briefs, reports, review diffs). Git-ignored — never commit |
@@ -64,11 +64,10 @@ loaded, no `FATAL`/`ShutdownError`. (The attract-loop launch can hit a
 CoreAudio `-66681` environment error on some machines — proven not a code
 regression; the `+map base1` smoke is the deterministic substitute.)
 
-**Known benign build noise:** an `ld` warning
-`reducing alignment of section __DATA,__common`, and ~200+ pre-existing
-`-Wall` warnings (mostly `-Wmissing-braces` in monster frame-array
-initializers, `-Wpointer-sign` in client/main.c). Do not "fix" these in
-unrelated changes.
+**Build hygiene:** since the 2026-09-03 warning-cleanup round the tree
+builds with zero `-Wall` warnings and no `ld` alignment warning
+(`-fno-common` in BASE_CFLAGS retires the `__DATA,__common` note).
+Keep it that way: new code must compile warning-free.
 
 ## Development Conventions
 
