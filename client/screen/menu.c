@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static int	m_main_cursor;
 
-#define NUM_CURSOR_FRAMES 15
-
 static char *menu_in_sound		= "misc/menu1.wav";
 static char *menu_move_sound	= "misc/menu2.wav";
 static char *menu_out_sound		= "misc/menu3.wav";
@@ -203,6 +201,10 @@ const char *Default_MenuKey( menuframework_s *m, int key )
 
 	case K_MOUSE1:
 	case K_MOUSE2:
+	case K_MWHEELUP:
+	case K_MWHEELDOWN:
+		return Menu_MouseKey( m, key );
+
 	case K_MOUSE3:
 	case K_JOY1:
 	case K_JOY2:
@@ -278,37 +280,6 @@ void M_Print (int cx, int cy, char *str)
 	}
 }
 
-/*
-=============
-M_DrawCursor
-
-Draws an animating cursor with the point at
-x,y.  The pic will extend to the left of x,
-and both above and below y.
-=============
-*/
-void M_DrawCursor( int x, int y, int f )
-{
-	char	cursorname[80];
-	static qboolean cached;
-
-	if ( !cached )
-	{
-		int i;
-
-		for ( i = 0; i < NUM_CURSOR_FRAMES; i++ )
-		{
-			Com_sprintf( cursorname, sizeof( cursorname ), "m_cursor%d", i );
-
-			re.RegisterPic( cursorname );
-		}
-		cached = true;
-	}
-
-	Com_sprintf( cursorname, sizeof(cursorname), "m_cursor%d", f );
-	re.DrawPic( x, y, cursorname );
-}
-
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
 	int		cx, cy;
@@ -362,6 +333,95 @@ MAIN MENU
 */
 #define	MAIN_ITEMS	5
 
+static char *s_main_names[MAIN_ITEMS] =
+{
+	"m_main_game",
+	"m_main_multiplayer",
+	"m_main_options",
+	"m_main_video",
+	"m_main_quit"
+};
+
+/*
+================
+M_Main_Geometry
+
+Layout shared by the draw and the mouse hit-testing: the five entry
+pics stacked 40 px apart, left edge at xoffset.
+================
+*/
+static void M_Main_Geometry( int *xoffset, int *ystart, int *widest )
+{
+	int	i, w, h;
+
+	*widest = -1;
+	for ( i = 0; i < MAIN_ITEMS; i++ )
+	{
+		re.DrawGetPicSize( &w, &h, s_main_names[i] );
+		if ( w > *widest )
+			*widest = w;
+	}
+
+	*ystart = ( viddef.height / 2 - 110 );
+	*xoffset = ( viddef.width - *widest + 70 ) / 2;
+}
+
+/*
+================
+M_Main_RowAtPoint
+
+Returns the entry row under the pointer, or -1.  Each row is a 40 px
+tall strip starting where its pic is drawn.
+================
+*/
+static int M_Main_RowAtPoint( int x, int y )
+{
+	int	i;
+	int	xoffset, ystart, widest;
+
+	M_Main_Geometry( &xoffset, &ystart, &widest );
+	if ( x < xoffset || x >= xoffset + widest )
+		return -1;
+
+	for ( i = 0; i < MAIN_ITEMS; i++ )
+		if ( y >= ystart + i * 40 + 13 && y < ystart + i * 40 + 53 )
+			return i;
+
+	return -1;
+}
+
+/*
+================
+M_Main_Activate
+================
+*/
+static void M_Main_Activate( int row )
+{
+	m_entersound = true;
+
+	switch ( row )
+	{
+	case 0:
+		M_Menu_Game_f ();
+		break;
+
+	case 1:
+		M_Menu_Multiplayer_f();
+		break;
+
+	case 2:
+		M_Menu_Options_f ();
+		break;
+
+	case 3:
+		M_Menu_Video_f ();
+		break;
+
+	case 4:
+		M_Menu_Quit_f ();
+		break;
+	}
+}
 
 void M_Main_Draw (void)
 {
@@ -369,39 +429,26 @@ void M_Main_Draw (void)
 	int w, h;
 	int ystart;
 	int	xoffset;
-	int widest = -1;
+	int widest;
+	int	x, y, row;
 	char litname[80];
-	char *names[] =
-	{
-		"m_main_game",
-		"m_main_multiplayer",
-		"m_main_options",
-		"m_main_video",
-		"m_main_quit",
-		0
-	};
 
-	for ( i = 0; names[i] != 0; i++ )
-	{
-		re.DrawGetPicSize( &w, &h, names[i] );
+	/* the pointer moves the selection; the _sel pic is the highlight */
+	IN_CursorPos( &x, &y );
+	row = M_Main_RowAtPoint( x, y );
+	if ( row >= 0 )
+		m_main_cursor = row;
 
-		if ( w > widest )
-			widest = w;
-	}
+	M_Main_Geometry( &xoffset, &ystart, &widest );
 
-	ystart = ( viddef.height / 2 - 110 );
-	xoffset = ( viddef.width - widest + 70 ) / 2;
-
-	for ( i = 0; names[i] != 0; i++ )
+	for ( i = 0; i < MAIN_ITEMS; i++ )
 	{
 		if ( i != m_main_cursor )
-			re.DrawPic( xoffset, ystart + i * 40 + 13, names[i] );
+			re.DrawPic( xoffset, ystart + i * 40 + 13, s_main_names[i] );
 	}
-	strcpy( litname, names[m_main_cursor] );
+	strcpy( litname, s_main_names[m_main_cursor] );
 	strcat( litname, "_sel" );
 	re.DrawPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
-
-	M_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100)%NUM_CURSOR_FRAMES );
 
 	re.DrawGetPicSize( &w, &h, "m_main_plaque" );
 	re.DrawPic( xoffset - 30 - w, ystart, "m_main_plaque" );
@@ -432,32 +479,27 @@ const char *M_Main_Key (int key)
 			m_main_cursor = MAIN_ITEMS - 1;
 		return sound;
 
+	case K_MOUSE1:
+	{
+		int	x, y, row;
+
+		IN_CursorPos( &x, &y );
+		row = M_Main_RowAtPoint( x, y );
+		if ( row < 0 )
+			break;
+		m_main_cursor = row;
+		M_Main_Activate( row );
+		break;
+	}
+
+	case K_MOUSE2:
+		M_PopMenu ();
+		return menu_out_sound;
+
 	case K_KP_ENTER:
 	case K_ENTER:
-		m_entersound = true;
-
-		switch (m_main_cursor)
-		{
-		case 0:
-			M_Menu_Game_f ();
-			break;
-
-		case 1:
-			M_Menu_Multiplayer_f();
-			break;
-
-		case 2:
-			M_Menu_Options_f ();
-			break;
-
-		case 3:
-			M_Menu_Video_f ();
-			break;
-
-		case 4:
-			M_Menu_Quit_f ();
-			break;
-		}
+		M_Main_Activate( m_main_cursor );
+		break;
 	}
 
 	return NULL;
@@ -1708,6 +1750,7 @@ const char *M_Credits_Key( int key )
 	switch (key)
 	{
 	case K_ESCAPE:
+	case K_MOUSE2:
 		if (creditsBuffer)
 			FS_FreeFile (creditsBuffer);
 		M_PopMenu ();
@@ -3778,6 +3821,7 @@ const char *M_Quit_Key (int key)
 	case K_ESCAPE:
 	case 'n':
 	case 'N':
+	case K_MOUSE2:
 		M_PopMenu ();
 		break;
 

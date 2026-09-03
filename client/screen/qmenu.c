@@ -27,14 +27,19 @@ static void	 Action_DoEnter( menuaction_s *a );
 static void	 Action_Draw( menuaction_s *a );
 static void  Menu_DrawStatusBar( const char *string );
 static void	 MenuList_Draw( menulist_s *l );
+static void	 MenuList_SelectFromPixel( menulist_s *l, int py );
 static void	 Separator_Draw( menuseparator_s *s );
 static void	 Slider_DoSlide( menuslider_s *s, int dir );
 static void	 Slider_Draw( menuslider_s *s );
+static void	 Slider_SetFromPixel( menuslider_s *s, int px );
 static void	 SpinControl_Draw( menulist_s *s );
 static void	 SpinControl_DoSlide( menulist_s *s, int dir );
 
+static menuslider_s *s_drag_slider;	/* slider being dragged, or 0 */
+
 #define RCOLUMN_OFFSET  16
 #define LCOLUMN_OFFSET -16
+#define SLIDER_RANGE	10
 
 extern refexport_t re;
 extern viddef_t viddef;
@@ -69,6 +74,20 @@ void Action_Draw( menuaction_s *a )
 	}
 	if ( a->generic.ownerdraw )
 		a->generic.ownerdraw( a );
+
+	{
+		int	l = ( int ) strlen( a->generic.name );
+		int	bx = a->generic.x + a->generic.parent->x;
+		int	by = a->generic.y + a->generic.parent->y;
+
+		if ( a->generic.flags & QMF_LEFT_JUSTIFY )
+			a->generic.hit_x = bx + LCOLUMN_OFFSET;
+		else
+			a->generic.hit_x = bx + LCOLUMN_OFFSET - 8 * ( l - 1 );
+		a->generic.hit_y = by;
+		a->generic.hit_w = 8 * l;
+		a->generic.hit_h = 8;
+	}
 }
 
 qboolean Field_DoEnter( menufield_s *f )
@@ -127,6 +146,11 @@ void Field_Draw( menufield_s *f )
 					   ' ' );
 		}
 	}
+
+	f->generic.hit_x = f->generic.x + f->generic.parent->x + 16;
+	f->generic.hit_y = f->generic.y + f->generic.parent->y - 4;
+	f->generic.hit_w = f->visible_length * 8 + 8;
+	f->generic.hit_h = 16;
 }
 
 qboolean Field_Key( menufield_s *f, int key )
@@ -260,6 +284,29 @@ qboolean Field_Key( menufield_s *f, int key )
 	return true;
 }
 
+/*
+** Field_SetCaretFromPixel
+**
+** Places the text caret at the clicked column.
+*/
+static void Field_SetCaretFromPixel( menufield_s *f, int px )
+{
+	int	base = f->generic.x + f->generic.parent->x + 24;
+	int	col;
+
+	col = ( px - base ) / 8;
+	if ( col < 0 )
+		col = 0;
+	if ( col > f->visible_length )
+		col = f->visible_length;
+
+	f->cursor = f->visible_offset + col;
+	if ( f->cursor > ( int ) strlen( f->buffer ) )
+		f->cursor = ( int ) strlen( f->buffer );
+	if ( f->cursor > f->length )
+		f->cursor = f->length;
+}
+
 void Menu_AddItem( menuframework_s *menu, void *item )
 {
 	if ( menu->nitems == 0 )
@@ -340,6 +387,137 @@ void Menu_Center( menuframework_s *menu )
 	menu->y = ( VID_HEIGHT - height ) / 2;
 }
 
+/*
+** Menu_MousePass
+**
+** Per-frame mouse handling for framework menus.  While a slider drag
+** is live the pointer owns the value; otherwise the menu cursor moves
+** silently to the item under the pointer.  Mouse and keyboard share
+** the one cursor index, so arrow keys keep working from wherever the
+** pointer left the selection.
+*/
+static void Menu_MousePass( menuframework_s *m )
+{
+	extern int keydown[];
+	menucommon_s	*item;
+	int	x, y, i;
+
+	IN_CursorPos( &x, &y );
+
+	if ( s_drag_slider )
+	{
+		if ( !keydown[K_MOUSE1] || s_drag_slider->generic.parent != m )
+			s_drag_slider = 0;
+		else
+		{
+			Slider_SetFromPixel( s_drag_slider, x );
+			return;
+		}
+	}
+
+	item = ( menucommon_s * ) Menu_ItemAtPoint( m, x, y );
+	if ( !item || item == Menu_ItemAtCursor( m ) )
+		return;
+
+	for ( i = 0; i < m->nitems; i++ )
+	{
+		if ( m->items[i] == item )
+		{
+			m->cursor = i;
+			break;
+		}
+	}
+}
+
+/*
+================
+Menu_MouseKey
+
+Pointer and wheel semantics for framework menus: left click
+activates the item under the pointer (a press on a slider starts a
+drag), right click goes back like Escape, and the wheel moves the
+selection or adjusts the value under it.  Returns the sound to play,
+or NULL.
+================
+*/
+const char *Menu_MouseKey( menuframework_s *m, int key )
+{
+	extern void M_PopMenu( void );
+
+	switch ( key )
+	{
+	case K_MOUSE1:
+		if ( m )
+		{
+			menucommon_s	*hit;
+			int	x, y, i;
+
+			IN_CursorPos( &x, &y );
+			hit = ( menucommon_s * ) Menu_ItemAtPoint( m, x, y );
+			if ( hit )
+			{
+				/* move the selection to the clicked item */
+				for ( i = 0; i < m->nitems; i++ )
+					if ( m->items[i] == hit )
+					{
+						m->cursor = i;
+						break;
+					}
+
+				switch ( hit->type )
+				{
+				case MTYPE_SLIDER:
+					s_drag_slider = ( menuslider_s * ) hit;
+					Slider_SetFromPixel( ( menuslider_s * ) hit, x );
+					break;
+				case MTYPE_FIELD:
+					Field_SetCaretFromPixel( ( menufield_s * ) hit, x );
+					break;
+				case MTYPE_SPINCONTROL:
+					SpinControl_DoSlide( ( menulist_s * ) hit, 1 );
+					break;
+				case MTYPE_LIST:
+					MenuList_SelectFromPixel( ( menulist_s * ) hit, y );
+					break;
+				case MTYPE_ACTION:
+					Action_DoEnter( ( menuaction_s * ) hit );
+					break;
+				}
+				return "misc/menu2.wav";
+			}
+		}
+		return NULL;
+
+	case K_MOUSE2:
+		M_PopMenu();
+		return "misc/menu3.wav";
+
+	case K_MWHEELUP:
+	case K_MWHEELDOWN:
+		if ( m )
+		{
+			menucommon_s	*cur = ( menucommon_s * ) Menu_ItemAtCursor( m );
+
+			if ( cur && ( cur->type == MTYPE_SLIDER || cur->type == MTYPE_SPINCONTROL ) )
+				Menu_SlideItem( m, key == K_MWHEELUP ? 1 : -1 );
+			else if ( key == K_MWHEELUP )
+			{
+				m->cursor--;
+				Menu_AdjustCursor( m, -1 );
+			}
+			else
+			{
+				m->cursor++;
+				Menu_AdjustCursor( m, 1 );
+			}
+			return "misc/menu2.wav";
+		}
+		return NULL;
+	}
+
+	return NULL;
+}
+
 void Menu_Draw( menuframework_s *menu )
 {
 	int i;
@@ -372,6 +550,9 @@ void Menu_Draw( menuframework_s *menu )
 			break;
 		}
 	}
+
+	/* let the pointer move the selection before the highlight draws */
+	Menu_MousePass( menu );
 
 	item = Menu_ItemAtCursor( menu );
 
@@ -476,6 +657,31 @@ void *Menu_ItemAtCursor( menuframework_s *m )
 	return m->items[m->cursor];
 }
 
+/*
+** Menu_ItemAtPoint
+**
+** Returns the item whose last drawn rect contains the point, or 0.
+** Separators are never hit.  Rects exist after the menu's first draw;
+** input cannot arrive before that.
+*/
+void *Menu_ItemAtPoint( menuframework_s *m, int x, int y )
+{
+	int	i;
+	menucommon_s	*item;
+
+	for ( i = 0; i < m->nitems; i++ )
+	{
+		item = ( menucommon_s * ) m->items[i];
+		if ( item->type == MTYPE_SEPARATOR || item->hit_w <= 0 )
+			continue;
+		if ( x >= item->hit_x && x < item->hit_x + item->hit_w
+			&& y >= item->hit_y && y < item->hit_y + item->hit_h )
+			return item;
+	}
+
+	return 0;
+}
+
 qboolean Menu_SelectItem( menuframework_s *s )
 {
 	menucommon_s *item = ( menucommon_s * ) Menu_ItemAtCursor( s );
@@ -566,12 +772,26 @@ void MenuList_Draw( menulist_s *l )
 		n++;
 		y += 10;
 	}
+
+	{
+		int	n = 0;
+		const char **c = l->itemnames;
+
+		while ( *c )
+			n++, c++;
+		l->generic.hit_x = l->generic.x - 112 + l->generic.parent->x;
+		l->generic.hit_y = l->generic.y + l->generic.parent->y;
+		l->generic.hit_w = 128;
+		l->generic.hit_h = 10 * ( n + 1 );
+	}
 }
 
 void Separator_Draw( menuseparator_s *s )
 {
 	if ( s->generic.name )
 		Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->generic.name );
+
+	s->generic.hit_w = s->generic.hit_h = 0;
 }
 
 void Slider_DoSlide( menuslider_s *s, int dir )
@@ -586,8 +806,6 @@ void Slider_DoSlide( menuslider_s *s, int dir )
 	if ( s->generic.callback )
 		s->generic.callback( s );
 }
-
-#define SLIDER_RANGE 10
 
 void Slider_Draw( menuslider_s *s )
 {
@@ -608,6 +826,55 @@ void Slider_Draw( menuslider_s *s )
 		Draw_Char( RCOLUMN_OFFSET + s->generic.x + i*8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 129);
 	Draw_Char( RCOLUMN_OFFSET + s->generic.x + i*8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 130);
 	Draw_Char( ( int ) ( 8 + RCOLUMN_OFFSET + s->generic.parent->x + s->generic.x + (SLIDER_RANGE-1)*8 * s->range ), s->generic.y + s->generic.parent->y, 131);
+
+	{
+		int	bx = s->generic.x + s->generic.parent->x;
+		int	left = bx + RCOLUMN_OFFSET;
+		int	right = left + ( SLIDER_RANGE + 2 ) * 8;
+
+		if ( s->generic.name )
+		{
+			int	ll = bx + LCOLUMN_OFFSET - 8 * ( ( int ) strlen( s->generic.name ) - 1 );
+			if ( ll < left )
+				left = ll;
+		}
+		s->generic.hit_x = left;
+		s->generic.hit_y = s->generic.y + s->generic.parent->y;
+		s->generic.hit_w = right - left;
+		s->generic.hit_h = 8;
+	}
+}
+
+/*
+** Slider_SetFromPixel
+**
+** Maps a pointer x inside the slider track to a value, clamped, and
+** fires the callback exactly once per changed step — the drag can
+** call this every frame.
+*/
+static void Slider_SetFromPixel( menuslider_s *s, int px )
+{
+	int	base;
+	int	travel;
+	float	range;
+	int	value;
+
+	base = s->generic.x + s->generic.parent->x + RCOLUMN_OFFSET + 8;
+	travel = ( SLIDER_RANGE - 1 ) * 8;
+
+	range = ( px - base ) / ( float ) travel;
+	if ( range < 0 )
+		range = 0;
+	if ( range > 1 )
+		range = 1;
+
+	value = ( int ) ( s->minvalue + range * ( s->maxvalue - s->minvalue ) + 0.5f );
+	if ( value == ( int ) s->curvalue )
+		return;
+	s->curvalue = value;
+
+	if ( s->generic.callback )
+		s->generic.callback( s );
 }
 
 void SpinControl_DoSlide( menulist_s *s, int dir )
@@ -645,5 +912,55 @@ void SpinControl_Draw( menulist_s *s )
 		strcpy( buffer, strchr( s->itemnames[s->curvalue], '\n' ) + 1 );
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
 	}
+
+	{
+		int	bx = s->generic.x + s->generic.parent->x;
+		const char *v = s->itemnames[s->curvalue];
+		const char *nl = strchr( v, '\n' );
+		int	left = bx + RCOLUMN_OFFSET;
+		int	right;
+
+		if ( s->generic.name )
+		{
+			int	ll = bx + LCOLUMN_OFFSET - 8 * ( ( int ) strlen( s->generic.name ) - 1 );
+			if ( ll < left )
+				left = ll;
+		}
+		if ( nl )
+		{
+			int	r1 = bx + RCOLUMN_OFFSET + 8 * ( int ) ( nl - v );
+			int	r2 = bx + RCOLUMN_OFFSET + 8 * ( int ) strlen( nl + 1 );
+			right = r1 > r2 ? r1 : r2;
+		}
+		else
+			right = bx + RCOLUMN_OFFSET + 8 * ( int ) strlen( v );
+
+		s->generic.hit_x = left;
+		s->generic.hit_y = s->generic.y + s->generic.parent->y;
+		s->generic.hit_w = right - left;
+		s->generic.hit_h = nl ? 18 : 8;
+	}
+}
+
+/*
+** MenuList_SelectFromPixel
+**
+** Sets curvalue to the row under the pointer, clamped.
+*/
+static void MenuList_SelectFromPixel( menulist_s *l, int py )
+{
+	int	n = 0;
+	int	row;
+	const char **c = l->itemnames;
+
+	while ( *c )
+		n++, c++;
+
+	row = ( py - ( l->generic.y + l->generic.parent->y + 10 ) ) / 10;
+	if ( row < 0 )
+		row = 0;
+	if ( row >= n )
+		row = n - 1;
+	l->curvalue = row;
 }
 

@@ -63,6 +63,12 @@ to look mode without shooting; otherwise left click shoots, and a left
 double-click also jumps. The wheel switches weapons. `walkmode` is
 archived, toggles apply immediately.
 
+In the menus the mouse takes over: hovering highlights, clicking
+activates (or starts a slider drag — hold and move to set the value),
+right click goes back like Escape, and the wheel moves the selection
+or, over a slider or spinner, adjusts its value. The OS cursor is the
+pointer everywhere; nothing is drawn or hidden.
+
 ## Texture overrides
 
 The renderer looks for hi-res replacements of the world textures on disk
