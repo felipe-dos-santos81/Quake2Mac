@@ -23,7 +23,7 @@ small standalone Python tool (`tools/`) for texture extraction.
 | `ref_gl/` | OpenGL renderer + texture-override loader (`override.c`), `stb_image.h`, host tests in `ref_gl/tests/` |
 | `platform/` | Platform layer: `posix/` (`sys.c`, `udp.c`, `glob.c`, `shared.c`, `vid_menu.c`) + `sdl/` (`vid.c`, `sound.c`, `input.c`, `glw.c`, `qgl.c` GL dispatch loader), plus `verify_load.c` at the platform root |
 | `tools/` | Standalone Python (uv-managed) pak `.wal` → PNG texture extractor + pytest suite |
-| `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit, folder restructure |
+| `docs/superpowers/specs/` | Design specs: the SDL3 port, cleanups rounds 1–4, texture overrides, texture recreation kit, folder restructure; plus the 2026-09-03 loading-plaque race audit |
 | `baseq2/` | **User territory** — game data (paks, players/, textures/, saves). Contents selectively git-ignored; only `hudtest.cfg` is tracked |
 | `build/` | Build outputs; object paths mirror the source tree (`client/main.c` → `build/client/main.o`): `quake2`, `ref_gl.so`, `verify_load` (git-ignored; the game DLL installs to `baseq2/gamearm64.so`) |
 | `.superpowers/` | Transient SDD agent workspaces (`sdd/<date>-<topic>/` briefs, reports, review diffs). Git-ignored — never commit |
