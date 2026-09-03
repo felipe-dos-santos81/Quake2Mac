@@ -1005,7 +1005,6 @@ void S_Update(vec3_t origin, vec3_t right)
 	int			i;
 	int			total;
 	channel_t	*ch;
-	channel_t	*combine;
 
 	if (!sound_started)
 		return;
@@ -1025,8 +1024,6 @@ void S_Update(vec3_t origin, vec3_t right)
 
 	VectorCopy(origin, listener_origin);
 	VectorCopy(right, listener_right);
-
-	combine = NULL;
 
 	// update spatialization for dynamic sounds	
 	ch = channels;
