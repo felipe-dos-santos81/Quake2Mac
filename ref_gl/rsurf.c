@@ -451,7 +451,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	}
 
 	// dynamic this frame or dynamic previously
-	if ( ( fa->dlightframe == r_framecount ) )
+	if (fa->dlightframe == r_framecount)
 	{
 dynamic:
 		if ( gl_dynamic->value )
@@ -640,7 +640,7 @@ static void GL_RenderLightmappedPoly( msurface_t *surf )
 	}
 
 	// dynamic this frame or dynamic previously
-	if ( ( surf->dlightframe == r_framecount ) )
+	if (surf->dlightframe == r_framecount)
 	{
 dynamic:
 		if ( gl_dynamic->value )
@@ -1358,7 +1358,6 @@ void GL_BuildPolygonFromSurface(msurface_t *fa)
 {
 	int			i, lindex, lnumverts;
 	medge_t		*pedges, *r_pedge;
-	int			vertpage;
 	float		*vec;
 	float		s, t;
 	glpoly_t	*poly;
@@ -1367,7 +1366,6 @@ void GL_BuildPolygonFromSurface(msurface_t *fa)
 // reconstruct the polygon
 	pedges = currentmodel->edges;
 	lnumverts = fa->numedges;
-	vertpage = 0;
 
 	VectorClear (total);
 	//
