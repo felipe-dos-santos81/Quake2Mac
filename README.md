@@ -42,7 +42,9 @@ make run       # launch, windowed GL
 ```
 
 `make all` checks game data then builds; `make verify-load` smoke-tests the
-renderer and game bundles without game data; `make help` lists every target.
+renderer and game bundles without game data; `make smoke` boots `+map base1`
+and asserts the spawn/connect/bsp markers (needs game data); `make help`
+lists every target.
 
 The engine reads `baseq2/` from the repository root, and the game DLL is built
 straight into `baseq2/gamearm64.so`.

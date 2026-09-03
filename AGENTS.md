@@ -47,13 +47,13 @@ Requirements: macOS/arm64, Xcode CLT (`cc`, `make`), `brew install sdl3`
 
 `make help` lists every target with its description (the Makefile's `##`
 comments are the source of truth). Targets agents use most: `build`,
-`verify-load`, `run`, `clean`, `test-ref`, `tools-test`, `textures`.
+`verify-load`, `run`, `smoke`, `clean`, `test-ref`, `tools-test`, `textures`.
 
 **Regression gate used by all cleanup rounds:**
 
 ```sh
 make clean && make verify-load                 # must exit 0 (verify-load implies build)
-./build/quake2 +set developer 1 +map base1     # runtime smoke
+make smoke                                     # runtime smoke: +map base1 spawn/connect/bsp assertions
 ```
 
 For iterative work an incremental `make verify-load` (header-dependency-aware
