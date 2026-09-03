@@ -109,8 +109,6 @@ static cvar_t *walkmode;
 static cvar_t *sensitivity;
 static cvar_t *m_pitch;
 static cvar_t *m_yaw;
-static cvar_t *m_forward;
-static cvar_t *m_side;
 
 static void Force_CenterView_f(void)
 {
@@ -240,8 +238,6 @@ void RW_IN_Init(in_state_t *in_state_p)
 	sensitivity = ri.Cvar_Get("sensitivity", "3", 0);
 	m_pitch     = ri.Cvar_Get("m_pitch", "0.022", 0);
 	m_yaw       = ri.Cvar_Get("m_yaw", "0.022", 0);
-	m_forward   = ri.Cvar_Get("m_forward", "1", 0);
-	m_side      = ri.Cvar_Get("m_side", "0.8", 0);
 
 	ri.Cmd_AddCommand("+mlook", RW_IN_MLookDown);
 	ri.Cmd_AddCommand("-mlook", RW_IN_MLookUp);
@@ -269,6 +265,27 @@ void RW_IN_Commands(void)
 RW_IN_Move
 ===========
 */
+#define WALK_DEADZONE 8
+#define WALK_MAXSPEED 400
+
+static float walk_axis(float off)
+{
+	float speed;
+
+	if (off > WALK_DEADZONE)
+		speed = (off - WALK_DEADZONE) * sensitivity->value;
+	else if (off < -WALK_DEADZONE)
+		speed = (off + WALK_DEADZONE) * sensitivity->value;
+	else
+		return 0;
+
+	if (speed > WALK_MAXSPEED)
+		speed = WALK_MAXSPEED;
+	if (speed < -WALK_MAXSPEED)
+		speed = -WALK_MAXSPEED;
+	return speed;
+}
+
 void RW_IN_Move(usercmd_t *cmd)
 {
 	float mouse_x, mouse_y;
@@ -276,6 +293,20 @@ void RW_IN_Move(usercmd_t *cmd)
 
 	if (!UseMouse)
 		return;
+
+	/*
+	 * walk/look mouse scheme: look is the default (X yaws, Y pitches);
+	 * walk mode steers by cursor POSITION relative to the screen center
+	 * (hold the cursor above center to keep walking forward), because the
+	 * cursor is never grabbed and motion deltas die at the window edge.
+	 * Toggled with the right mouse button or the HUD walk button.
+	 */
+	if (walkmode->value)
+	{
+		cmd->sidemove += walk_axis(cursor_x - vid.width * 0.5f);
+		cmd->forwardmove += walk_axis(vid.height * 0.5f - cursor_y);
+		return;
+	}
 
 	if (m_filter->value)
 	{
@@ -298,21 +329,8 @@ void RW_IN_Move(usercmd_t *cmd)
 	mouse_x *= sensitivity->value;
 	mouse_y *= sensitivity->value;
 
-	/*
-	 * walk/look mouse scheme: look is the default (X yaws, Y pitches);
-	 * walk mode moves the player instead (X strafes, Y walks) and is
-	 * toggled with the right mouse button or the HUD walk button.
-	 */
-	if (walkmode->value)
-	{
-		cmd->sidemove += m_side->value * mouse_x;
-		cmd->forwardmove -= m_forward->value * mouse_y;
-	}
-	else
-	{
-		in_state->viewangles[YAW] -= m_yaw->value * mouse_x;
-		in_state->viewangles[PITCH] += m_pitch->value * mouse_y;
-	}
+	in_state->viewangles[YAW] -= m_yaw->value * mouse_x;
+	in_state->viewangles[PITCH] += m_pitch->value * mouse_y;
 }
 
 void RW_IN_Frame(void)
